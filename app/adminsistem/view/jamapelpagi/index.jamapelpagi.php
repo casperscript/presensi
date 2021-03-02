@@ -1,0 +1,135 @@
+<body class="search-app quick-results-off">
+    <?php $this->getView('adminsistem', 'main', 'loading', ''); ?>
+    <div class="mn-content fixed-sidebar">
+        <?php $this->getView('adminsistem', 'main', 'header', ''); ?>    
+        <?php $this->getView('adminsistem', 'main', 'menu', ''); ?>
+
+        <main class="mn-inner">
+            
+            <div class="search-header">
+                <div class="card card-transparent no-m">
+                    <div class="card-content no-s">
+                        <div class="z-depth-1 search-tabs">
+                            <div class="search-tabs-container">
+                                <div class="col s12 m12 l12">
+                                    <div class="row search-tabs-row search-tabs-container blue-grey white-text">
+                                        <div class="col s12 m6 l6">
+                                            <span style="line-height: 48px;text-transform: uppercase;"><?= $title; ?></span>
+                                        </div>
+                                        <div class="col s12 m6 l6 right-align search-stats">
+                                            <span class="secondary-stats"><?= $breadcrumb; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card stats-card">
+                        <div class="card-content">
+                            <div class="col s12">
+                                <form id="frmData" class="navbar-search expanded" onsubmit="return false" role="search" >
+                                    <div class="input-field col s7 custom-prefix">
+                                        <i class="material-icons prefix">search</i>
+                                        <input name="cari" id="cari" class="validate" type="text" placeholder="Pencarian Data">
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <button type="submit" class="waves-effect waves-light btn green">Cari</button>
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <a id="" class="waves-effect waves-light btn blue btnForm">Tambah</a>
+                                    </div>
+                                    <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
+                                </form>
+                            </div>
+                            <div class="col s12">
+                                <div id="data-tabel"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sparkline-bar"></div>
+                </div>
+            </div>
+        </main>
+
+        <div id="frmInputModal" class="form-apelpagi modal">
+            <form id="frmInput" class="form-horizontal" role="form" onsubmit="return false" autocomplete="off">
+                <div class="modal-content">
+                    <div id="data-form-input"></div>
+                </div>
+                <div class="modal-footer right-align">
+                    <button id="btnSimpan" type="submit" class="waves-effect waves-light btn green">Simpan</button>
+                    <button id="btnBatal" type="button" class="modal-close waves-effect waves-light btn red">Batal</button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="confirmModal" class="modal">
+            <form class="form-horizontal" role="form" onsubmit="return false" autocomplete="off" id="frmHapus">
+                <div class="modal-content">
+                    <h4 class="modal-title" id="myConfirmModalLabel"></h4>
+                    <div id="data-confirm"></div>
+                    <?= comp\MATERIALIZE::inputKey('id_jam_apel', ''); ?>
+                    <?= comp\MATERIALIZE::inputKey('tanggal_mulai', ''); ?>
+                    <?= comp\MATERIALIZE::inputKey('tanggal_akhir', ''); ?>
+                    <br />
+                    <div id="resultHapus"></div>
+                </div>
+                <div class="modal-footer right-align">
+                    <button id="btnConfirmHapus" type="button" class="waves-effect waves-light btn red">Hapus</button>
+                    <button id="btnBatalHapus" type="button" class="modal-close waves-effect waves-light btn green">Batal</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal -->
+        <?php $this->getView('adminsistem', 'main', 'footer', ''); ?>
+    </div>
+    <!-- ./wrapper -->
+
+     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
+    <script>
+        (function ($) {
+            "use strict";
+            app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
+
+            app.loadTabel();
+
+            $(document).on("submit", "#frmData", function () {
+                $("#page").val(1);
+                app.loadTabel();
+            });
+
+            $(document).on("click", ".btnForm", function () {
+                $("#resultForm").html("");
+                app.showForm(this.id);
+            });
+            
+            $(document).on("submit", "#frmInput", function () {
+                $("#btnSimpan").removeClass("waves-effect waves-light btn green").addClass("btn disabled");
+                app.simpan(this);
+            });
+            
+            $(document).on("click", ".btnHapus", function () {
+                $("#resultHapus").html("");
+                $("#myConfirmModalLabel").html("Konfirmasi Hapus");
+                $("#data-confirm").html("Apakah anda ingin menghapus data <span class='blue-text' for=''><b>"+$(this).attr("nama")+"</b></span> ?");
+                $("#frmHapus #id_jam_apel").val(this.id);
+                $("#frmHapus #tanggal_mulai").val($(this).data('mulai'));
+                $("#frmHapus #tanggal_akhir").val($(this).data('akhir'));
+                $("#confirmModal").openModal();
+            });
+            
+            $(document).on("click", "#btnConfirmHapus", function () {
+                app.hapus(this.id);
+            });
+            
+            $(document).on("click", ".paging", function () {
+                app.tabelPagging($(this).attr("number-page"));
+            });
+
+        })(jQuery);
+    </script>
+</body>

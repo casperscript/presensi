@@ -1,0 +1,287 @@
+<?php
+ob_start();
+use comp\FUNC;
+$namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
+
+$path_stempel = $this->new_simpeg_url."/simpeg/upload/stempel/";
+$path_ttd = $this->new_simpeg_url."/simpeg/upload/ttd/";
+/*
+$path_stempel = $this->link()."upload/stempel/";
+$path_ttd = $this->link()."upload/ttd/";
+*/
+?>
+<div class="row lap">
+    <div class="format-lap">
+        Format TPP - <?= $tingkat == 6 ? 'Final' : $tingkat ?>
+    </div>
+</div>
+<h5 class="center-align"><b>
+DAFTAR PENERIMAAN TAMBAHAN PENGHASILAN<br>
+<?= $satker ?><br>
+<small>Bulan <?= $namabulan[$bulan - 1] ?> Tahun <?= $tahun ?></small>
+</b></h5>
+<table class="bordered hoverable custom-border scrollable">
+    <thead>
+        <tr>
+        	<th class="grey lighten-2 center-align" rowspan="2">No</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">Nama / NIP / NPWP / Jabatan</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">Gol</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">TPP</th>
+        	<th class="grey lighten-2 center-align" colspan="3">Persentase Potongan (%)</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">Total Potongan (Rp)</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">TPP Kotor (TPP - Tot Pot)</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">Pajak</th>
+        	<th class="grey lighten-2 center-align" rowspan="2">Diterimakan (TPP Kotor - Pajak)</th>
+        </tr>
+        <tr>	
+        	<th class="grey lighten-2 center-align">MK</th>
+        	<th class="grey lighten-2 center-align">AP</th>
+        	<th class="grey lighten-2 center-align">PK</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+    $no = 1; $pin_absen = '';
+    $tot_tpp = 0; $tot_pot = 0; $tot_tppkotor = 0; $tot_pajak = 0; $tot_terima = 0;
+    foreach ($pegawai['value'] as $peg) {
+        $pin = $peg['pin_absen'];
+        $sum = $rekap[$pin]['sum_pot'];
+        $sum['all'] = ($sum['all'] > 100 ? 100 : $sum['all']);
+
+        //januari 2018 --- potongan belum diberlakukan -- yg untuk dicetak    
+        if ($asli != 1 && $download == 1 && $bulan == 1 && $tahun == 2018) {
+            $sum['all'] = 0; $sum['mk'] = '-'; $sum['ap'] = '-'; $sum['pk'] = '-';
+        }
+
+        $pot = ($sum['all']/100 * $peg['nominal_tp']);
+        $tpp_kotor = $peg['nominal_tp'] - $pot;
+        //remove whitespace-- ambil % pajak
+        $clean = str_replace(" ", "", $peg['golruang']);
+        $gol = explode("/", $clean)[0];
+        $pot_pajak = 0;
+        if (isset($pajak[$gol])) {
+            $pot_pajak = round($pajak[$gol] * $tpp_kotor);
+        }
+
+        $terima = $tpp_kotor - $pot_pajak;
+
+    	echo '<tr>
+    	<td class="center-align">'.$no.'</td>
+    	<td>'.$peg['nama_personil'].
+            '<br>'.$peg['nipbaru'].
+            '<br>'.($peg['npwp'] ? $peg['npwp'] : '-').
+            '<br>'.$peg['gol_jbtn'].
+        '</td>';
+    ?>
+    	<td><?= $peg['golruang'] ?></td>
+    	<td class="right-align"><?= 'Rp '.number_format($peg['nominal_tp'], 0, ",", ".") ?></td>
+        <?php 
+        if ($rekap[$pin]['pot_penuh']) {
+            echo '<td class="center-align" colspan="3">'.$rekap[$pin]['sum_pot']['all'].'</td>';
+            $sum['all'] = 100;
+        } else 
+            echo "<td class='center-align'>".$sum['mk']."</td>
+            <td class='center-align'>".$sum['ap']."</td>
+        	<td class='center-align'>".$sum['pk']."</td>";
+        ?>
+    	
+    	<td class="right-align"><?= ($pot > 0 ? 'Rp '.number_format($pot, 0, ",", ".") : '-') ?></td>
+    	<td class="right-align"><?= ($tpp_kotor ? 'Rp '.number_format($tpp_kotor, 0, ",", ".") : '-') ?></td>
+    	<td class="right-align"><?= ($pot_pajak ? 'Rp '.number_format($pot_pajak, 0, ",", ".") : '-') ?></td>
+    	<td class="right-align"><?= ($terima ? 'Rp '.number_format($terima, 0, ",", ".") : '-') ?></td>
+        <?php
+        	echo '</tr>';	
+            $pin_absen .= $pin . (count($pegawai['value']) != $no ? ',' : '');
+        	$no++;
+            $tot_tpp += $peg['nominal_tp'];
+            $tot_pot += $pot;
+            $tot_tppkotor += $tpp_kotor;
+            $tot_pajak += $pot_pajak;        
+            $tot_terima += $terima;
+        }
+        ?>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="right-align"><?= 'Rp '.number_format($tot_tpp, 0, ",", ".") ?></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="right-align"><?= ($tot_pot > 0 ? 'Rp '.number_format($tot_pot, 0, ",", ".") : '-') ?></th>
+            <th class="right-align"><?= 'Rp '.number_format($tot_tppkotor, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp '.number_format($tot_pajak, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp '.number_format($tot_terima, 0, ",", ".") ?></th>
+        </tr>
+    </tbody>
+</table>
+<br>
+<?php if ($download == 0) { ?>
+<div class="ttd-laporan">
+    <table class="ttd-tabel">
+         <tr>
+            <td width="50%">
+                <?php 
+                if ($tingkat == 3)
+                    if (isset($laporan['kepala_opd'])) {
+                        echo '<b>Mengesahkan Kepala OPD</b><br>'.
+                        $laporan['kepala_opd']['nama_personil'].'<br>
+                        NIP '.$laporan['kepala_opd']['nipbaru'].'<br>
+                        ('.FUNC::tanggal($laporan['dt_sah_kepala_opd'], 'short_date').')';
+                    } else
+                        echo '<b>[Belum disahkan Kepala OPD]';
+
+                else if ($tingkat > 3)
+                    if (isset($laporan['admin_kota'])) {
+                        echo '<b>Telah diverifikasi Admin Kota</b><br>'.
+                        $laporan['admin_kota']['nama_personil'].'<br>
+                        NIP '.$laporan['admin_kota']['nipbaru'].'<br>
+                        ('.FUNC::tanggal($laporan['dt_ver_admin_kota'], 'short_date').')';
+                    } else
+                        echo '<b>[Belum diverifikasi Admin Kota]';
+                ?>                
+            </td>
+            <td width="50%">
+                <?php if ($tingkat > 1)
+                if (isset($laporan['admin_opd'])) {
+                    echo '<b>Telah diverifikasi Admin OPD</b><br>'.
+                    $laporan['admin_opd']['nama_personil'].'<br>
+                    NIP '.$laporan['admin_opd']['nipbaru'].'<br>
+                    ('.FUNC::tanggal($laporan['dt_ver_admin_opd'], 'short_date').')';
+                } else
+                    echo '<b>[Belum diverifikasi Admin OPD]';
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php if ($tingkat > 4)
+                    if (isset($laporan['kepala_bkppd'])) {
+                        echo '<b>Mengesahkan Kepala BKPPD</b><br>'.
+                        $laporan['kepala_bkppd']['nama_personil'].'<br>
+                        NIP '.$laporan['kepala_bkppd']['nipbaru'].'<br>
+                        ('.FUNC::tanggal($laporan['dt_sah_kepala_bkppd'], 'short_date').')';
+                    } else
+                        echo '<b>[Belum disahkan Kepala BKPPD]';
+                ?>
+            </td>
+            <td>
+                <?php if ($tingkat > 3 && $tingkat < 6)
+                    if (isset($laporan['kepala_opd'])) {
+                        echo '<b>Mengesahkan Kepala OPD</b><br>'.
+                        $laporan['kepala_opd']['nama_personil'].'<br>
+                        NIP '.$laporan['kepala_opd']['nipbaru'].'<br>
+                        ('.FUNC::tanggal($laporan['dt_sah_kepala_opd'], 'short_date').')';
+                    } else
+                        echo '<b>[Belum disahkan Kepala OPD]';
+
+                    if ($tingkat == 6)
+                        if (isset($laporan['final'])) {
+                            echo '<b>Mengesahkan Kepala OPD</b><br>'.
+                            $laporan['kepala_opd']['nama_personil'].'<br>
+                            NIP '.$laporan['kepala_opd']['nipbaru'].'<br>
+                            ('.FUNC::tanggal($laporan['dt_sah_kepala_opd'], 'short_date').')';
+                        } else
+                            echo '<b>[Belum disahkan Kepala OPD]';
+                ?>
+            </td>
+        </tr>
+    </table>
+</div>  
+<?php
+
+if ($download == 0 && $tingkat == 5 && !isset($laporan['sah_kepala_bkppd']) 
+    && isset($laporan['ver_admin_kota']) &&
+    date('Y') >= $tahun && date('m') > $bulan
+) {
+?>
+<div class="center-align">
+    <form id="frmVer">
+        <?= comp\MATERIALIZE::inputKey('pin_absen', $pin_absen); ?>
+        <?= comp\MATERIALIZE::inputKey('bulan', $bulan); ?>
+        <?= comp\MATERIALIZE::inputKey('tahun', $tahun); ?>
+        <?= comp\MATERIALIZE::inputKey('tingkat', $tingkat); ?>
+        <?= comp\MATERIALIZE::inputKey('format', $format); ?>
+        <?= comp\MATERIALIZE::inputKey('kdlokasi', $kdlokasi); ?>
+        <button class="btn <?= $rekap['allverified'] ? 'waves-effect waves-light orange btnVer' : 'btn disabled' ?>" type="button">
+            <i class="material-icons left">verified_user</i>
+            Sahkan Laporan
+        </button>
+    </form>
+</div>
+<?php
+}
+}
+
+if ($download == 0)
+    exit;
+
+$all = [2 => 'admin_opd', 3 => 'kepala_opd', 4 => 'admin_kota', 5 => 'kepala_bkppd'];
+
+foreach ($all as $i => $level) {
+    $$level = "";
+    $tipe = ($i == 2 ||$i == 4) ? 'ver' : 'sah';
+
+    if ($i == 2)
+        $ket = 'Telah diverifikasi Admin OPD';
+    elseif ($i == 3)
+        $ket = 'Mengesahkan Kepala OPD';
+    elseif ($i == 4)
+        $ket = 'Telah diverifikasi Admin Kota';
+    elseif ($i == 5)
+        $ket = 'Mengesahkan Kepala BKPPD';
+
+    if ($tingkat >= $i && isset($laporan[$level])) {
+        $ttd = $path_ttd.$laporan[$level]['ttd'];
+        $ttd_headers = @get_headers($ttd);
+
+        $stempel = $path_stempel.$laporan[$level]['stempel'];
+        $stempel_headers = @get_headers($stempel);
+
+        $$level = '<div class="teks-atas"><b>'.$ket.'</b></div>
+            <div class="ttd-area">';
+
+        if ($ttd_headers[0] == 'HTTP/1.1 200 OK') { 
+            
+            $$level .= '<div class="ini-ttd">
+                <img class="ttd" src="'.$path_ttd.$laporan[$level]['ttd'] .'" width="180">
+            </div>';
+
+            if (($level == 'kepala_opd' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK')
+                $$level .= '<div class="ini-stempel">
+                    <img class="stempel" src="'.$path_stempel.$laporan[$level]['stempel'].'" width="180">
+                </div>';
+        } else {
+            $$level .= '<br><br><br><br><br><br><br>';
+        }
+        $$level .= '</div>';
+        $$level .= '<p class="teks-bawah">'
+            .$laporan[$level]['nama_personil'].'<br>
+            NIP '.$laporan[$level]['nipbaru'].'<br>
+            ('.FUNC::tanggal($laporan['dt_'.$tipe.'_'.$level], 'short_date').')</p>';
+
+    }
+}
+?>
+<!--pagebreak-->
+<div class="kiri-atas"><?= $tingkat == 3 ? $kepala_opd : $admin_kota ?></div>
+<div class="kanan-atas"><?= $admin_opd ?></div>
+<div style="clear: both"></div>
+<div class="kiri-bawah"><?= $kepala_bkppd ?></div>
+<div class="kanan-bawah"><?= $tingkat > 3 ? $kepala_opd : '' ?></div>
+
+<?php
+
+require_once ('comp/mpdf60/mpdf.php');
+$html = ob_get_contents();
+ob_end_clean();
+$pdf = new mPDF('UTF8', 'F4-L');
+$pdf->SetDisplayMode('fullpage');
+//$stylesheet = file_get_contents($this->link().'template/theme_admin/assets/css/laporanpdf.css', true);
+$stylesheet = file_get_contents('http://192.168.254.62/template/theme_admin/assets/css/laporanpdf.css', true);
+$pdf->WriteHTML($stylesheet, 1);
+$pdf->WriteHTML(utf8_encode($html));
+$filename = 'Laporan'.$format.'-'.$satker.'-'.$namabulan[$bulan - 1].$tahun.'-tingkat'.$tingkat.'.pdf';
+
+$pdf->Output($filename, 'D');
+?>

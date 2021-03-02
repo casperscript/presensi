@@ -1,0 +1,59 @@
+<body class="search-app quick-results-off">
+    <?php $this->getView('admin', 'main', 'loading', ''); ?>
+    <div class="mn-content fixed-sidebar">
+      <?php $this->getView('admin', 'main', 'header', ''); ?>    
+      <?php $this->getView('admin', 'main', 'menu', ''); ?>
+
+      <main class="mn-inner" style="padding-top: 10px">
+          <div class="row">
+              <?= $breadcrumb;?>
+              <div class="col s12">
+                  <div class="page-title">
+                    <?= $title;?>
+                    <small><?= $subtitle;?></small>
+                  </div>
+              </div>
+
+              <div class="col s12">
+                  <div class="card stats-card">
+                    <div class="card-content">
+                      <!-- content -->
+                      <?php //comp\FUNC::showPre($session);?>
+                      <div class="pengumuman">
+                            <h4>Landasan</h4>
+                            <ol>
+                                <li>Berdasarkan Surat Edaran Walikota Nomor 900/4235 tanggal 1 Nopember 2018 tentang Langkah-langkah Akhir Tahun Anggaran 2018 pada B. Belanja Nomor 1 huruf b berbunyi "SPM Tambahan Penghasilan bulan Desember 2018 diterima BUD paling lambat tanggal 18 Desember 2018 pukul 15.00 WIB, dengan dilampiri Absen Finger Print sampai dengan tanggal 14 Desember 2018.</li>
+                                <li>Rapat koordinasi antara Dinkominfo, BKPPD, dan BKD tanggal 10 Desember 2018 bertempat di Ruang Bidang Perbendaharaan dan Kasda BKD Kota Pekalongan.</li>
+                            </ol>
+
+                            <h4>Hasil pembahasan</h4>
+                            <ol>
+                                <li>Pengajuan tamsil Desember 2018 dilakukan sesuai dengan surat Edaran Walikota, yaitu paling lambat tanggal 18 Desember 2018 dengan finger print tanggal 1 - 14 Desember 2018 dan daftar penerimaan dengan potongan dengan status verifikasi tingkat 3 (Kepala OPD).</li>
+                                <li>Moderasi untuk finger print dilaksanakan sampai dengan tanggal 17 Desember 2018 jam 12.00 WIB. Selanjutnya verifikasi dilakukan oleh admin OPD dan Kepala OPD. Selanjutnya finger print tetap dilaksanakan dan diverifikasi BKPPD di akhir bulan untuk keperluan disiplin pegawai.</li>
+                                <li>Cetakan Laporan Kehadiran dan Penerimaan TPP Bulan Desember terdapat pada menu "Desember 2018". Menu diaktifkan mulai tanggal 15 Desember 2018.</li>
+                                <li>OPD yang terkendala update data secara online, dapat melakukan update data dengan membawa alat fingerprint ke Kominfo pada hari Sabtu & Minggu tanggal 15 & 16 Desember 2018 pukul 08:30 s/d 12:00 WIB.</li>
+                                <li>Pada tingkat sekolah (alat fingerprint offline), update data tetap dilakukan pada akhir bulan.</li>
+                            </ol>
+
+<!--                        Sehubungan banyaknya pertanyaan terkait kode <b>NR</b> pada laporan
+                        jam Apel, dapat kami informasikan hal-hal sebagai berikut :
+                        <ol>
+                          <li>Pada aplikasi e-presensi saat ini, jam kerja pegawai dibedakan dalam 2 jenis/ kelompok : </li>
+                          <ul class="normal">
+                           <li>Pertama, Jam Kerja Reguler , yaitu  Jam Kerja Umum sesuai Perwal Nomor 8 Tahun 2018 dan Surat Sekretaris Daerah Nomor 800/1054 tanggal 14 Mei 2018 (Masuk kerja Jam 07.15 dan 08.00 untuk bulan Ramadhan)</li>
+                           <li>Kedua, Jam Kerja Non Reguler (NR), yakni jam kerja khusus diluar Jam Kerja Reguler (Jam Masuk bukan jam 07.15).  Misal jam shif siang petugas jaga kantor.</li>
+                          </ul>
+                          <li>Kewajiban pelaksanaan apel pagi (termasuk Finger Apel pagi), pada  aplikasi hanya ditujukan untuk pegawai dengan jam kerja Reguler.  Bagi pegawai kelompok Jam kerja Non Reguler, Aplikasi tidak menyediakan pencatatan finger apel pagi (tidak perlu finger apel pagi), dan secara otomatis pada laporan akhir bulan ada diberi keterangan NR pada laporan apelnya (artinya Non Reguler, tidak wajib apel pagi, dan oleh sistem tidak terkena potongan)</li>
+                        </ol>-->
+                      </div>
+                    <div id="sparkline-bar"></div>
+                  </div>
+              </div>
+            </div>
+      </main>
+      <?php $this->getView('admin', 'main', 'footer', ''); ?>
+    </div>
+    <!-- ./wrapper -->
+
+    <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
+</body>
