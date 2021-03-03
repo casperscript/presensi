@@ -69,7 +69,7 @@ if ($download == 0) {
     ?>
     <div class="row ini-kotak">
         <div class="input-field col s4 right-align" style="padding-top: 15px">
-            <b>BENDAHARA PENGELUARANxx</b>
+            <b>BENDAHARA PENGELUARAN</b>
         </div>
         <div class="input-field col s5" id="ini-bendahara">
             <select id="pilihbendahara">
@@ -150,8 +150,8 @@ if ($download == 0) {
         <tr>
             <th class="grey lighten-2 center-align" rowspan="2">No</th>
             <th class="grey lighten-2 center-align" rowspan="2">Nama / NIP / NPWP / Jabatan</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Kelas</th>
-            <th class="grey lighten-2 center-align" rowspan="2">TPP</th>
+            <th class="grey lighten-2 center-align" rowspan="2">Kelas Jab.</th>
+            <th class="grey lighten-2 center-align" colspan="2">Tambahan Penghasilan</th>
             <th class="grey lighten-2 center-align" colspan="3">Persentase Potongan (%)</th>
             <th class="grey lighten-2 center-align" rowspan="2">Total Potongan (Rp)</th>
             <th class="grey lighten-2 center-align" rowspan="2">TPP Kotor (TPP - Tot Pot)</th>
@@ -162,6 +162,8 @@ if ($download == 0) {
             <th class="grey lighten-2 center-align" rowspan="2">Tanda Tangan</th>
         </tr>
         <tr>	
+            <th class="grey lighten-2 center-align">Beban Kerja (40%)</th>
+            <th class="grey lighten-2 center-align">Prestasi Kerja (60%)</th>
             <th class="grey lighten-2 center-align">MK</th>
             <th class="grey lighten-2 center-align">AP</th>
             <th class="grey lighten-2 center-align">PK</th>
@@ -193,7 +195,11 @@ if ($download == 0) {
 
             //mengenolkan tunj
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
-            $pot = ($sum['all'] / 100 * $peg['nominal_tp']);
+            
+            $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
+            $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
+            
+            $pot = ($sum['all'] / 100 * $nominal_tp60);
             $tpp_kotor = $peg['nominal_tp'] - $pot;
             //remove whitespace-- ambil % pajak
             $clean = str_replace(" ", "", $peg['golruang']);
@@ -205,14 +211,11 @@ if ($download == 0) {
 
             $terima = round($tpp_kotor - $pot_pajak);
 
-            /* acil 20200208 */
-//            $pot_bpjs = round((($terima + $peg['totgaji']) > $kenabpjs['value']) ? ($kenabpjs['value'] - $peg['totgaji']) * 0.01 : $terima * 0.01); // edited 20201007
             $checkBpjsGaji = round((($peg['nominal_tp'] + $peg['totgaji']) > $kenabpjs['value']) ?
                     ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
                     $peg['nominal_tp'] * 0.01);
             $pot_bpjs = ($terima > $checkBpjsGaji) ? $checkBpjsGaji : $terima;
             $terima_potbpjs = round($terima - $pot_bpjs);
-            /* END acil 20200208 */
             ?>
             <tr>
                 <td class="center-align"><?= $no ?></td>
@@ -223,7 +226,8 @@ if ($download == 0) {
                     <br>Golongan <?= $peg['golruang'] ?>
                 </td>
                 <td class="center-align"><?= $peg['kelas'] ?></td>
-                <td class="right-align"><?= ($peg['nominal_tp'] > 0 ? 'Rp ' . number_format($peg['nominal_tp'], 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($nominal_tp40 > 0 ? 'Rp ' . number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($nominal_tp60 > 0 ? 'Rp ' . number_format($nominal_tp60, 0, ",", ".") : '-') ?></td>
                 <?php
                 if ($rekap[$pin]['pot_penuh']) {
                     echo '<td class="center-align" colspan="3">' . $rekap[$pin]['sum_pot']['all'] . '</td>';
@@ -267,7 +271,7 @@ if ($download == 0) {
             <th></th>
             <th></th>
             <th></th>
-            <th class="right-align"><?= 'Rp ' . number_format($tot_tpp, 0, ",", ".") ?></th>
+            <th class="right-align" colspan="2"><?= 'Rp ' . number_format($tot_tpp, 0, ",", ".") ?></th>
             <th></th>
             <th></th>
             <th></th>

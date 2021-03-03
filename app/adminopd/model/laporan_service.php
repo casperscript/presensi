@@ -947,17 +947,19 @@ class laporan_service extends system\Model {
 		pegawai.`golruang`          AS golruang,
 		personal.`path_foto_pegawai` AS foto_pegawai,
 		jabatan.`kode_kelas`        AS kode_kelas,
-		kelas.`nominal`             AS nominal_tp,
+		kelas.`nominal` * lokasi.`prosentase_tpp` AS nominal_tp,
 		kelas.`kelas`               AS kelas,
 		gaji.`total`                AS totgaji,
-		pegawai.`kode_sert_guru`    AS kode_sert_guru
+		pegawai.`kode_sert_guru`    AS kode_sert_guru,
+                lokasi.`prosentase_tpp`
             FROM `texisting_kepegawaian_Jan2021` `pegawai` 
 		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
+                JOIN tref_lokasi_kerja_2maret2021 lokasi ON IF(pegawai.`kdsublokasi` = "", pegawai.`kdlokasi`, pegawai.`kdsublokasi`) = lokasi.`kdlokasi` AND lokasi.`status_lokasi_kerja` = 1
 		LEFT JOIN `tref_jabatan_campur_2021` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan`
 		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
 		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
-            WHERE 1 ' . $q_cari . ' AND pegawai.`kd_stspeg` = 04
-            ORDER BY ISNULL(`jabatan`.`kode_kelas`), `jabatan`.`kode_kelas`';
+            WHERE 1 ' . $q_cari . ' AND pegawai.`kd_stspeg` = 04 AND pegawai.`tunjangan_jabatan` = 0
+            ORDER BY ISNULL(kelas.`kelas`), kelas.`kelas` DESC';
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }

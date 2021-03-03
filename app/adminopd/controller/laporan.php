@@ -461,7 +461,7 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
-//            comp\FUNC::showPre($data['pegawai']);exit;
+            comp\FUNC::showPre($data['pegawai']);//exit;
 
             $this->subView($fileView, $data);
         }
