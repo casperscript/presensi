@@ -151,6 +151,7 @@ if ($download == 0) {
             <th class="grey lighten-2 center-align" rowspan="2">No</th>
             <th class="grey lighten-2 center-align" rowspan="2">Nama / NIP / NPWP / Jabatan</th>
             <th class="grey lighten-2 center-align" rowspan="2">Kelas Jab.</th>
+            <th class="grey lighten-2 center-align" rowspan="2">Gaji</th>
             <th class="grey lighten-2 center-align" colspan="2">Tambahan Penghasilan</th>
             <th class="grey lighten-2 center-align" colspan="3">Persentase Potongan (%)</th>
             <th class="grey lighten-2 center-align" rowspan="2">Total Potongan (Rp)</th>
@@ -226,6 +227,7 @@ if ($download == 0) {
                     <br>Golongan <?= $peg['golruang'] ?>
                 </td>
                 <td class="center-align"><?= $peg['kelas'] ?></td>
+                <td class="center-align"><?= number_format($peg['totgaji'], 0, ",", ".") ?></td>
                 <td class="right-align"><?= ($nominal_tp40 > 0 ? 'Rp ' . number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
                 <td class="right-align"><?= ($nominal_tp60 > 0 ? 'Rp ' . number_format($nominal_tp60, 0, ",", ".") : '-') ?></td>
                 <?php
@@ -268,6 +270,7 @@ if ($download == 0) {
         }
         ?>
         <tr>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
