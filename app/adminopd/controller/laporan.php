@@ -418,10 +418,10 @@ class laporan extends system\Controller {
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
-//            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-//                $this->tabeltppbc($input);
-//                exit;
-//            } //aktifkan lagi
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc($input);
+                exit;
+            } //aktifkan lagi
 
             switch (true) {
                 case ($data['tahun'] == 2021):
@@ -461,7 +461,7 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
-//            comp\FUNC::showPre($data['pegawai']);//exit;
+//            comp\FUNC::showPre($data['pegawai']);exit;
 
             $this->subView($fileView, $data);
         }
@@ -918,12 +918,7 @@ class laporan extends system\Controller {
             //if ($check['count'] == $data['pegawai']['count']) {
             //ambil dari presensi backup
             $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
-            if ($this->login['username'] == 'acil@adminopd') {
-//                comp\FUNC::showPre($data['rekap']);
-                $this->subView('tabeltppbcall', $data);
-            } else {
-                $this->subView('tabeltppbcall', $data);
-            }
+            $this->subView('tabeltppbcall', $data);
             /* } else {
               $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
               $data['pajak'] = $this->laporan_service->getArraypajak();

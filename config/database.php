@@ -36,7 +36,7 @@ return array(
         'port' => 3306,
         'user' => 'admin',
         'password' => '$absensi-db@simapp',
-        'dbname' => 'db_backup' . ($tahun != '' ? '_' . $tahun : ''),
+        'dbname' => 'db_backup' . ($tahun >= 2021 ? '_dev' : '') . ($tahun != '' ? '_' . $tahun : ''),
         'charset' => 'utf8',
         'collate' => 'utf8_general_ci',
         'persistent' => false,
