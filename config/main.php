@@ -20,7 +20,7 @@ return array(
         'web_footer' => 'Copyright 2017',
         'dir_arsip' => UPLOAD . 'archive/',
         'dir_panduan' => UPLOAD . 'panduan',
-        "husnanw_moderasi_upload_path" => UPLOAD . "moderasi/dokumen", // added by husnanw
+        "husnanw_moderasi_upload_path" => UPLOAD . "../../presensi_v1/upload/moderasi/dokumen", // added by husnanw
         "simpeg_url" => "http://simpeg.pekalongankota.go.id", // added by husnanw
         "new_simpeg_url" => "http://192.168.254.226", // added by husnanw
         'file_type' => 'jpeg|jpg|png|pdf',
