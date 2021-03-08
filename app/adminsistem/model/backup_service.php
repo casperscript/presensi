@@ -2,6 +2,7 @@
 
 namespace app\adminsistem\model;
 
+use comp;
 use system;
 use app\adminsistem\model\laporan_service;
 use app\adminsistem\model\pegawai_service;
@@ -263,8 +264,9 @@ class backup_service extends system\Model {
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0)
+                if ($pengguna['count'] > 0) :
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                endif;
 
                 $i['tanggal'] = $datalap['dt_ver_admin_opd'];
                 $verlap['admin_opd'] = $i;
@@ -276,8 +278,9 @@ class backup_service extends system\Model {
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0)
+                if ($pengguna['count'] > 0) :
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                endif;
 
 
                 $i['tanggal'] = $datalap['dt_sah_kepala_opd'];
@@ -291,8 +294,9 @@ class backup_service extends system\Model {
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0)
+                if ($pengguna['count'] > 0) :
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                endif;
 
                 $i['tanggal'] = $datalap['dt_ver_admin_kota'];
                 $verlap['admin_kota'] = $i;
@@ -304,8 +308,9 @@ class backup_service extends system\Model {
 
                 $i['jabatan_pengguna'] = '';
                 if ($pengguna['count'] > 0) {
-                    if ($pengguna['value'][0]['jabatan_pengguna'] != NULL)
+                    if ($pengguna['value'][0]['jabatan_pengguna'] != NULL) :
                         $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                    endif;
 
                     $verlap['stempel_bkppd'] = $pengguna['value'][0]['kdlokasi'] . '.png';
                 }
@@ -321,8 +326,9 @@ class backup_service extends system\Model {
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0)
+                if ($pengguna['count'] > 0) :
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                endif;
 
                 $i['tanggal'] = $datalap['dt_sah_final'];
                 $verlap['final'] = $i;
@@ -344,8 +350,9 @@ class backup_service extends system\Model {
         $laporan['stempel_opd'] = $verlap['stempel_opd'];
 
         $laporan['stempel_bkppd'] = '';
-        if (isset($verlap['stempel_bkppd']))
+        if (isset($verlap['stempel_bkppd'])) :
             $laporan['stempel_bkppd'] = $verlap['stempel_bkppd'];
+        endif;
 
         $laporan['dateAdd'] = date('Y-m-d H:i:s');
 
@@ -405,12 +412,14 @@ class backup_service extends system\Model {
             $field = array_keys($p);
 
             foreach ($field as $i) {
-                if ($i != 'id' && isset($peg[$i]))
+                if ($i != 'id' && isset($peg[$i])) :
                     $p[$i] = $peg[$i];
+                endif;
             }
 
-            if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1)
+            if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
+            endif;
 
             //remove whitespace-- ambil % pajak
             $clean = str_replace(" ", "", $peg['golruang']);
@@ -418,14 +427,15 @@ class backup_service extends system\Model {
             $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
             $p['induk_id'] = $tbinduk['inserted_id'];
             $p['dateAdd'] = date('Y-m-d H:i:s');
-
+            
             $tbpersonil = $this->save('tb_personil', $p);
             //simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
                 $tbpresensi = $this->save_presensi($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
-                if (!$tbpresensi['error'])
+                if (!$tbpresensi['error']) :
                     return $tbpresensi;
+                endif;
             }
         }
 
@@ -456,8 +466,8 @@ class backup_service extends system\Model {
             'pot_final' => $final,
             'tpp_kotor' => $peg['nominal_tp']
         ];
-
-        $pot = ($final / 100 * $peg['nominal_tp']);
+        
+        $pot = ((is_numeric($final) ? $final : 1000) / 100 * $peg['nominal_tp']);
         $tpp_kotor = $peg['nominal_tp'] - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
@@ -477,8 +487,9 @@ class backup_service extends system\Model {
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
         $tbpresensi = $this->save('tb_presensi', $presensi);
-        if ($tbpresensi['error'])
+        if ($tbpresensi['error']) :
             $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
+        endif;
 
         return $tbpresensi;
     }
@@ -1007,8 +1018,9 @@ class backup_service extends system\Model {
             $hitungpot = true;
             for ($i = 1; $i <= $hitungtgl; $i++) {
                 //bln desember 2018 ttp dihitung brdasarkan presensi s/d tgl 14
-                if ($data['bulan'] == 12 && $data['tahun'] == 2018 && $i > 14)
+                if ($data['bulan'] == 12 && $data['tahun'] == 2018 && $i > 14) :
                     $hitungpot = false;
+                endif;
 
                 $tgl = $data['tahun'] . '-' . $data['bulan'] . '-' . $i;
                 $hari = date("l", strtotime($tgl));
@@ -1024,35 +1036,43 @@ class backup_service extends system\Model {
                 $color3 = '';
                 $hl = false;
                 if (isset($masuk[$key][$i])) {
-                    if ($masuk[$key][$i]['kode'] == 'HL')
+                    
+                    if ($masuk[$key][$i]['kode'] == 'HL') :
                         $hl = true;
-                    else
+                    else :
                         $kd_masuk = $masuk[$key][$i]['kode'];
+                    endif;
 
-                    if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0']))
+                    if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) :
                         $color1 = 'yellow accent-2';
+                    endif;
+                    
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color1 = 'yellow accent-2';
                     $kd_masuk = 'M0';
                 }
 
                 if (isset($apel[$key][$i])) {
-                    if ($apel[$key][$i]['kode'] != 'HL')
+                    if ($apel[$key][$i]['kode'] != 'HL') :
                         $kd_apel = $apel[$key][$i]['kode'];
+                    endif;
 
-                    if ($kd_apel == 'A0')
+                    if ($kd_apel == 'A0') :
                         $color2 = 'yellow accent-2';
+                    endif;
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color2 = 'yellow accent-2';
                     $kd_apel = 'A0';
                 }
 
                 if (isset($pulang[$key][$i])) {
-                    if ($pulang[$key][$i]['kode'] != 'HL')
+                    if ($pulang[$key][$i]['kode'] != 'HL') :
                         $kd_pulang = $pulang[$key][$i]['kode'];
+                    endif;
 
-                    if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0']))
+                    if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0'])) :
                         $color3 = 'yellow accent-2';
+                    endif;
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color3 = 'yellow accent-2';
                     $kd_pulang = 'P0';
@@ -1093,11 +1113,13 @@ class backup_service extends system\Model {
                 if ($tampil_mod && isset($moderasi[$key][$i])) {
                     foreach ($moderasi[$key][$i] as $jnsmod => $modr) {
                         $ver = $moderasi[$key][$i][$jnsmod]['verified'];
-                        if ($ver != null && ($ver == 0 || $ver == 3))
+                        if ($ver != null && ($ver == 0 || $ver == 3)) :
                             continue;
+                        endif;
 
-                        if ($ver == null)
+                        if ($ver == null) :
                             $allverified = false;
+                        endif;
 
                         if ($kd_masuk && ($jnsmod == 'JNSMOD04' || $jnsmod == 'JNSMOD01')) {
                             $color1 = 'red accent-3';
@@ -1113,8 +1135,9 @@ class backup_service extends system\Model {
                         }
 
                         //jk jenisnya semuanya atau kode moderasi masuk, apel, pulang sama dalam 1 hari maka potongan dijasikan 1
-                        if ($jnsmod == 'JNSMOD04' || ($kd_apel == $kd_masuk && $kd_pulang == $kd_masuk))
+                        if ($jnsmod == 'JNSMOD04' || ($kd_apel == $kd_masuk && $kd_pulang == $kd_masuk)) :
                             $gabung = true;
+                        endif;
                         /*
                           //jk jenisnya semuanya, potongan dijadikan 1
                           if ($jnsmod == 'JNSMOD04')
@@ -1133,8 +1156,9 @@ class backup_service extends system\Model {
 
                 if ($hitungpot) {
                     $hitung = 1;
-                    if ($kd_masuk != 'M0')
+                    if ($kd_masuk != 'M0') :
                         $hitung = isset($hitungmod[$key][$kd_masuk]) ? $hitungmod[$key][$kd_masuk] : 1;
+                    endif;
 
                     if ($kd_masuk && isset($data_pot[$kd_masuk])) {
                         foreach ($data_pot[$kd_masuk] as $p) {
@@ -1144,8 +1168,9 @@ class backup_service extends system\Model {
                             }
                         }
 
-                        if ($pot_masuk == 100)
+                        if ($pot_masuk == 100) :
                             $pot_penuh[] = $kd_masuk;
+                        endif;
                     }
 
                     if ($kd_apel != 'A0')
@@ -1215,16 +1240,19 @@ class backup_service extends system\Model {
                     'all' => ($subtot > 0 ? $subtot : '')
                 ];
 
-                if ($hitungpot)
+                if ($hitungpot) :
                     $sum_mk += $pot_masuk;
+                endif;
                 $sum_ap += $pot_apel;
                 $sum_pk += $pot_pulang;
 
-                if ($kd_masuk == 'TK')
+                if ($kd_masuk == 'TK') :
                     $jumlah_tk++;
+                endif;
 
-                if ($jumlah_tk >= 7)
+                if ($jumlah_tk >= 7) :
                     $pot_penuh[] = 'TK';
+                endif;
             }
 
             $all[$key]['pot_penuh'] = array_unique($pot_penuh);

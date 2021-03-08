@@ -301,6 +301,7 @@ class backuplaporan extends system\Controller {
 
             $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $result = $this->backup_service->dobackup($input);
+//            comp\FUNC::showPre($result);exit;
             $error_msg = ($result['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
 
             header('Content-Type: application/json');

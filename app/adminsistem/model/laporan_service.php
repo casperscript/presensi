@@ -252,8 +252,9 @@ class laporan_service extends system\Model {
         */
 
         $pin = "";
-        if (isset($data['pin_absen']) && $data['pin_absen'])
+        if (isset($data['pin_absen']) && $data['pin_absen']) :
             $pin = " AND pin_absen in (" . $data['pin_absen'] . ")";
+        endif;
         
         /*
         $sql = "SELECT * FROM tb_moderasi tmod
@@ -294,10 +295,11 @@ class laporan_service extends system\Model {
     }
 
     public function hitungHari($data) {
-        $hitung = '';
+        $hitung = [];
         foreach ($data as $i) {
-            if ($i['kd_jenis'] != 'JNSMOD04')
+            if ($i['kd_jenis'] != 'JNSMOD04') :
                 continue;
+            endif;
 
             $pin = $i['pin_absen'];
             $kode = $i['kode_presensi'];
@@ -305,10 +307,11 @@ class laporan_service extends system\Model {
             $akhir = date_create($i['tanggal_akhir']);
             $diff = date_diff($awal, $akhir)->d + 1;
 
-            if (!isset($hitung[$kode]))
+            if (!isset($hitung[$kode])) :
                 $hitung[$pin][$kode] = $diff;
-            else
+            else :
                 $hitung[$pin][$kode] += $diff;
+            endif;
         }
         return $hitung;
     }

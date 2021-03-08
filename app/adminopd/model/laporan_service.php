@@ -300,8 +300,9 @@ class laporan_service extends system\Model {
     public function hitungHari($data) {
         $hitung = [];
         foreach ($data as $i) {
-            if ($i['kd_jenis'] != 'JNSMOD04')
+            if ($i['kd_jenis'] != 'JNSMOD04') {
                 continue;
+            }
 
             $pin = $i['pin_absen'];
             $kode = $i['kode_presensi'];
@@ -309,10 +310,11 @@ class laporan_service extends system\Model {
             $akhir = date_create($i['tanggal_akhir']);
             $diff = date_diff($awal, $akhir)->d + 1;
 
-            if (!isset($hitung[$kode]))
+            if (!isset($hitung[$kode])) {
                 $hitung[$pin][$kode] = $diff;
-            else
+            } else {
                 $hitung[$pin][$kode] += $diff;
+            }
         }
         return $hitung;
     }
