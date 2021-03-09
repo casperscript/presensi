@@ -42,33 +42,39 @@ class Url {
                 $this->Controller = $this->mainConfig['project'][$this->ProjectName]['controller'];
                 $this->Method = $this->mainConfig['project'][$this->ProjectName]['method'];
                 $this->ID = null;
-                if (!empty($_GET['p2']))
+                if (!empty($_GET['p2'])) :
                     $this->Controller = $_GET['p2'];
-                if (!empty($_GET['p3']))
+                endif;
+                if (!empty($_GET['p3'])) :
                     $this->Method = $_GET['p3'];
-                if (!empty($_GET['p4']))
+                endif;
+                if (!empty($_GET['p4'])) :
                     $this->ID = $_GET['p4'];
-            }
-            else {
+                endif;
+            } else {
                 $this->ProjectName = $this->defaultProject;
                 $this->PathController = $defaultPathController;
                 $this->Controller = $_GET['p1'];
-                if (!empty($_GET['p2']))
+                if (!empty($_GET['p2'])) :
                     $this->Method = $_GET['p2'];
-                if (!empty($_GET['p3']))
+                endif;
+                if (!empty($_GET['p3'])) :
                     $this->ID = $_GET['p3'];
+                endif;
             }
         }
     }
 
     public function isHttps() {
         if (isset($_SERVER['HTTPS'])) {
-            if (strtolower($_SERVER['HTTPS']) == 'on')
+            if (strtolower($_SERVER['HTTPS']) == 'on'):
                 return true;
-            if ($_SERVER['HTTPS'] == '1')
+            endif;
+
+            if ($_SERVER['HTTPS'] == '1'):
                 return true;
-        }
-        elseif (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] == '443')) {
+            endif;
+        } elseif (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] == '443')) {
             return true;
         }
         return false;
@@ -107,5 +113,3 @@ class Url {
     }
 
 }
-
-?>

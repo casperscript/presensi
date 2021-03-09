@@ -4,7 +4,7 @@
  *
  * @Author  	: M. Hanif Afiatna <hanif.softdev@gmail.com>
  * @Since   	: version 4.1.0
- * @Date		: 10 April 2017
+ * @Date	: 10 April 2017
  * @package 	: core system
  * @Description : 
  */
@@ -23,10 +23,12 @@ class frameduzPHP {
     }
 
     private function loader($file) {
-        if ($this->logs)
+        if ($this->logs) :
             echo 'LOG[\'autoload\'] : ' . $file . ' --> Time : ' . round((microtime(true) - TIME_LOAD), 3) . ' sec<br>';
-        if (file_exists($file = ROOT . str_ireplace('\\', '/', $file) . '.php'))
+        endif;
+        if (file_exists($file = ROOT . str_ireplace('\\', '/', $file) . '.php')) :
             require_once $file;
+        endif;
     }
 
     private function disableMagicQuotes() {
@@ -70,4 +72,3 @@ class frameduzPHP {
 }
 
 new frameduzPHP;
-?>

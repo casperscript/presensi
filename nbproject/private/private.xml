@@ -3,17 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/admin/model/servicemain.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/view/biodata/script.biodata.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/admin/controller/barang.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/view/biodata/index.biodata.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/view/biodata/tabel.biodata.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/controller/biodata.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/admin/view/barang/script.barang.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/admin/view/barang/index.barang.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/model/dataservice.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/app/kemahasiswaan/view/biodata/form.biodata.php</file>
-            <file>file:/D:/xampp/htdocs/frameduz-php-login/config/database.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/config/database.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/config/main.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/controller/backuplaporan.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/model/laporan_service.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminopd/controller/laporan.php</file>
+            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/model/backup_service.php</file>
         </group>
     </open-files>
 </project-private>

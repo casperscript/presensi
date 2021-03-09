@@ -188,6 +188,9 @@ class backup_service extends system\Model {
     }
 
     public function dobackup($input, $w_presensi = true) {
+        comp\FUNC::showPre($input);
+        exit;
+
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
@@ -211,6 +214,12 @@ class backup_service extends system\Model {
             $tblaporan = $this->save_laporan($input, $tbinduk);
 
             //simpan personil
+            $preData['input'] = $input;
+            $preData['induk'] = $tbinduk;
+            $preData['rekap'] = $rekap;
+            $preData['presensi'] = $w_presensi;
+            comp\FUNC::showPre($preData);
+            exit;
             $tbpersonil = $this->save_personil($input, $tbinduk, $rekap, $w_presensi);
 
             //simpan tpp
@@ -427,7 +436,7 @@ class backup_service extends system\Model {
             $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
             $p['induk_id'] = $tbinduk['inserted_id'];
             $p['dateAdd'] = date('Y-m-d H:i:s');
-            
+
             $tbpersonil = $this->save('tb_personil', $p);
             //simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
@@ -466,7 +475,7 @@ class backup_service extends system\Model {
             'pot_final' => $final,
             'tpp_kotor' => $peg['nominal_tp']
         ];
-        
+
         $pot = ((is_numeric($final) ? $final : 1000) / 100 * $peg['nominal_tp']);
         $tpp_kotor = $peg['nominal_tp'] - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
@@ -1036,7 +1045,7 @@ class backup_service extends system\Model {
                 $color3 = '';
                 $hl = false;
                 if (isset($masuk[$key][$i])) {
-                    
+
                     if ($masuk[$key][$i]['kode'] == 'HL') :
                         $hl = true;
                     else :
@@ -1046,7 +1055,6 @@ class backup_service extends system\Model {
                     if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) :
                         $color1 = 'yellow accent-2';
                     endif;
-                    
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color1 = 'yellow accent-2';
                     $kd_masuk = 'M0';

@@ -6,7 +6,7 @@
 
       <main class="mn-inner" style="padding-top: 10px">
           <div class="row">
-              <?= $breadcrumb;?>
+              <?= $breadcrumb ?>
               <div class="col s12">
                   <div class="page-title">
                     <?= $title;?>

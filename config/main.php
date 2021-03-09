@@ -1,5 +1,10 @@
 <?php
 
+// Variabel identitas ketika terjadi perubahan kebijakan
+//switch (true) {
+//    case ()
+//}
+
 /* Website Configuration */
 return array(
     // Set default main controller
@@ -102,4 +107,3 @@ return array(
     ),
 );
 /* ---------------------- */
-?>

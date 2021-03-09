@@ -1175,23 +1175,23 @@ class laporan_service extends system\Model {
     public function getKepala($kdlokasi, $parent = true) {
         //checkparent
         parent::setConnection('db_pegawai');
-        $get = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE kdlokasi = ?', [$kdlokasi]);
+        $getLoKer = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE kdlokasi = ?', [$kdlokasi]);
         //khusus setda, yg ttd kabag umum
         //kecuali bag.hukum - G08002 --- gk jadi minta dibalikin lg ke kabag umum
         //if ($kdlokasi != 'G08002' && $get['count'] > 0 && $get['value'][0]['kdlokasi_parent']) {
-        if ($parent && $get['count'] > 0 && $get['value'][0]['kdlokasi_parent']) {
-            $kdlokasi = $get['value'][0]['kdlokasi_parent'];
+        if ($parent && $getLoKer['count'] > 0 && $getLoKer['value'][0]['kdlokasi_parent']) {
+            $kdlokasi = $getLoKer['value'][0]['kdlokasi_parent'];
         }
 
         parent::setConnection('db_presensi');
-        $get = $this->getData('SELECT * FROM tb_pengguna WHERE kdlokasi = ? AND grup_pengguna_kd = ?', [$kdlokasi, 'KDGRUP02']); //KEPALA
+        $getPengguna = $this->getData('SELECT * FROM tb_pengguna WHERE kdlokasi = ? AND grup_pengguna_kd = ?', [$kdlokasi, 'KDGRUP02']); //KEPALA
 
         $respon = '';
-        if ($get['count'] > 0) {
+        if ($getPengguna['count'] > 0) {
             parent::setConnection('db_pegawai');
             $namanya = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE kdlokasi = ?', [$kdlokasi]);
 
-            foreach ($get['value'] as $i) {
+            foreach ($getPengguna['value'] as $i) {
                 $peg = $this->getData("SELECT nipbaru, nama_personil FROM view_presensi_personal WHERE nipbaru = '".$i['nipbaru']."'", []);
 
                 if ($i['nipbaru'] != '' && $peg['count'] > 0) {
@@ -1241,5 +1241,3 @@ class laporan_service extends system\Model {
         }
     }
 }
-
-?>

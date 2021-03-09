@@ -29,4 +29,3 @@ define('MEMORY_LOAD', memory_get_usage());
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once('Frameduz.php');
-?>
