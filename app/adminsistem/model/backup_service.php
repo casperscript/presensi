@@ -21,8 +21,9 @@ class backup_service extends system\Model {
         $query = 'SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?';
         $dataArr = $this->getData($query, $idKey);
 
-        if ($dataArr['count'] > 0)
+        if ($dataArr['count'] > 0) :
             return $dataArr['value'][0];
+        endif;
 
         return false;
     }

@@ -1231,13 +1231,27 @@ class laporan_service extends system\Model {
         return $get;
     }
 
-    public function getDataSetting($var) {
+    public function getDataSetting($id) {
         parent::setConnection('db_presensi');
-        $data = $this->getData('SELECT * FROM tb_setting WHERE `variable` = ?', [$var]);
+        $data = $this->getData('SELECT * FROM tb_setting WHERE `variable` = ?', [$id]);
         if ($data['count'] > 0) {
             return $data['value'][0];
         } else {
             return $this->getTabel('tb_setting');
+        }
+    }
+    
+    public function getDataVersi($id, $param) {
+        parent::setConnection('db_presensi');
+        $data = $this->getData('SELECT * FROM tb_variabel_versi '
+                . 'WHERE 1 '
+                . ' AND kode_variabel = ? '
+                . ' AND ? BETWEEN YEAR(tgl_mulai) AND YEAR(tgl_akhir) '
+                . ' AND ? BETWEEN MONTH(tgl_mulai) AND MONTH(tgl_akhir)', [$id, $param['tahun'], $param['bulan']]);
+        if ($data['count'] > 0) {
+            return $data['value'][0];
+        } else {
+            return $this->getTabel('tb_variabel_versi');
         }
     }
 }
