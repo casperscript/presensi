@@ -5,7 +5,7 @@
  *
  * @Author  	: M. Hanif Afiatna <hanif.softdev@gmail.com>
  * @Since   	: version 4.1.0
- * @Date		: 10 April 2017
+ * @Date	: 10 April 2017
  * @package 	: core system
  * @Description : 
  */
@@ -21,8 +21,9 @@ class Controller {
         $this->session = $this->getUrl->mainConfig['project'][$this->project]['session'];
         $setting = $this->getUrl->mainConfig['setting'];
         if (!empty($setting)) {
-            foreach ($setting as $set => $value)
+            foreach ($setting as $set => $value) :
                 $this->{$set} = $value;
+            endforeach;
         }
     }
 
@@ -65,7 +66,6 @@ class Controller {
         extract($data, EXTR_SKIP);
         $viewPath = APP . $PathController . '/view/' . $Controller . '/' . $fileView . '.' . $Controller . '.php';
         require $viewPath;
-//        require_once $viewPath;
         $this->delSession('getView');
         unset($data);
     }
@@ -88,8 +88,9 @@ class Controller {
 
     protected function redirect($location, $status = 302) {
         $location = (empty($location)) ? $this->link() : $location;
-        if (substr($location, 0, 4) != 'http')
+        if (substr($location, 0, 4) != 'http') :
             $location = $this->link() . $location;
+        endif;
         header('Location: ' . $location, true, $status);
         exit;
     }
@@ -107,38 +108,41 @@ class Controller {
     }
 
     protected function delSession($name) {
-        if (isset($_SESSION[$this->session][$name]))
+        if (isset($_SESSION[$this->session][$name])) :
             unset($_SESSION[$this->session][$name]);
+        endif;
     }
 
     protected function desSession() {
-        if (isset($_SESSION[$this->session]))
+        if (isset($_SESSION[$this->session])) :
             unset($_SESSION[$this->session]);
+        endif;
     }
 
     protected function post($validation = false, $key = false, $filterType = false) {
         if ($validation === true) {
             if (isset($_SESSION[$this->session])) {
-                if (!$key)
+                if (!$key) :
                     return filter_var_array($_POST, FILTER_SANITIZE_MAGIC_QUOTES);
-                if ($filterType)
+                endif;
+                if ($filterType) :
                     return filter_input(INPUT_POST, $key, $filterType);
-                else
+                else :
                     return $_POST[$key];
-            }
-            else {
+                endif;
+            } else {
                 return false;
             }
         } else {
-            if (!$key)
+            if (!$key) :
                 return filter_var_array($_POST, FILTER_SANITIZE_MAGIC_QUOTES);
-            if ($filterType)
+            endif;
+            if ($filterType) :
                 return filter_input(INPUT_POST, $key, $filterType);
-            else
+            else :
                 return $_POST[$key];
+            endif;
         }
     }
 
 }
-
-?>

@@ -62,23 +62,25 @@ class Model {
             $indexed = $params == array_values($params);
             foreach ($params as $k => $v) {
                 if (is_object($v)) {
-                    if ($v instanceof \DateTime)
+                    if ($v instanceof \DateTime) :
                         $v = $v->format('Y-m-d H:i:s');
-                    else
+                    else :
                         continue;
-                }
-                else if (is_string($v))
+                    endif;
+                } else if (is_string($v)) {
                     $v = "'$v'";
-                else if ($v === null)
+                } else if ($v === null) {
                     $v = 'NULL';
-                else if (is_array($v))
+                } else if (is_array($v)) {
                     $v = implode(',', $v);
+                }
 
                 if ($indexed) {
                     $sql_string = preg_replace('/\?/', $v, $sql_string, 1);
                 } else {
-                    if ($k[0] != ':')
+                    if ($k[0] != ':') :
                         $k = ':' . $k;
+                    endif;
                     $sql_string = str_replace($k, $v, $sql_string);
                 }
             }
@@ -94,15 +96,17 @@ class Model {
             $dataTabel[$kol['Field']] = '';
         }
         foreach ($dataTabel as $key => $value) {
-            if (isset($defaultValue[$key]))
+            if (isset($defaultValue[$key])) :
                 $dataTabel[$key] = $defaultValue[$key];
+            endif;
         }
         return $dataTabel;
     }
 
     public function getData($query, $arrData = array()) {
-        if (is_null($this->db))
+        if (is_null($this->db)) :
             $this->openConnection();
+        endif;
         $sql_stat = $this->db->prepare($query);
         $sql_stat->execute($arrData);
         $sql_value = $sql_stat->fetchAll(PDO::FETCH_ASSOC);
@@ -120,11 +124,11 @@ class Model {
         if (is_null($this->db)) {
             $this->openConnection();
         }
-        
+
         foreach ($arrData as $key => $value) {
             $keys[] = ':' . $key;
         }
-        
+
         $valTable = implode(', ', $keys);
         $query = 'INSERT INTO ' . $tabel . ' VALUES (' . $valTable . ')';
         $error = 0;
@@ -149,10 +153,12 @@ class Model {
     }
 
     public function save_update($tabel, $arrData) {
-        if (is_null($this->db))
+        if (is_null($this->db)) :
             $this->openConnection();
-        foreach ($arrData as $key => $value)
+        endif;
+        foreach ($arrData as $key => $value) :
             $keys[] = $key . '= :' . $key;
+        endforeach;
         $valTable = implode(', ', $keys);
         $query = 'INSERT INTO ' . $tabel . ' SET ' . $valTable . ' ON DUPLICATE KEY UPDATE ' . $valTable;
         $error = 0;
@@ -174,13 +180,16 @@ class Model {
     }
 
     public function update($tabel, $arrData, $idKey) {
-        if (is_null($this->db))
+        if (is_null($this->db)) :
             $this->openConnection();
-        foreach ($arrData as $key => $value)
+        endif;
+        foreach ($arrData as $key => $value) :
             $keys1[] = $key . ' = :' . $key;
+        endforeach;
         $valTable = implode(', ', $keys1);
-        foreach ($idKey as $key => $value)
+        foreach ($idKey as $key => $value) :
             $keys2[] = '(' . $key . '= :' . $key . ')';
+        endforeach;
         $keyTable = implode(' AND ', $keys2);
         $query = 'UPDATE ' . $tabel . ' SET ' . $valTable . ' WHERE ' . $keyTable;
         $error = 0;
@@ -202,10 +211,12 @@ class Model {
     }
 
     public function delete($tabel, $idKey) {
-        if (is_null($this->db))
+        if (is_null($this->db)) :
             $this->openConnection();
-        foreach ($idKey as $key => $value)
+        endif;
+        foreach ($idKey as $key => $value) :
             $keys[] = '(' . $key . '= :' . $key . ')';
+        endforeach;
         $keyTable = implode(' AND ', $keys);
         $query = 'DELETE FROM ' . $tabel . ' WHERE ' . $keyTable;
         $error = 0;
@@ -235,15 +246,15 @@ class Model {
     }
 
     protected function delSession($name) {
-        if (isset($_SESSION[$this->session][$name]))
+        if (isset($_SESSION[$this->session][$name])) :
             unset($_SESSION[$this->session][$name]);
+        endif;
     }
 
     protected function desSession() {
-        if (isset($_SESSION[$this->session]))
+        if (isset($_SESSION[$this->session])) :
             unset($_SESSION[$this->session]);
+        endif;
     }
 
 }
-
-?>

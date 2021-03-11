@@ -104,7 +104,6 @@ class main extends system\Controller {
         $data['link_tpp_cetak'] = $this->link('adminopd/tpp/cetak');
         $data['link_tpp_presensi_cetak'] = $this->link('adminopd/tpp/presensi');
         $data['menu_tpp'] = $this->laporan_service->getTppMenu();
-//        comp\FUNC::showPre($data); exit;
         $this->subView('menu', $data);
     }
 

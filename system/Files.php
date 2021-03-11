@@ -149,8 +149,9 @@ class Files {
 
     public function getMimeTypes($file_type = '') {
         $mimes = array();
-        if (empty($file_type))
+        if (empty($file_type)) :
             return array();
+        endif;
         $exts = explode('|', $file_type);
         foreach ($exts as $ext) {
             array_push($mimes, $this->arrMimes[$ext]);
@@ -159,8 +160,9 @@ class Files {
     }
 
     public function upload($file, $opt) {
-        foreach ($opt as $key => $value)
+        foreach ($opt as $key => $value) :
             $this->$key = $value;
+        endforeach;
         $dir_upload = $this->folder;
         $dst_name = $this->fileName;
         $file_dst = $dir_upload . '/' . $dst_name;
@@ -193,8 +195,9 @@ class Files {
     }
 
     public function download($opt) {
-        foreach ($opt as $key => $value)
+        foreach ($opt as $key => $value) :
             $this->$key = $value;
+        endforeach;
         $dir_upload = $this->folder;
         $dst_name = $this->fileName;
         $file_dst = $dir_upload . '/' . $dst_name;
@@ -207,18 +210,18 @@ class Files {
     }
 
     public function delete($opt) {
-        foreach ($opt as $key => $value)
+        foreach ($opt as $key => $value) :
             $this->$key = $value;
+        endforeach;
         $dir_upload = $this->folder;
         $dst_name = $this->fileName;
         $file_dst = $dir_upload . '/' . $dst_name;
         if (file_exists($file_dst)) {
             unlink($file_dst);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
 }
-
-?>

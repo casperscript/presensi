@@ -425,7 +425,7 @@ class laporan extends system\Controller {
 
             switch (true) {
                 case ($data['tahun'] == 2021):
-                    $data['pegawai'] = $this->laporan_service->getDataPersonilTpp2021($input);;
+                    $data['pegawai'] = $this->laporan_service->getDataPersonilTpp2021($input);
                     $fileView = 'tabeltpp2021';
                     break;
                 default:

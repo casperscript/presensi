@@ -958,7 +958,10 @@ class laporan_service extends system\Model {
 		LEFT JOIN `tref_jabatan_campur_2021` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
 		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
 		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
-            WHERE 1 ' . $q_cari . ' AND pegawai.`kd_stspeg` IN ("04", "29") AND pegawai.`tunjangan_jabatan` = 0
+            WHERE 1 ' . $q_cari . '
+                AND pegawai.`kd_stspeg` IN ("04", "29")
+                AND pegawai.`tunjangan_jabatan` = 0
+                AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
             ORDER BY ISNULL(kelas.`kelas`), kelas.`kelas` DESC';
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
