@@ -17,12 +17,26 @@
     <tbody>
         <?php                    
             foreach ($dataTabel as $kol) {
+                switch (true) {
+                    case ($kol['nipbaru'] == 'system'):
+                        $nama_pengguna = 'Admin Sistem';
+                        break;
+                    case ($kol['nipbaru'] == ''):
+                        $nama_pengguna = 'Nama tidak terdaftar';
+                        break;
+                    case (!empty($kol['nipbaru'])):
+                        $nama_pengguna = $nama_personil[$kol['nipbaru']];
+                        break;
+                    default: 
+                        $nama_pengguna = '';
+                }
                 ?>
                 <tr style="cursor: pointer;">
                     <td id="<?= $kol['username']; ?>" class="btnDetail center-align"><?= $no; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail"><?= $kol['username']; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
-                        <?= (($kol['nipbaru']=='')) ? '' : $nama_personil[$kol['nipbaru']];?>
+                        <?= $nama_pengguna ?>
+                        <?php // (($kol['nipbaru'] == '')) ? '' : $nama_personil[$kol['nipbaru']];?>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
                         <?= (($kol['kdlokasi']=='')) ? '' : $nama_lokasi[$kol['kdlokasi']];?>
