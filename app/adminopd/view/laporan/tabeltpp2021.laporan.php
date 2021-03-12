@@ -257,7 +257,7 @@ if ($download == 0) {
 
                 <td class="right-align"><?= ($pot > 0 ? number_format($pot, 0, ",", ".") : '-') ?></td> <!-- total potongan kehadiran -->
                 <td class="right-align"><?= ($tpp_kotor ? number_format($tpp_kotor, 0, ",", ".") : '-') ?></td> <!-- tpp kotor -->
-                <td class="right-align"><?= ($pot_pajak ? number_format($pot_pajak, 0, ",", ".") : '-') ?> <?= $pajak[$gol] ?></td> <!-- pajak -->
+                <td class="right-align"><?= ($pot_pajak ? number_format($pot_pajak, 0, ",", ".") : '-') ?></td> <!-- pajak -->
                 <td class="right-align"><?= ($terima ? number_format($terima, 0, ",", ".") : '-') ?></td> <!-- tpp bersih -->
                 <td class="right-align"><?= ($pot_bpjs ? number_format($pot_bpjs, 0, ",", ".") : '-') ?></td> <!-- potongan bpjs -->
                 <td class="right-align"><?= ($terima_potbpjs ? number_format($terima_potbpjs, 0, ",", ".") : '-') ?></td> <!-- diterimakan -->
@@ -341,7 +341,7 @@ if ($bendahara != '') {
     <p><strong>Keterangan</strong></p>
     <table>
         <tr><td>Jumlah TPP Beban Kerja</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp40) ?></td></tr>
-        <tr><td>Jumlah TPP Prestasi Kerja - Potongan</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp40 - $tot_pot) ?></td></tr>
+        <tr><td>Jumlah TPP Prestasi Kerja - Potongan</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp60 - $tot_pot) ?></td></tr>
         <tr><td>Jumlah TPP Kotor</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tppkotor) ?></td></tr>
         <tr><td>Pajak</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_pajak) ?></td></tr>
         <tr><td>TPP Bersih</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_terima) ?></td></tr>
