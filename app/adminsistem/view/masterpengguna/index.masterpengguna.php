@@ -37,9 +37,6 @@
                                         <input name="cari" id="cari" class="validate" type="text" placeholder="Pencarian Data">
                                     </div>
                                     <div class="input-field col s2">
-                                        <?= MATERIALIZE::inputSelect('aa', ['aa', 'bb'], 'aa') ?>
-                                    </div>
-                                    <div class="input-field col s2">
                                         <button type="submit" class="waves-effect waves-light btn green">Cari</button>
                                     </div>
                                     <div class="input-field col s2">
