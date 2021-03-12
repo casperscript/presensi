@@ -309,37 +309,39 @@ class backuplaporan extends system\Controller {
                     $result = $this->dobackup_v1($input);
                     break;
                 case 'v2':
-                    $result = $this->dobackup_v1($input);
+                    $result = $this->dobackup_v2($input);
                     break;
                 default:
                     $result = ['error' => 1, 'message' => 'Versi tidak ditemukan'];
             }
-            echo json_encode($result);
-//            header('Content-Type: application/json');
-//            echo json_encode($error_msg + ['page' => $input['page']]);
+            header('Content-Type: application/json');
+            echo json_encode($result + ['page' => $input['page']]);
         }
     }
 
     protected function dobackup_v1($input) {
-//        $input['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
-//        $input['personil'] = '';
-//        if ($input['pegawai']['count'] > 0) {
-//            $personil = array_map(function ($i) {
-//                return $i['pin_absen'];
-//            }, $input['pegawai']['value']);
-//
-//            $input['personil'] = implode(',', $personil);
-//        }
-//
-//        $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
-//        $result = $this->backup_service->dobackup($input);
-//        $error_msg = ($result['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
-//        return $error_msg;
-        return ['result' => 'v1'];
+        $input['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
+        $input['personil'] = '';
+        if ($input['pegawai']['count'] > 0) {
+            $personil = array_map(function ($i) {
+                return $i['pin_absen'];
+            }, $input['pegawai']['value']);
+
+            $input['personil'] = implode(',', $personil);
+        }
+
+        $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+        echo json_encode($input); exit;
+        $result = $this->backup_service->dobackup($input);
+        $error_msg = ($result['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
+        return $error_msg;
     }
 
     protected function dobackup_v2($input) {
-        return ['result' => 'v2'];
+        $data['satker'] = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
+        $data['personil_tpp'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+//        comp\FUNC::showPre($satker);
+        return $data;
     }
 
     protected function hapus() {

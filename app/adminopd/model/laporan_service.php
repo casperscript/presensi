@@ -919,7 +919,7 @@ class laporan_service extends system\Model {
         return $dataArr;
     }
     
-    public function getDataPersonilTpp2021($data) {
+    public function getDataPersonilTpp_v2($data) {
         parent::setConnection('db_pegawai');
         
         $idKey = array();

@@ -189,9 +189,6 @@ class backup_service extends system\Model {
     }
 
     public function dobackup($input, $w_presensi = true) {
-        comp\FUNC::showPre($input);
-        exit;
-
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
