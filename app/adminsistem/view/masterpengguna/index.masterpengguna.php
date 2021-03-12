@@ -32,9 +32,12 @@
                         <div class="card-content">
                             <div class="col s12">
                                 <form id="frmData" class="navbar-search expanded" onsubmit="return false" role="search" >
-                                    <div class="input-field col s7 custom-prefix">
+                                    <div class="input-field col s5 custom-prefix">
                                         <i class="material-icons prefix">search</i>
                                         <input name="cari" id="cari" class="validate" type="text" placeholder="Pencarian Data">
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <?= MATERIALIZE::inputSelect('aa', ['aa', 'bb'], 'aa') ?>
                                     </div>
                                     <div class="input-field col s2">
                                         <button type="submit" class="waves-effect waves-light btn green">Cari</button>
