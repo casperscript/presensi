@@ -949,8 +949,8 @@ class laporan_service extends system\Model {
 		pegawai.`golruang`              AS golruang,
 		personal.`path_foto_pegawai`    AS foto_pegawai,
 		jabatan.`kode_kelas`            AS kode_kelas,
-		IF(pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
-		kelas.`kelas`                   AS kelas,
+		IF (pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
+		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
 		gaji.`total`                    AS totgaji,
 		pegawai.`kode_sert_guru`        AS kode_sert_guru
             FROM `texisting_kepegawaian_Jan2021` `pegawai` 
