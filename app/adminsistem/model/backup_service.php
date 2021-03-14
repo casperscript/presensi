@@ -192,7 +192,7 @@ class backup_service extends system\Model {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
-            $input['satker'] = $lokasi['value'][0]['singkatan_lokasi'];
+            $input['singkatan_lokasi'] = $lokasi['value'][0]['singkatan_lokasi'];
             $input['nmlokasi'] = $lokasi['value'][0]['nmlokasi'];
         }
 
@@ -216,8 +216,6 @@ class backup_service extends system\Model {
             $preData['induk'] = $tbinduk;
             $preData['rekap'] = $rekap;
             $preData['presensi'] = $w_presensi;
-            comp\FUNC::showPre($preData);
-            exit;
             $tbpersonil = $this->save_personil($input, $tbinduk, $rekap, $w_presensi);
 
             //simpan tpp
@@ -233,12 +231,12 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    private function save_induk($input) {
+    public function save_induk($input) {
         $induk = [
             'id' => '',
             'kdlokasi' => $input['kdlokasi'],
             'nmlokasi' => $input['nmlokasi'],
-            'singkatan_lokasi' => $input['satker'],
+            'singkatan_lokasi' => $input['singkatan_lokasi'],
             'bulan' => $input['bulan'],
             'tahun' => $input['tahun'],
             'dateAdd' => date('Y-m-d H:i:s')
@@ -247,7 +245,7 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    private function save_laporan($input, $tbinduk) {
+    public function save_laporan($input, $tbinduk) {
         parent::setConnection('db_presensi');
         $params = [$input['kdlokasi'], $input['bulan'], $input['tahun']];
         $sql = "SELECT * FROM tb_laporan WHERE kdlokasi = ? AND bulan = ? AND tahun = ? AND pin_absen IS NULL";
@@ -406,6 +404,37 @@ class backup_service extends system\Model {
         $query .= ' ORDER BY IF(urutan_sotk = "0" OR urutan_sotk = "" OR urutan_sotk IS NULL, 1, 0), IF(pp.kd_jabatan = "" OR pp.kd_jabatan = "-" OR pp.kd_jabatan IS NULL, 1, 0), v.nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, pp.nipbaru ASC';
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
+    }
+    
+    public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
+        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input);
+        $pajak = $this->laporan_service->getArraypajak();
+        
+        foreach ($pegawai['value'] as $peg) {
+            $field = array_keys($this->getTabel('tb_personil'));
+            
+            foreach ($field as $i) {
+                if ($i != 'id' && isset($peg[$i])) :
+                    $p[$i] = $peg[$i];
+                endif;
+            }
+            
+            if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
+                $p['tampil_tpp'] = 0;
+            endif;
+            
+            //remove whitespace-- ambil % pajak
+            $clean = str_replace(" ", "", $peg['golruang']);
+            $gol = explode("/", $clean)[0];
+            $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
+            $p['induk_id'] = $tbinduk['inserted_id'];
+            $p['dateAdd'] = date('Y-m-d H:i:s');
+
+            parent::setConnection('db_backup');
+            $tbpersonil = $this->save('tb_personil', $p);
+            $dataPeg[] = $p;
+        }
+        return $dataPeg;
     }
 
     private function save_personil($input, $tbinduk, $rekap, $w_presensi) {
@@ -1667,7 +1696,7 @@ class backup_service extends system\Model {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
-            $input['satker'] = $lokasi['value'][0]['singkatan_lokasi'];
+            $input['singkatan_lokasi'] = $lokasi['value'][0]['singkatan_lokasi'];
             $input['nmlokasi'] = $lokasi['value'][0]['nmlokasi'];
         }
 

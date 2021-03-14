@@ -40,11 +40,13 @@
 
                                         foreach ($namabulan as $key => $i) {
                                             $selected = ''; $bulan = date('m');
-                                            if ($bulan == 1)
+                                            if ($bulan == 1) :
                                                 $bulan = 13;
+                                            endif;
 
-                                            if ($key+2 == $bulan)
+                                            if ($key+2 == $bulan) :
                                                 $selected = 'selected';
+                                            endif;
                                             echo '<option value="'.($key+1).'" '.$selected.'>'.$i.'</option>';   
                                         }
                                         ?>
@@ -56,11 +58,13 @@
                                             <?php
                                             for ($i = 2018; $i < 2022; $i++) {
                                                 $selected = ""; $tahun = date('Y');
-                                                if (date('m') == 1)
+                                                if (date('m') == 1) :
                                                     $tahun--;
+                                                endif;
 
-                                                if ($i == $tahun)
+                                                if ($i == $tahun) :
                                                     $selected = "selected";
+                                                endif;
 
                                                 echo '<option value="'.$i.'" '.$selected.'>'.$i.'</option>';
                                             }

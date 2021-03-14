@@ -59,6 +59,55 @@ class laporan_service extends system\Model {
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }
+    
+    public function getDataPersonilTpp_v2($data) {
+        parent::setConnection('db_pegawai');
+        
+        $idKey = array();
+        $q_carigaji = '';
+        if (!empty($data['bulan']) && !empty($data['tahun'])) {
+            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
+            $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
+            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            array_push($idKey, $bulan, $tahun);
+        }
+        
+        $q_cari = '';
+        if (!empty($data['kdlokasi'])) {
+            $q_cari .= 'AND ((pegawai.kdlokasi = ?) OR (pegawai.kdsublokasi = ?)) ';
+            array_push($idKey, $data['kdlokasi'], $data['kdlokasi']);
+        }
+        
+        $query = 'SELECT 
+		pegawai.`nipbaru`               AS nipbaru,
+		pegawai.`pin_absen`             AS pin_absen,
+		jabatan.`kdsotk`                AS kdsotk,
+		CONCAT(`personal`.`gelar_depan`,IF((`personal`.`gelar_depan` <> "")," ",""),`personal`.`namapeg`,IF((`personal`.`gelar_blkg` <> "")," ",""),`personal`.`gelar_blkg`) AS `nama_personil`,
+		IF((`pegawai`.`kdsublokasi` = ""),`pegawai`.`kdlokasi`,`pegawai`.`kdsublokasi`) AS `kdlokasi`,
+		pegawai.`kd_jabatan`            AS kd_jabatan,
+		personal.`npwp`                 AS npwp,
+		personal.`nama_R_jabatan`       AS nama_R_jabatan,
+		pegawai.`golruang`              AS golruang,
+                pegawai.`tunjangan_jabatan`     AS tunjangan_jabatan,
+		personal.`path_foto_pegawai`    AS foto_pegawai,
+		jabatan.`kode_kelas`            AS kode_kelas,
+		IF (pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
+		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
+		gaji.`total`                    AS totgaji,
+		pegawai.`kode_sert_guru`        AS kode_sert_guru
+            FROM `texisting_kepegawaian_Jan2021` `pegawai` 
+		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
+		LEFT JOIN `tref_jabatan_campur_2021` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
+		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
+		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
+            WHERE 1 ' . $q_cari . '
+                AND pegawai.`kd_stspeg` IN ("04", "29")
+                AND pegawai.`tunjangan_jabatan` = 0
+                AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
+            ORDER BY ISNULL(kelas.`kelas`), kelas.`kelas` DESC';
+        $dataArr = $this->getData($query, $idKey);
+        return $dataArr;
+    }
 
     /*     * **************** Get data personil batch where in ************************** */
 
