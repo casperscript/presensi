@@ -953,9 +953,9 @@ class laporan_service extends system\Model {
 		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
 		gaji.`total`                    AS totgaji,
 		pegawai.`kode_sert_guru`        AS kode_sert_guru
-            FROM `texisting_kepegawaian_Jan2021` `pegawai` 
+            FROM `texisting_kepegawaian` `pegawai` 
 		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
-		LEFT JOIN `tref_jabatan_campur_2021` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
+		LEFT JOIN `tref_jabatan_campur` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
 		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
 		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
             WHERE 1 ' . $q_cari . '

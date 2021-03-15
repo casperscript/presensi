@@ -192,7 +192,7 @@ class backup_service extends system\Model {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
-            $input['satker'] = $lokasi['value'][0]['singkatan_lokasi'];
+            $input['singkatan_lokasi'] = $lokasi['value'][0]['singkatan_lokasi'];
             $input['nmlokasi'] = $lokasi['value'][0]['nmlokasi'];
         }
 
@@ -216,8 +216,6 @@ class backup_service extends system\Model {
             $preData['induk'] = $tbinduk;
             $preData['rekap'] = $rekap;
             $preData['presensi'] = $w_presensi;
-            comp\FUNC::showPre($preData);
-            exit;
             $tbpersonil = $this->save_personil($input, $tbinduk, $rekap, $w_presensi);
 
             //simpan tpp
@@ -233,12 +231,12 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    private function save_induk($input) {
+    public function save_induk($input) {
         $induk = [
             'id' => '',
             'kdlokasi' => $input['kdlokasi'],
             'nmlokasi' => $input['nmlokasi'],
-            'singkatan_lokasi' => $input['satker'],
+            'singkatan_lokasi' => $input['singkatan_lokasi'],
             'bulan' => $input['bulan'],
             'tahun' => $input['tahun'],
             'dateAdd' => date('Y-m-d H:i:s')
@@ -247,7 +245,7 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    private function save_laporan($input, $tbinduk) {
+    public function save_laporan($input, $tbinduk) {
         parent::setConnection('db_presensi');
         $params = [$input['kdlokasi'], $input['bulan'], $input['tahun']];
         $sql = "SELECT * FROM tb_laporan WHERE kdlokasi = ? AND bulan = ? AND tahun = ? AND pin_absen IS NULL";
@@ -408,6 +406,48 @@ class backup_service extends system\Model {
         return $dataArr;
     }
 
+    public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
+        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input);
+        $pajak = $this->laporan_service->getArraypajak();
+        $a = 1;
+
+        parent::setConnection('db_backup');
+        foreach ($pegawai['value'] as $peg) {
+            $field = array_keys($this->getTabel('tb_personil'));
+
+            foreach ($field as $i) :
+                $p[$i] = (isset($peg[$i])) ? $peg[$i] : NULL;
+            endforeach;
+
+            if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
+                $p['tampil_tpp'] = 0;
+            endif;
+
+            //remove whitespace-- ambil % pajak
+            $clean = str_replace(" ", "", $peg['golruang']);
+            $gol = explode("/", $clean)[0];
+            $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
+            $p['induk_id'] = $tbinduk['inserted_id'];
+            $p['dateAdd'] = date('Y-m-d H:i:s');
+
+            $tbpersonil = $this->save('tb_personil', $p);
+            //simpan presensi
+            if ($tbpersonil['error'] && $w_presensi) {
+                $peg['pajak_tpp'] = $p['pajak_tpp'];
+                $tbpresensi = $this->save_presensi($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
+                if (!$tbpresensi['error']) :
+                    return $tbpresensi;
+                endif;
+            }
+//            $dataPeg[$a]['p'] = $p;
+//            $dataPeg[$a]['peg'] = $peg;
+//            $dataPeg[$a]['field'] = $field;
+//            $dataPeg[$a]['insert'] = $tbpersonil;
+            $a++;
+        }
+        return $tbpresensi;
+    }
+
     private function save_personil($input, $tbinduk, $rekap, $w_presensi) {
         $pegawai = $this->getDataPersonilTpp($input)['value'];
 
@@ -426,6 +466,8 @@ class backup_service extends system\Model {
 
             if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
+            else :
+                $p['tampil_tpp'] = 1;
             endif;
 
             //remove whitespace-- ambil % pajak
@@ -455,6 +497,11 @@ class backup_service extends system\Model {
         $pot_penuh = [];
         $sum_pot = [];
         $pin_absen = $peg['pin_absen'];
+        if ($pin_absen == '10001140') :
+            comp\FUNC::showPre($rekap[1][$pin_absen]);
+        endif;
+        exit;
+
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
             $pot_penuh[$i] = $get['pot_penuh'];
@@ -493,6 +540,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
+
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :
             $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
@@ -1667,7 +1715,7 @@ class backup_service extends system\Model {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
-            $input['satker'] = $lokasi['value'][0]['singkatan_lokasi'];
+            $input['singkatan_lokasi'] = $lokasi['value'][0]['singkatan_lokasi'];
             $input['nmlokasi'] = $lokasi['value'][0]['nmlokasi'];
         }
 

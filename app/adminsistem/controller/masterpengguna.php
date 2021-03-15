@@ -40,8 +40,14 @@ class masterpengguna extends system\Controller {
             $dataTabel = $this->servicemasterpresensi->getTabelPengguna($input);
             $data['title'] = 'Total Data : ' . $dataTabel['jmlData'] . ' Data';
             $data = array_merge($data, $dataTabel);
-            $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
-            $data['nama_personil'] = $this->servicemasterpegawai->getTabelPilihanNamaPersonil();
+            
+            $arrKdlokasi = array_column($dataTabel['dataTabel'], 'kdlokasi');
+//            $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
+            $data['listLokasi'] = $this->servicemasterpegawai->getListLokasiKerja($arrKdlokasi);
+//            comp\FUNC::showPre($data['nama_lokasi']);exit;
+            
+            $arrNip = array_column($dataTabel['dataTabel'], 'nipbaru');
+            $data['listPersonil'] = $this->servicemasterpegawai->getListNamaPersonil($arrNip);
             $this->subView('tabel', $data);
         }
     }

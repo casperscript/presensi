@@ -1,5 +1,5 @@
 <?php
-//comp\FUNC::showPre($dataTabel);
+//comp\FUNC::showPre($nama_lokasi);
 //comp\FUNC::showPre($query);
 ?>
 <table class="bordered striped hoverable table-list">
@@ -17,15 +17,44 @@
     <tbody>
         <?php                    
             foreach ($dataTabel as $kol) {
+                # Nama personil
+                switch (true) {
+                    case ($kol['nipbaru'] == 'system'):
+                        $nama_pengguna = 'Admin Sistem';
+                        break;
+                    case ($kol['nipbaru'] == ''):
+                        $nama_pengguna = '<span class="chip blue-grey white-text">NIP Tidak Diisi</span>';
+                        break;
+                    case (isset($listPersonil[$kol['nipbaru']])):
+                        $nama_pengguna = $listPersonil[$kol['nipbaru']];
+                        break;
+                    default: 
+                        $nama_pengguna = '<span class="chip blue-grey white-text">Undifined</span>';
+                }
+                
+                # Nama lokasi kerja
+                switch (true) {
+                    case (isset($listLokasi[$kol['kdlokasi']])):
+                        $nama_lokasi = $listLokasi[$kol['kdlokasi']];
+                        break;
+                    case ($kol['kdlokasi'] == ''):
+                        $nama_lokasi = '<span class="chip blue-grey white-text">OPD Kosong</span>';
+                        break;
+                    case (!empty($kol['kdlokasi']) && !isset($listLokasi[$kol['kdlokasi']])):
+                        $nama_lokasi = '<span class="chip blue-grey white-text">OPD Tidak Terdaftar</span>';
+                        break;
+                    default:
+                        $nama_lokasi = '<span class="chip blue-grey white-text">Undefined</span>';
+                }
                 ?>
                 <tr style="cursor: pointer;">
                     <td id="<?= $kol['username']; ?>" class="btnDetail center-align"><?= $no; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail"><?= $kol['username']; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
-                        <?= (($kol['nipbaru']=='')) ? '' : $nama_personil[$kol['nipbaru']];?>
+                        <?= $nama_pengguna ?>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
-                        <?= (($kol['kdlokasi']=='')) ? '' : $nama_lokasi[$kol['kdlokasi']];?>
+                        <?= $nama_lokasi ?>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
                         <div class="center-align">

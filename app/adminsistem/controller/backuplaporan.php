@@ -331,17 +331,40 @@ class backuplaporan extends system\Controller {
         }
 
         $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
-        echo json_encode($input); exit;
+
         $result = $this->backup_service->dobackup($input);
         $error_msg = ($result['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
         return $error_msg;
     }
 
     protected function dobackup_v2($input) {
-        $data['satker'] = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
-        $data['personil_tpp'] = $this->laporan_service->getDataPersonilTpp_v2($input);
-//        comp\FUNC::showPre($satker);
-        return $data;
+        $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
+        $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
+        $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+
+        $satker = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
+
+        //simpan induk
+        $tbinduk = $this->backup_service->save_induk($satker + $input);
+
+        if ($tbinduk['error']) { //jk berhasil simpan
+            // simpan laporan
+            $tblaporan = $this->backup_service->save_laporan($input, $tbinduk);
+
+            //simpan personil
+            $rekap = [];
+            $laporan = $this->laporan_service->getLaporan($input);
+            for ($i = 1; $i <= 6; $i++) {
+                $input['tingkat'] = $i;
+                $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
+            }
+            $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
+            comp\FUNC::showPre($tbpersonil);
+            exit;
+        }
+//        exit;
+//        $data['personil_tpp'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+//        return $data;
     }
 
     protected function hapus() {

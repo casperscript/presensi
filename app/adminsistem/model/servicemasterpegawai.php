@@ -11,20 +11,49 @@ class servicemasterpegawai extends system\Model {
         parent::setConnection('db_pegawai');
     }
     
+    # Get List Data
+    public function getListNamaPersonil($arrNip = array()) {
+        $q_where = 'WHERE 1 ';
+        if (count($arrNip) > 0) :
+            $inArray = implode(',', $arrNip);
+            $q_where .= 'AND nipbaru IN (' . $inArray . ')';
+        endif;
+        $dataArr = $this->getData('SELECT '
+                . 'nipbaru, CONCAT(gelar_depan, IF((gelar_depan <> "")," ",""), namapeg, IF((gelar_blkg <> "")," ",""), gelar_blkg) AS nama_personil FROM texisting_personal ' 
+                . $q_where, []);
+        $key = array_column($dataArr['value'], 'nipbaru');
+        $column = array_column($dataArr['value'], 'nama_personil');
+        return array_combine($key, $column);
+    }
+
+    public function getListLokasiKerja($arrKdlokasi = array()) {
+        $q_where = 'WHERE 1 AND status_lokasi_kerja = 1 ';
+        if (count($arrKdlokasi) > 0) :
+            $inArray = implode('","', $arrKdlokasi);
+            $q_where .= 'AND kdlokasi IN ("' . $inArray . '")';
+        endif;
+        $dataArr = $this->getData('SELECT * FROM tref_lokasi_kerja ' . $q_where, []);
+        $key = array_column($dataArr['value'], 'kdlokasi');
+        $column = array_column($dataArr['value'], 'singkatan_lokasi');
+        return array_combine($key, $column);
+    }
+
+
+
     // START DUMP CETAK USER
-        public function getDataUserCetak() {
-            set_time_limit(0);
-            $data = $this->getData('SELECT a.nipbaru, a.nama_personil, b.nmlokasi, b.singkatan_lokasi FROM view_presensi_personal a, tref_lokasi_kerja b WHERE a.kdlokasi=b.kdlokasi ORDER BY b.singkatan_lokasi', array());
-            return $data['value'];
-        }
+    public function getDataUserCetak() {
+        set_time_limit(0);
+        $data = $this->getData('SELECT a.nipbaru, a.nama_personil, b.nmlokasi, b.singkatan_lokasi FROM view_presensi_personal a, tref_lokasi_kerja b WHERE a.kdlokasi=b.kdlokasi ORDER BY b.singkatan_lokasi', array());
+        return $data['value'];
+    }
+
     // END DUMP CETAK USER
-    
     // START MASTER JENIS MODERASI
 //    public function getPilihanSatuanPotongan() {
 //        return array('Hari Kerja' => 'Hari Kerja', 'Bulan Kerja' => 'Bulan Kerja');
 //    }
-    
-    public function getTabelPilihanLokasiKerja() {        
+
+    public function getTabelPilihanLokasiKerja() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE (status_lokasi_kerja = "1")
@@ -35,7 +64,9 @@ class servicemasterpegawai extends system\Model {
         return $data;
     }
     
-    public function getTabelPilihanLokasiKerjaAdminOPD($kdlokasi) {        
+    
+
+    public function getTabelPilihanLokasiKerjaAdminOPD($kdlokasi) {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE (kdlokasi = ?) AND  (status_lokasi_kerja = "1")', array($kdlokasi));
@@ -44,7 +75,7 @@ class servicemasterpegawai extends system\Model {
         }
         return $data;
     }
-    
+
 //    public function getPilAdmin($id) {
 //        set_time_limit(0);
 //        $data = $this->getData('SELECT * FROM view_presensi_personal WHERE (kdlokasi = ?)', array($id));
@@ -57,8 +88,8 @@ class servicemasterpegawai extends system\Model {
 //        }
 //        return $valData;
 //    }
-    
-    public function getPilihanAdmin($id) {        
+
+    public function getPilihanAdmin($id) {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM view_presensi_personal WHERE (kdlokasi = ?)', array($id));
@@ -67,12 +98,12 @@ class servicemasterpegawai extends system\Model {
         }
         return $data;
     }
-    
+
     public function getPilihanStatusPengguna() {
         return array('enable' => 'Enable', 'disable' => 'Disable');
     }
-    
-    public function getTabelPilihanNamaPersonil() {        
+
+    public function getTabelPilihanNamaPersonil() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM view_presensi_personal', array());
@@ -81,36 +112,33 @@ class servicemasterpegawai extends system\Model {
         }
         return $data;
     }
-        
+
     public function getDataPegawaiPresensi($id) {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM view_presensi_personal WHERE (nipbaru = ?)', array($id));
         if ($data['count'] > 0) {
             return $data['value'][0];
-        }
-        else {
+        } else {
             return array('nipbaru' => '-', 'nama_personil' => '-', 'pin_absen' => '-');
         }
     }
-    
+
     public function getDataFotoPegawai($id) {
         set_time_limit(0);
         $data = $this->getData('SELECT foto_pegawai FROM view_presensi_personal WHERE (nipbaru = ?)', array($id));
         if ($data['count'] > 0) {
             return $data['value'][0];
-        }
-        else {
+        } else {
             return array('foto_pegawai' => '-');
         }
     }
-
 
     //added by daniek
     public function getDataPegawai($p) {
         $data = $this->getData('SELECT vw.*, lokasi.nmlokasi, lokasi.singkatan_lokasi FROM view_presensi_personal vw
             JOIN tref_lokasi_kerja lokasi ON vw.kdlokasi = lokasi.kdlokasi
             WHERE nipbaru IN (' . $p . ')', []);
-        
+
         $result = [];
         foreach ($data['value'] as $kol) {
             $result[$kol['nipbaru']] = [
@@ -124,6 +152,7 @@ class servicemasterpegawai extends system\Model {
 
         return $result;
     }
+
 }
 
 ?>

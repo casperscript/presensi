@@ -418,10 +418,10 @@ class laporan extends system\Controller {
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
-            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-                $this->tabeltppbc($input);
-                exit;
-            } //aktifkan lagi
+//            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+//                $this->tabeltppbc($input);
+//                exit;
+//            } //aktifkan lagi
 
             switch (true) {
                 case ($data['tahun'] == 2021):
