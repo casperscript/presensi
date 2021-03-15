@@ -435,9 +435,9 @@ class backup_service extends system\Model {
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
                 $tbpresensi = $this->save_presensi($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
-//                if (!$tbpresensi['error']) :
-//                    return $tbpresensi;
-//                endif;
+                if (!$tbpresensi['error']) :
+                    return $tbpresensi;
+                endif;
             }
 //            $dataPeg[$a]['p'] = $p;
 //            $dataPeg[$a]['peg'] = $peg;
@@ -445,7 +445,7 @@ class backup_service extends system\Model {
 //            $dataPeg[$a]['insert'] = $tbpersonil;
             $a++;
         }
-//        return $rekap;
+        return $tbpresensi;
     }
 
     private function save_personil($input, $tbinduk, $rekap, $w_presensi) {

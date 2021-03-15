@@ -341,7 +341,7 @@ class backuplaporan extends system\Controller {
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
         $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
         $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
-        
+
         $satker = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
 
         //simpan induk
@@ -362,6 +362,7 @@ class backuplaporan extends system\Controller {
             comp\FUNC::showPre($tbpersonil);
             exit;
         }
+//        exit;
 //        $data['personil_tpp'] = $this->laporan_service->getDataPersonilTpp_v2($input);
 //        return $data;
     }
