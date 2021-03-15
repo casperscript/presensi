@@ -405,24 +405,24 @@ class backup_service extends system\Model {
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }
-    
+
     public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
         $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input);
         $pajak = $this->laporan_service->getArraypajak();
-        
+        $a = 1;
+
+        parent::setConnection('db_backup');
         foreach ($pegawai['value'] as $peg) {
             $field = array_keys($this->getTabel('tb_personil'));
-            
-            foreach ($field as $i) {
-                if ($i != 'id' && isset($peg[$i])) :
-                    $p[$i] = $peg[$i];
-                endif;
-            }
-            
+
+            foreach ($field as $i) :
+                $p[$i] = (isset($peg[$i])) ? $peg[$i] : NULL;
+            endforeach;
+
             if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
             endif;
-            
+
             //remove whitespace-- ambil % pajak
             $clean = str_replace(" ", "", $peg['golruang']);
             $gol = explode("/", $clean)[0];
@@ -430,11 +430,22 @@ class backup_service extends system\Model {
             $p['induk_id'] = $tbinduk['inserted_id'];
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
-            parent::setConnection('db_backup');
             $tbpersonil = $this->save('tb_personil', $p);
-            $dataPeg[] = $p;
+            //simpan presensi
+            if ($tbpersonil['error'] && $w_presensi) {
+                $peg['pajak_tpp'] = $p['pajak_tpp'];
+                $tbpresensi = $this->save_presensi($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
+//                if (!$tbpresensi['error']) :
+//                    return $tbpresensi;
+//                endif;
+            }
+//            $dataPeg[$a]['p'] = $p;
+//            $dataPeg[$a]['peg'] = $peg;
+//            $dataPeg[$a]['field'] = $field;
+//            $dataPeg[$a]['insert'] = $tbpersonil;
+            $a++;
         }
-        return $dataPeg;
+//        return $rekap;
     }
 
     private function save_personil($input, $tbinduk, $rekap, $w_presensi) {
@@ -455,6 +466,8 @@ class backup_service extends system\Model {
 
             if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
+            else :
+                $p['tampil_tpp'] = 1;
             endif;
 
             //remove whitespace-- ambil % pajak
@@ -484,6 +497,11 @@ class backup_service extends system\Model {
         $pot_penuh = [];
         $sum_pot = [];
         $pin_absen = $peg['pin_absen'];
+        if ($pin_absen == '10001140') :
+            comp\FUNC::showPre($rekap[1][$pin_absen]);
+        endif;
+        exit;
+
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
             $pot_penuh[$i] = $get['pot_penuh'];
@@ -522,6 +540,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
+
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :
             $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);

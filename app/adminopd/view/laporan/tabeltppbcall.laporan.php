@@ -45,7 +45,7 @@ if (count($rekap) == 0) {
         ?>
         <span class="ket-small">
             <?php
-            if ($period != '12018' && $period != '22018')
+            if ($period != '12018' && $period != '22018') :
                 switch ($tingkat) {
                     case '1':
                         echo '<br>Belum Diverifikasi Admin OPD.';
@@ -66,6 +66,7 @@ if (count($rekap) == 0) {
                         # code...
                         break;
                 }
+            endif;
             ?>
         </span>
     </div>
@@ -117,7 +118,7 @@ if (count($rekap) == 0) {
             $find = $rekap[$peg['id']];
             $pot_penuh = json_decode($find['pot_penuh'], true)[$tingkat];
             $sum = json_decode($find['sum_pot'], true)[$tingkat];
-            
+
             $sum['text'] = $sum['all'];
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
             $sum['all'] = ($sum['all'] > 100 ? 100 : $sum['all']);

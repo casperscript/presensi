@@ -60,6 +60,48 @@ class laporan_service extends system\Model {
         return $dataArr;
     }
     
+    public function getDataPersonilSatker_v2($data) {
+        parent::setConnection('db_pegawai');
+        
+        $idKey = [];
+        $q_cari = 'WHERE 1 ';
+        
+        if (!empty($data['kdlokasi'])) :
+            $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
+            array_push($idKey, $data['kdlokasi']);
+        endif;
+        
+        if (!empty($data['cari'])) :
+            $cari = '%' . $data['cari'] . '%';
+            $q_cari .= 'AND ((personal.nama_personil = ?) OR (pegawai.pin_absen = ?)) ';
+            array_push($idKey, $cari, $cari);
+        endif;
+        
+        $query = 'SELECT
+            pegawai.nipbaru            AS nipbaru,
+            pegawai.pin_absen          AS pin_absen,
+            CONCAT(
+                    personal.gelar_depan,
+                    IF((personal.gelar_depan <> ""), " ", ""),
+                    personal.namapeg,
+                    IF((personal.gelar_blkg <> ""), " ", ""),
+                    personal.gelar_blkg
+                ) AS nama_personil,
+            IF((pegawai.kdsublokasi = ""), pegawai.kdlokasi, pegawai.kdsublokasi) AS kdlokasi,
+            pegawai.kd_jabatan         AS kd_jabatan,
+            personal.npwp              AS npwp,
+            personal.nama_R_jabatan    AS nama_R_jabatan,
+            pegawai.golruang           AS golruang,
+            personal.path_foto_pegawai AS foto_pegawai
+        FROM texisting_kepegawaian_Jan2021 pegawai
+            JOIN texisting_personal personal
+                ON pegawai.nipbaru = personal.nipbaru
+            LEFT JOIN tref_jabatan_campur_2021 jabatan
+                ON jabatan.kd_jabatan = pegawai.kd_jabatan ' . $q_cari;
+        $dataArr = $this->getData($query, $idKey);
+        return $dataArr;
+    }
+    
     public function getDataPersonilTpp_v2($data) {
         parent::setConnection('db_pegawai');
         
