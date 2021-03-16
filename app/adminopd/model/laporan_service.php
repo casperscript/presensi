@@ -245,8 +245,9 @@ class laporan_service extends system\Model {
         */
 
         $pin = "";
-        if (isset($data['pin_absen']) && $data['pin_absen'])
+        if (isset($data['pin_absen']) && $data['pin_absen']) :
             $pin = " AND pin_absen in (" . $data['pin_absen'] . ")";
+        endif;
         
         /*
         $sql = "SELECT * FROM tb_moderasi tmod
