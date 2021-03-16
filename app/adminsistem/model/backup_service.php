@@ -450,7 +450,7 @@ class backup_service extends system\Model {
 //            $dataPeg[$a]['insert'] = $tbpersonil;
             $a++;
         }
-        return $pegawai;
+        return $tbpresensi;
     }
 
     private function save_personil($input, $tbinduk, $rekap, $w_presensi) {

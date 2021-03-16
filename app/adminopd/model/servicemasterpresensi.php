@@ -80,7 +80,7 @@ class servicemasterpresensi extends system\Model {
         $result['jmlData'] = $jmlData['count'];
         $result['dataTabel'] = $dataArr['value'];
         $result['query'] = $dataArr['query'];
-        $result['query'] = '';
+//        $result['query'] = '';
         return $result;
     }
     public function getPilihanGrupPenggunaAdminOPD() {        

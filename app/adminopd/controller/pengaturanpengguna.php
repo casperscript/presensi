@@ -43,6 +43,7 @@ class pengaturanpengguna extends system\Controller {
             $data = array_merge($data, $dataTabel);
             $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
             $data['nama_personil'] = $this->servicemasterpegawai->getTabelPilihanNamaPersonil();
+//            comp\FUNC::showPre($dataTabel);
             $this->subView('tabel', $data);
         }
     }

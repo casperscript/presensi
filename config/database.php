@@ -5,8 +5,8 @@ $tahun = isset($_POST['tahun']) ? $_POST['tahun'] : '';
 return array(
     'db_pegawai' => array(
         'driver' => 'mysql',
-        'host' => '192.168.254.62',
-//        'host' => 'localhost',
+//        'host' => '192.168.254.62',
+        'host' => 'localhost',
         'port' => 3306,
         'user' => 'admin',
         'password' => '$absensi-db@simapp',
@@ -18,8 +18,8 @@ return array(
     ),
     'db_presensi' => array(
         'driver' => 'mysql',
-        'host' => '192.168.254.62',
-//        'host' => 'localhost',
+//        'host' => '192.168.254.62',
+        'host' => 'localhost',
         'port' => 3306,
         'user' => 'admin',
         'password' => '$absensi-db@simapp',
@@ -31,8 +31,8 @@ return array(
     ),
     'db_backup' => array(
         'driver' => 'mysql',
-        'host' => '192.168.254.62',
-//        'host' => 'localhost',
+//        'host' => '192.168.254.62',
+        'host' => 'localhost',
         'port' => 3306,
         'user' => 'admin',
         'password' => '$absensi-db@simapp',
