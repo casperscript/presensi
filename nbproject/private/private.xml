@@ -3,21 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
-            <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminopd/model/laporan_service.php</file>
-            <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminsistem/model/laporan_service.php</file>
-            <file>file:/D:/xampp/htdocs/git/presensi2021/config/database.php</file>
             <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminsistem/model/backup_service.php</file>
-            <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminopd/view/laporan/tabeltpp2021.laporan.php</file>
-            <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminopd/controller/laporan.php</file>
             <file>file:/D:/xampp/htdocs/git/presensi2021/app/adminsistem/controller/backuplaporan.php</file>
-=======
-            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/controller/backuplaporan.php</file>
-            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/model/laporan_service.php</file>
-            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/view/backuplaporan/index.backuplaporan.php</file>
-            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/view/backuplaporan/script.backuplaporan.php</file>
-            <file>file:/E:/WebServer/htdocs/git/presensi2021/app/adminsistem/model/backup_service.php</file>
->>>>>>> 7108d6b724abe4401214a3c845adc17d19813498
         </group>
     </open-files>
 </project-private>
