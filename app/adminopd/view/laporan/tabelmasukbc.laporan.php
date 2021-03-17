@@ -1,6 +1,7 @@
 <?php
 ob_start();
 use comp\FUNC;
+//FUNC::showPre($data);exit;
 
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);

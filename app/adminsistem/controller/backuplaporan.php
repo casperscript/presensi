@@ -358,13 +358,22 @@ class backuplaporan extends system\Controller {
                 $input['tingkat'] = $i;
                 $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
             }
+            $v['rekap'] = $rekap[1];
+            $v['pegawai'] = $input['pegawai'];
             $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
-            comp\FUNC::showPre($tbpersonil);
-            exit;
+            
+            //simpan tpp
+            $tbtpp = $this->backup_service->save_tpp($input, $tbinduk);
+            
+            //hapus jika terjadi gagal backup
+            if (!$tblaporan['error'] || !$tbpersonil['error'] || !$tbtpp['error']) {
+                $this->backup_service->hapusBackup($input);
+                $result['error'] = false;
+                return $result;
+            }
         }
-//        exit;
-//        $data['personil_tpp'] = $this->laporan_service->getDataPersonilTpp_v2($input);
-//        return $data;
+        $error_msg = ($tbinduk['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
+        return $error_msg;
     }
 
     protected function hapus() {

@@ -71,6 +71,48 @@ class laporan_service extends system\Model {
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }
+    
+    public function getDataPersonilSatker_v2($data) {
+        parent::setConnection('db_pegawai');
+        
+        $idKey = [];
+        $q_cari = 'WHERE 1 ';
+        
+        if (!empty($data['kdlokasi'])) :
+            $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
+            array_push($idKey, $data['kdlokasi']);
+        endif;
+        
+        if (!empty($data['cari'])) :
+            $cari = '%' . $data['cari'] . '%';
+            $q_cari .= 'AND ((personal.nama_personil = ?) OR (pegawai.pin_absen = ?)) ';
+            array_push($idKey, $cari, $cari);
+        endif;
+        
+        $query = 'SELECT
+            pegawai.nipbaru            AS nipbaru,
+            pegawai.pin_absen          AS pin_absen,
+            CONCAT(
+                    personal.gelar_depan,
+                    IF((personal.gelar_depan <> ""), " ", ""),
+                    personal.namapeg,
+                    IF((personal.gelar_blkg <> ""), " ", ""),
+                    personal.gelar_blkg
+                ) AS nama_personil,
+            IF((pegawai.kdsublokasi = ""), pegawai.kdlokasi, pegawai.kdsublokasi) AS kdlokasi,
+            pegawai.kd_jabatan         AS kd_jabatan,
+            personal.npwp              AS npwp,
+            personal.nama_R_jabatan    AS nama_R_jabatan,
+            pegawai.golruang           AS golruang,
+            personal.path_foto_pegawai AS foto_pegawai
+        FROM texisting_kepegawaian pegawai
+            JOIN texisting_personal personal
+                ON pegawai.nipbaru = personal.nipbaru
+            LEFT JOIN tref_jabatan_campur jabatan
+                ON jabatan.kd_jabatan = pegawai.kd_jabatan ' . $q_cari;
+        $dataArr = $this->getData($query, $idKey);
+        return $dataArr;
+    }
 
     /****************** Get data personil batch where in ************************** */
     public function getDataPersonilBatch($ids, $raw = false) {
@@ -170,6 +212,59 @@ class laporan_service extends system\Model {
         $result['dataTabel'] = $dataArr['value'];
         $result['query'] = $dataArr['query'];
 //        $result['query'] = '';
+        return $result;
+    }
+
+    public function getTabelPersonil_v2($data) {
+        parent::setConnection('db_pegawai');
+        
+        $idKey = array();
+        $page = (!empty($data['page'])) ? $data['page'] : 1;
+        $batas = (!empty($data['batas'])) ? $data['batas'] : 10;
+        $q_cari = 'WHERE 1 ';
+        if (!empty($data['kdlokasi'])) {
+            $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
+            array_push($idKey, $data['kdlokasi']);
+        }
+
+        if (!empty($data['cari'])) {
+            $q_cari .= 'AND (namapeg LIKE "%'.$data['cari'].'%") ';
+        }
+
+        $query = 'SELECT
+                pegawai.nipbaru            AS nipbaru,
+                pegawai.pin_absen          AS pin_absen,
+                CONCAT(
+                        personal.gelar_depan,
+                        IF((personal.gelar_depan <> ""), " ", ""),
+                        personal.namapeg,
+                        IF((personal.gelar_blkg <> ""), " ", ""),
+                        personal.gelar_blkg
+                    ) AS nama_personil,
+                IF((pegawai.kdsublokasi = ""), pegawai.kdlokasi, pegawai.kdsublokasi) AS kdlokasi,
+                pegawai.kd_jabatan         AS kd_jabatan,
+                personal.npwp              AS npwp,
+                personal.nama_R_jabatan    AS nama_R_jabatan,
+                pegawai.golruang           AS golruang,
+                personal.path_foto_pegawai AS foto_pegawai
+            FROM texisting_kepegawaian pegawai
+                JOIN texisting_personal personal
+                    ON pegawai.nipbaru = personal.nipbaru
+                LEFT JOIN tref_jabatan_campur jabatan
+                    ON jabatan.kd_jabatan = pegawai.kd_jabatan ' . $q_cari;
+        $j_query = 'SELECT COUNT(pin_absen) AS jumlah FROM texisting_kepegawaian a JOIN texisting_personal b ON a.nipbaru = b.nipbaru ' . $q_cari;
+
+        $posisi = ($page - 1) * $batas;
+        $jmlData = $this->getData($j_query, $idKey);
+        $dataArr = $this->getData($query . ' LIMIT ' . $posisi . ', ' . $batas, $idKey);
+
+        $result['no'] = $posisi + 1;
+        $result['page'] = $page;
+        $result['batas'] = $batas;
+        $result['jmlData'] = ($jmlData['count'] > 0) ? $jmlData['value'][0]['jumlah'] : 0;
+        $result['dataTabel'] = $dataArr['value'];
+        $result['query'] = $dataArr['query'];
+        $result['query'] = '';
         return $result;
     }
 
@@ -975,6 +1070,20 @@ class laporan_service extends system\Model {
             return $data['value'][0];
         } else {
             return $this->getTabel('tb_setting');
+        }
+    }
+    
+    public function getDataVersi($id, $param) {
+        parent::setConnection('db_presensi');
+        $data = $this->getData('SELECT * FROM tb_variabel_versi '
+                . 'WHERE 1 '
+                . ' AND kode_variabel = ? '
+                . ' AND ? BETWEEN YEAR(tgl_mulai) AND YEAR(tgl_akhir) '
+                . ' AND ? BETWEEN MONTH(tgl_mulai) AND MONTH(tgl_akhir)', [$id, $param['tahun'], $param['bulan']]);
+        if ($data['count'] > 0) {
+            return $data['value'][0];
+        } else {
+            return $this->getTabel('tb_variabel_versi');
         }
     }
     

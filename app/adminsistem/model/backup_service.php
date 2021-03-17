@@ -408,13 +408,7 @@ class backup_service extends system\Model {
 
     public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
         $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input);
-//        $pegawai2 = $this->getDataPersonilTpp($input);
-//        $v['peg1'] = $pegawai;
-//        $v['peg2'] = $pegawai2;
-//        comp\FUNC::showPre($v); exit;
-        
         $pajak = $this->laporan_service->getArraypajak();
-        $a = 1;
 
         parent::setConnection('db_backup');
         foreach ($pegawai['value'] as $peg) {
@@ -426,6 +420,8 @@ class backup_service extends system\Model {
 
             if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
+            else :
+                $p['tampil_tpp'] = 1;
             endif;
 
             //remove whitespace-- ambil % pajak
@@ -444,11 +440,6 @@ class backup_service extends system\Model {
                     return $tbpresensi;
                 endif;
             }
-//            $dataPeg[$a]['p'] = $p;
-//            $dataPeg[$a]['peg'] = $peg;
-//            $dataPeg[$a]['field'] = $field;
-//            $dataPeg[$a]['insert'] = $tbpersonil;
-            $a++;
         }
         return $tbpresensi;
     }
@@ -502,10 +493,10 @@ class backup_service extends system\Model {
         $pot_penuh = [];
         $sum_pot = [];
         $pin_absen = $peg['pin_absen'];
-        if ($pin_absen == '10001140') :
-            comp\FUNC::showPre($rekap[1][$pin_absen]);
-        endif;
-        exit;
+//        if ($pin_absen == '10001140') :
+//            comp\FUNC::showPre($rekap[1][$pin_absen]);
+//        endif;
+//        exit;
 
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
@@ -554,7 +545,7 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    private function save_tpp($input, $tbinduk) {
+    public function save_tpp($input, $tbinduk) {
         $kepala = $this->laporan_service->getKepala($input['kdlokasi']);
         $bendahara = $this->laporan_service->getBendahara($input['kdlokasi']);
 

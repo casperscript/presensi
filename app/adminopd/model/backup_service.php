@@ -16,18 +16,19 @@ class backup_service extends system\Model {
     }
 
     public function getDataInduk($data) {
-    	$idKey = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
-    	$query = 'SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?';
+        $idKey = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
+        $query = 'SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?';
         $dataArr = $this->getData($query, $idKey);
 
         if ($dataArr['count'] > 0)
-        	return $dataArr['value'][0];
+            return $dataArr['value'][0];
 
         return false;
     }
 
     public function getDataPersonil($data) {
-        $idKey = array(); $dataArr = array();
+        $idKey = array();
+        $dataArr = array();
         $q_cari = 'WHERE 1 ';
         if (!empty($data['induk']['id'])) {
             $q_cari .= 'AND (induk_id = ?)';
@@ -56,19 +57,37 @@ class backup_service extends system\Model {
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }
-
-    public function getTabelPersonil($data) {        
+    
+    public function getDataPersonil_v2($data) {
         $idKey = array();
-        $page = (!empty($data['page'])) ? $data['page'] : 1;
-        $batas = (!empty($data['batas'])) ? $data['batas'] : 10;
         $q_cari = 'WHERE 1 ';
-         if (!empty($data['induk']['id'])) {
+        if (!empty($data['induk']['id'])) {
             $q_cari .= 'AND (induk_id = ?)';
             array_push($idKey, $data['induk']['id']);
         }
 
         if (!empty($data['cari'])) {
-            $q_cari .= 'AND (nama_personil LIKE "%'.$data['cari'].'%") ';
+            $cari = '%' . $data['cari'] . '%';
+            $q_cari .= ' AND ((nama_personil LIKE ?) || (pin_absen LIKE ?)) ';
+            array_push($idKey, $cari, $cari);
+        }
+
+        $dataArr = $this->getData('SELECT * FROM tb_personil ' . $q_cari, $idKey);
+        return $dataArr;
+    }
+
+    public function getTabelPersonil($data) {
+        $idKey = array();
+        $page = (!empty($data['page'])) ? $data['page'] : 1;
+        $batas = (!empty($data['batas'])) ? $data['batas'] : 10;
+        $q_cari = 'WHERE 1 ';
+        if (!empty($data['induk']['id'])) {
+            $q_cari .= 'AND (induk_id = ?)';
+            array_push($idKey, $data['induk']['id']);
+        }
+
+        if (!empty($data['cari'])) {
+            $q_cari .= 'AND (nama_personil LIKE "%' . $data['cari'] . '%") ';
         }
 
         $query = 'SELECT *,
@@ -98,13 +117,44 @@ class backup_service extends system\Model {
 //        $result['query'] = '';
         return $result;
     }
+    
+    public function getTabelPersonil_v2($data) {
+        $idKey = array();
+        $page = (!empty($data['page'])) ? $data['page'] : 1;
+        $batas = (!empty($data['batas'])) ? $data['batas'] : 10;
+        $q_cari = 'WHERE 1 ';
+        if (!empty($data['induk']['id'])) {
+            $q_cari .= 'AND (induk_id = ?)';
+            array_push($idKey, $data['induk']['id']);
+        }
+
+        if (!empty($data['cari'])) {
+            $q_cari .= 'AND (nama_personil LIKE "%' . $data['cari'] . '%") ';
+        }
+
+        $query = 'SELECT * FROM tb_personil  ' . $q_cari;
+        $j_query = 'SELECT COUNT(pin_absen) AS jumlah FROM tb_personil ' . $q_cari;
+
+        $posisi = ($page - 1) * $batas;
+        $jmlData = $this->getData($j_query, $idKey);
+        $dataArr = $this->getData($query . ' LIMIT ' . $posisi . ', ' . $batas, $idKey);
+
+        $result['no'] = $posisi + 1;
+        $result['page'] = $page;
+        $result['batas'] = $batas;
+        $result['jmlData'] = ($jmlData['count'] > 0) ? $jmlData['value'][0]['jumlah'] : 0;
+        $result['dataTabel'] = $dataArr['value'];
+        $result['query'] = $dataArr['query'];
+//        $result['query'] = '';
+        return $result;
+    }
 
     public function getLaporan($induk_id) {
-    	$query = 'SELECT * FROM tb_laporan WHERE induk_id = "'.$induk_id.'"';
+        $query = 'SELECT * FROM tb_laporan WHERE induk_id = "' . $induk_id . '"';
         $dataArr = $this->getData($query, []);
 
-        if ($dataArr['count'] > 0)  {
-        	$lap = $dataArr['value'][0];
+        if ($dataArr['count'] > 0) {
+            $lap = $dataArr['value'][0];
 
             $plus = [
                 'ver_admin_opd' => $lap['nip_admin_opd'],
@@ -121,10 +171,10 @@ class backup_service extends system\Model {
     }
 
     public function getDataTpp($induk_id) {
-        $query = 'SELECT * FROM tb_tpp WHERE induk_id = "'.$induk_id.'" ';
+        $query = 'SELECT * FROM tb_tpp WHERE induk_id = "' . $induk_id . '" ';
         $dataArr = $this->getData($query, []);
 
-        if ($dataArr['count'] > 0) 
+        if ($dataArr['count'] > 0)
             return $dataArr['value'][0];
 
         return false;
@@ -133,7 +183,7 @@ class backup_service extends system\Model {
     public function getDataPersonilBatch($data, $raw = false) {
         $qcari = '';
         if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
-             $qcari = 'AND pin_absen IN ('.$data['pin_absen'].')';
+            $qcari = 'AND pin_absen IN (' . $data['pin_absen'] . ')';
         }
 
         $query = 'SELECT *,
@@ -145,16 +195,17 @@ class backup_service extends system\Model {
                 ELSE NULL
             END) AS golruang_1,
             RIGHT(golruang, 1) AS golruang_2
-        FROM tb_personil WHERE tampil_tpp = 1 AND induk_id = "'.$data['induk']['id'].'" '.$qcari;
+        FROM tb_personil WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $qcari;
 
         $query .= ' ORDER BY IF(urutan_sotk = "0" OR urutan_sotk = "" OR urutan_sotk IS NULL, 1, 0), IF(kd_jabatan = "" OR kd_jabatan = "-" OR kd_jabatan IS NULL, 1, 0), nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, nipbaru ASC';
         $result = $this->getData($query);
 
-        if ($raw)
+        if ($raw) :
             return $result;
+        endif;
 
         $dataArr = [];
-        if (isset($result['value']))
+        if (isset($result['value'])) :
             foreach ($result['value'] as $i) {
                 $dataArr[$i['pin_absen']] = [
                     'nip' => $i['nipbaru'],
@@ -162,17 +213,28 @@ class backup_service extends system\Model {
                     'no_' => $i['nama_personil'],
                 ];
             }
+        endif;
 
         return $dataArr;
+    }
+    
+    public function getDataPersonilBatch_v2($data) {
+        $q_cari = '';
+        if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
+            $q_cari .= 'AND pin_absen IN (' . $data['pin_absen'] . ')';
+        }
+        $result = $this->getData('SELECT * FROM tb_personil WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari);
+        return $result;
     }
 
     public function getBelumBackup($input, $induk) {
         $sudah = [];
-        foreach ($induk['value'] as $i) 
+        foreach ($induk['value'] as $i) :
             $sudah[] = $i['kdlokasi'];
+        endforeach;
 
         $lap = $this->laporan_service->getData('SELECT * FROM tb_laporan
-            WHERE bulan = "'.$input['bulan'].'" AND tahun = "'.$input['tahun'].'"
+            WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"
             AND sah_final IS NOT NULL
         ');
 
@@ -187,10 +249,10 @@ class backup_service extends system\Model {
 
     public function dobackup($input) {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
-        $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "'.$input['kdlokasi'].'"');
+        $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
             $input['satker'] = $lokasi['value'][0]['singkatan_lokasi'];
-            $input['nmlokasi']= $lokasi['value'][0]['nmlokasi'];
+            $input['nmlokasi'] = $lokasi['value'][0]['nmlokasi'];
         }
 
         $rekap = [];
@@ -203,7 +265,7 @@ class backup_service extends system\Model {
         //simpan induk
         parent::setConnection('db_backup');
         $tbinduk = $this->save_induk($input);
-        
+
         if ($tbinduk['error']) { //jk berhasil simpan
             //simpan laporan
             $tblaporan = $this->save_laporan($input, $tbinduk);
@@ -249,18 +311,18 @@ class backup_service extends system\Model {
         parent::setConnection('db_pegawai');
         $person_ver = $this->getData("SELECT vp.nipbaru, vp.nama_personil
             FROM view_presensi_personal vp
-            WHERE (vp.nipbaru in (".$p."))", []);
+            WHERE (vp.nipbaru in (" . $p . "))", []);
 
         parent::setConnection('db_presensi'); //ambil jabatan pengguna
         foreach ($person_ver['value'] as $i) {
             if ($datalap['ver_admin_opd'] == $i['nipbaru']) {
                 $pengguna = $this->getData("SELECT * FROM tb_pengguna 
-                    WHERE grup_pengguna_kd = 'KDGRUP01' AND nipbaru = '".$i['nipbaru']."' 
-                    AND kdlokasi = '".$input['kdlokasi']."' AND jabatan_pengguna IS NOT NULL
+                    WHERE grup_pengguna_kd = 'KDGRUP01' AND nipbaru = '" . $i['nipbaru'] . "' 
+                    AND kdlokasi = '" . $input['kdlokasi'] . "' AND jabatan_pengguna IS NOT NULL
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0) 
+                if ($pengguna['count'] > 0)
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
 
                 $i['tanggal'] = $datalap['dt_ver_admin_opd'];
@@ -268,27 +330,27 @@ class backup_service extends system\Model {
             }
             if ($datalap['sah_kepala_opd'] == $i['nipbaru']) {
                 $pengguna = $this->getData("SELECT * FROM tb_pengguna 
-                    WHERE grup_pengguna_kd = 'KDGRUP02' AND nipbaru = '".$i['nipbaru']."' 
-                    AND kdlokasi = '".$input['kdlokasi']."' AND jabatan_pengguna IS NOT NULL
+                    WHERE grup_pengguna_kd = 'KDGRUP02' AND nipbaru = '" . $i['nipbaru'] . "' 
+                    AND kdlokasi = '" . $input['kdlokasi'] . "' AND jabatan_pengguna IS NOT NULL
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
                 if ($pengguna['count'] > 0)
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
-                    
+
 
                 $i['tanggal'] = $datalap['dt_sah_kepala_opd'];
                 $verlap['kepala_opd'] = $i;
-                $verlap['stempel_opd'] = $input['kdlokasi'].'.png';
+                $verlap['stempel_opd'] = $input['kdlokasi'] . '.png';
             }
             if ($datalap['ver_admin_kota'] == $i['nipbaru']) {
                 $pengguna = $this->getData("SELECT * FROM tb_pengguna 
-                    WHERE grup_pengguna_kd = 'KDGRUP03' AND nipbaru = '".$i['nipbaru']."' 
+                    WHERE grup_pengguna_kd = 'KDGRUP03' AND nipbaru = '" . $i['nipbaru'] . "' 
                     AND jabatan_pengguna IS NOT NULL
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0) 
+                if ($pengguna['count'] > 0)
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
 
                 $i['tanggal'] = $datalap['dt_ver_admin_kota'];
@@ -296,7 +358,7 @@ class backup_service extends system\Model {
             }
             if ($datalap['sah_kepala_bkppd'] == $i['nipbaru']) {
                 $pengguna = $this->getData("SELECT * FROM tb_pengguna 
-                    WHERE grup_pengguna_kd = 'KDGRUP04' AND nipbaru = '".$i['nipbaru']."' 
+                    WHERE grup_pengguna_kd = 'KDGRUP04' AND nipbaru = '" . $i['nipbaru'] . "' 
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
@@ -304,7 +366,7 @@ class backup_service extends system\Model {
                     if ($pengguna['value'][0]['jabatan_pengguna'] != NULL)
                         $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
 
-                    $verlap['stempel_bkppd'] = $pengguna['value'][0]['kdlokasi'].'.png';
+                    $verlap['stempel_bkppd'] = $pengguna['value'][0]['kdlokasi'] . '.png';
                 }
 
                 $i['tanggal'] = $datalap['dt_sah_kepala_bkppd'];
@@ -313,12 +375,12 @@ class backup_service extends system\Model {
 
             if ($datalap['sah_final'] == $i['nipbaru']) {
                 $pengguna = $this->getData("SELECT * FROM tb_pengguna 
-                    WHERE grup_pengguna_kd = 'KDGRUP02' AND nipbaru = '".$i['nipbaru']."' 
-                    AND kdlokasi = '".$input['kdlokasi']."' AND jabatan_pengguna IS NOT NULL
+                    WHERE grup_pengguna_kd = 'KDGRUP02' AND nipbaru = '" . $i['nipbaru'] . "' 
+                    AND kdlokasi = '" . $input['kdlokasi'] . "' AND jabatan_pengguna IS NOT NULL
                 ", []);
 
                 $i['jabatan_pengguna'] = '';
-                if ($pengguna['count'] > 0) 
+                if ($pengguna['count'] > 0)
                     $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
 
                 $i['tanggal'] = $datalap['dt_sah_final'];
@@ -332,16 +394,16 @@ class backup_service extends system\Model {
         $laporan['induk_id'] = $tbinduk['inserted_id'];
 
         foreach ($field as $key) {
-            $laporan['nip_'.$key] = $verlap[$key]['nipbaru'];
-            $laporan['nama_'.$key] = $verlap[$key]['nama_personil'];
-            $laporan['jabatan_'.$key] = $verlap[$key]['jabatan_pengguna'];
-            $laporan['dt_'.$key] = $verlap[$key]['tanggal'];
+            $laporan['nip_' . $key] = $verlap[$key]['nipbaru'];
+            $laporan['nama_' . $key] = $verlap[$key]['nama_personil'];
+            $laporan['jabatan_' . $key] = $verlap[$key]['jabatan_pengguna'];
+            $laporan['dt_' . $key] = $verlap[$key]['tanggal'];
         }
-        
+
         $laporan['stempel_opd'] = $verlap['stempel_opd'];
 
         $laporan['stempel_bkppd'] = '';
-        if (isset($verlap['stempel_bkppd'])) 
+        if (isset($verlap['stempel_bkppd']))
             $laporan['stempel_bkppd'] = $verlap['stempel_bkppd'];
 
         $laporan['dateAdd'] = date('Y-m-d H:i:s');
@@ -350,10 +412,11 @@ class backup_service extends system\Model {
         return $tblaporan;
     }
 
-     public function getDataPersonilTpp($data) {
+    public function getDataPersonilTpp($data) {
         parent::setConnection('db_pegawai');
 
-        $idKey = array(); $dataArr = array();
+        $idKey = array();
+        $dataArr = array();
         $q_cari = 'WHERE 1 ';
         if (!empty($data['kdlokasi'])) {
             $q_cari .= 'AND (pp.kdlokasi = ?)';
@@ -373,9 +436,9 @@ class backup_service extends system\Model {
 
             FROM view_presensi_personal pp 
             LEFT JOIN tref_sotk s ON s.kdsotk = pp.kdsotk 
-            JOIN view_tpp_pegawai v ON v.nipbaru = pp.nipbaru '. $q_cari;
+            JOIN view_tpp_pegawai v ON v.nipbaru = pp.nipbaru ' . $q_cari;
 
-            $query .= ' ORDER BY IF(urutan_sotk = "0" OR urutan_sotk = "" OR urutan_sotk IS NULL, 1, 0), IF(pp.kd_jabatan = "" OR pp.kd_jabatan = "-" OR pp.kd_jabatan IS NULL, 1, 0), v.nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, pp.nipbaru ASC';
+        $query .= ' ORDER BY IF(urutan_sotk = "0" OR urutan_sotk = "" OR urutan_sotk IS NULL, 1, 0), IF(pp.kd_jabatan = "" OR pp.kd_jabatan = "-" OR pp.kd_jabatan IS NULL, 1, 0), v.nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, pp.nipbaru ASC';
 
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
@@ -416,9 +479,11 @@ class backup_service extends system\Model {
 
     public function save_presensi($rekap, $pin_absen, $personil_id) {
         parent::setConnection('db_backup');
-        $saveto = []; $pot_penuh = []; $sum_pot = [];
+        $saveto = [];
+        $pot_penuh = [];
+        $sum_pot = [];
         for ($i = 1; $i <= 6; $i++) {
-            $get = $rekap[$i][$pin_absen]; 
+            $get = $rekap[$i][$pin_absen];
             $pot_penuh[$i] = $get['pot_penuh'];
             $sum_pot[$i] = $get['sum_pot'];
             foreach ($get as $tgl => $isi) {
@@ -433,12 +498,12 @@ class backup_service extends system\Model {
             'sum_pot' => json_encode($sum_pot)
         ];
         for ($i = 1; $i <= 31; $i++) {
-            $presensi['t'.$i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
+            $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error'])
-           $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
+            $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
 
         return $tbpresensi;
     }
@@ -466,13 +531,13 @@ class backup_service extends system\Model {
     public function hapusBackup($data) {
         $params = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
         $induk = $this->getData('SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?', $params);
-        
+
         foreach ($induk['value'] as $ind) {
             $idKeys = ['induk_id' => $ind['id']];
             $this->delete('tb_induk', ['id' => $ind['id']]);
-            /*$this->delete('tb_laporan', $idKeys);
-            $this->delete('tb_personil', $idKeys);
-            $this->delete('tb_tpp', $idKeys);*/
+            /* $this->delete('tb_laporan', $idKeys);
+              $this->delete('tb_personil', $idKeys);
+              $this->delete('tb_tpp', $idKeys); */
         }
 
         return true;
@@ -481,12 +546,12 @@ class backup_service extends system\Model {
     public function getRekapAllView($induk_id, $pin_absen = '') {
         $cond = "";
         if ($pin_absen != '')
-            $cond = " AND tb_personil.pin_absen IN (".$pin_absen.")";
+            $cond = " AND tb_personil.pin_absen IN (" . $pin_absen . ")";
 
         $presensi = $this->getData('SELECT tb_presensi.* FROM tb_presensi
             JOIN tb_personil ON tb_personil.id = tb_presensi.personil_id
             JOIN tb_induk ON tb_induk.id = tb_personil.induk_id
-            WHERE tb_induk.id="'.$induk_id.'"' .$cond, []);
+            WHERE tb_induk.id="' . $induk_id . '"' . $cond, []);
 
         $response = [];
         if ($presensi['count'] > 0) {
@@ -494,40 +559,37 @@ class backup_service extends system\Model {
             foreach ($get as $isi) {
                 $response[$isi['personil_id']] = $isi;
             }
-
         }
 
         return $response;
     }
 
-    /**************************************************************************/
-    /**************************************************************************/
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /******************   BACKUP DATA PRESENSI LAPORAN    *********************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/    
-    /**************************************************************************/
-    /**************************************************************************/
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * ****************   BACKUP DATA PRESENSI LAPORAN    ******************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
+    /*     * *********************************************************************** */
 
-
-    public function checkMasuk($data, $jadwal = [])
-    {
+    public function checkMasuk($data, $jadwal = []) {
         $check = [];
         foreach ($data as $i) {
             $pin = $i['pin_absen'];
-            $tgl = (int)date('d', strtotime($i['tanggal_log_presensi']));
+            $tgl = (int) date('d', strtotime($i['tanggal_log_presensi']));
             $finger = strtotime($i['jam_log_presensi']);
 
             //default jadwal
@@ -536,23 +598,23 @@ class backup_service extends system\Model {
             $akhir = strtotime('11:30:00');
             $libur = false;
 
-            if (isset($jadwal[$pin][$tgl]) ) {
+            if (isset($jadwal[$pin][$tgl])) {
                 if ($jadwal[$pin][$tgl] != 'HL') {
-                    $awal = strtotime($jadwal[$pin][$tgl]['awal']);  
+                    $awal = strtotime($jadwal[$pin][$tgl]['awal']);
                     $batas = strtotime($jadwal[$pin][$tgl]['batas']);
                     $akhir = strtotime($jadwal[$pin][$tgl]['akhir']);
 
                     //jk batas akhir melewati 00:00
-                    if ($akhir < $awal){
+                    if ($akhir < $awal) {
                         if ($awal > $batas)
-                            $awal = strtotime($jadwal[$pin][$tgl]['awal'].' -24 Hour');
+                            $awal = strtotime($jadwal[$pin][$tgl]['awal'] . ' -24 Hour');
                         if ($akhir < $batas)
-                            $akhir = strtotime($jadwal[$pin][$tgl]['akhir'].' +24 Hour');
+                            $akhir = strtotime($jadwal[$pin][$tgl]['akhir'] . ' +24 Hour');
                     }
                 } else
                     $libur = true;
             }
-            
+
             $kode = '';
             $waktu = substr($i['jam_log_presensi'], 0, 5);
             if ($libur) {//libur tapi finger
@@ -590,7 +652,7 @@ class backup_service extends system\Model {
                 $angka_isi = substr($isi['kode'], 1, 1);
                 $angka_masuk = substr($masuk['kode'], 1, 1);
 
-                if ($masuk['kode'] == 'M0' || ($isi['kode'] != 'M0' && $angka_masuk > $angka_isi)) 
+                if ($masuk['kode'] == 'M0' || ($isi['kode'] != 'M0' && $angka_masuk > $angka_isi))
                     continue;
             }
 
@@ -612,20 +674,21 @@ class backup_service extends system\Model {
         return $check;
     }
 
-    public function checkPulang($data, $jadwal = [])
-    {
-        $check = []; $bln = null; $thn = null;
+    public function checkPulang($data, $jadwal = []) {
+        $check = [];
+        $bln = null;
+        $thn = null;
         foreach ($data as $i) {
             $pin = $i['pin_absen'];
             $finger = strtotime($i['jam_log_presensi']);
-            $tgl = (int)date('d', strtotime($i['tanggal_log_presensi']));
+            $tgl = (int) date('d', strtotime($i['tanggal_log_presensi']));
             $hari = date('l', strtotime($i['tanggal_log_presensi']));
 
             if (!$bln)
-                $bln = (int)date('m', strtotime($i['tanggal_log_presensi']));
+                $bln = (int) date('m', strtotime($i['tanggal_log_presensi']));
 
             if (!$thn)
-                $thn = (int)date('Y', strtotime($i['tanggal_log_presensi']));
+                $thn = (int) date('Y', strtotime($i['tanggal_log_presensi']));
 
             //default jadwal
             $awal = strtotime('11:30:00');
@@ -638,30 +701,31 @@ class backup_service extends system\Model {
             }
 
             $sebelum = $tgl - 1;
-            $libur = false; $unset = false; $bedabulan = false;
-            if ((int)date('m', strtotime($i['tanggal_log_presensi'])) != $bln) {
+            $libur = false;
+            $unset = false;
+            $bedabulan = false;
+            if ((int) date('m', strtotime($i['tanggal_log_presensi'])) != $bln) {
                 $bedabulan = true;
                 $sebelum = cal_days_in_month(CAL_GREGORIAN, $bln, $thn);
             }
 
-            if (isset($jadwal[$pin][$sebelum]) && $jadwal[$pin][$sebelum] != 'HL' 
-                && $jadwal[$pin][$sebelum]['shiftmalam'] && $finger <= strtotime($jadwal[$pin][$sebelum]['akhir'])) {
+            if (isset($jadwal[$pin][$sebelum]) && $jadwal[$pin][$sebelum] != 'HL' && $jadwal[$pin][$sebelum]['shiftmalam'] && $finger <= strtotime($jadwal[$pin][$sebelum]['akhir'])) {
                 $tgl = $sebelum;
             } elseif ($bedabulan)
                 continue;
 
-            if (isset($jadwal[$pin][$tgl]) ) {
+            if (isset($jadwal[$pin][$tgl])) {
                 if ($jadwal[$pin][$tgl] != 'HL') {
-                    $awal = strtotime($jadwal[$pin][$tgl]['awal']);  
+                    $awal = strtotime($jadwal[$pin][$tgl]['awal']);
                     $batas = strtotime($jadwal[$pin][$tgl]['batas']);
                     $akhir = strtotime($jadwal[$pin][$tgl]['akhir']);
 
                     //jk batas akhir melewati 00:00
                     if ($akhir < $awal) {
                         if ($awal > $batas)
-                            $awal = strtotime($jadwal[$pin][$tgl]['awal'].' -24 Hour');
+                            $awal = strtotime($jadwal[$pin][$tgl]['awal'] . ' -24 Hour');
                         if ($akhir < $batas)
-                            $akhir = strtotime($jadwal[$pin][$tgl]['akhir'].' +24 Hour');
+                            $akhir = strtotime($jadwal[$pin][$tgl]['akhir'] . ' +24 Hour');
                     }
                 } else
                     $libur = true;
@@ -699,7 +763,7 @@ class backup_service extends system\Model {
             if (isset($check[$pin][$tgl]) && !in_array($check[$pin][$tgl]['kode'], ['P2', 'P3', 'P4', 'P5', 'P0']))
                 continue;
 
-            if (isset($check[$pin][$tgl])  && in_array($pulang['kode'], ['P2', 'P3', 'P4', 'P5', 'P0'])) {
+            if (isset($check[$pin][$tgl]) && in_array($pulang['kode'], ['P2', 'P3', 'P4', 'P5', 'P0'])) {
                 $isi = $check[$pin][$tgl];
                 $angka_isi = substr($isi['kode'], 1, 1);
                 $angka_pulang = substr($pulang['kode'], 1, 1);
@@ -722,30 +786,29 @@ class backup_service extends system\Model {
                 }
             }
         }
-        
+
         return $check;
     }
 
-    public function getLogPersonil($data)
-    {
+    public function getLogPersonil($data) {
         parent::setConnection('db_presensi');
 
         $params = [$data['bulan'], $data['tahun']];
-        $masuk = "SELECT * FROM tb_log_presensi WHERE pin_absen in (".$data['pin_absen'].")
+        $masuk = "SELECT * FROM tb_log_presensi WHERE pin_absen in (" . $data['pin_absen'] . ")
              AND MONTH(tanggal_log_presensi) = ? AND YEAR(tanggal_log_presensi) = ? AND status_log_presensi = 0 ORDER BY tanggal_log_presensi ASC, jam_log_presensi ASC";
         $get_masuk = $this->getData($masuk, $params);
 
         //ambil data bulan itu s.d tgl 1 bln brikutnya
-        $batas_awal = $data['tahun'].'-'.$data['bulan'].'-1';
-        $thn_akhir = $data['bulan'] == 12 ? ($data['tahun']+1) : $data['tahun'];
-        $bln_akhir = $data['bulan'] == 12 ? 1 : ($data['bulan']+1);
-        $batas_akhir = $thn_akhir.'-'.$bln_akhir.'-1';
+        $batas_awal = $data['tahun'] . '-' . $data['bulan'] . '-1';
+        $thn_akhir = $data['bulan'] == 12 ? ($data['tahun'] + 1) : $data['tahun'];
+        $bln_akhir = $data['bulan'] == 12 ? 1 : ($data['bulan'] + 1);
+        $batas_akhir = $thn_akhir . '-' . $bln_akhir . '-1';
         $params = [$batas_awal, $batas_akhir];
-        $pulang = "SELECT * FROM tb_log_presensi WHERE pin_absen in (".$data['pin_absen'].")
+        $pulang = "SELECT * FROM tb_log_presensi WHERE pin_absen in (" . $data['pin_absen'] . ")
              AND (tanggal_log_presensi BETWEEN ? AND ?) AND status_log_presensi = 1 ORDER BY 
              tanggal_log_presensi ASC, jam_log_presensi DESC";
         $get_pulang = $this->getData($pulang, $params);
-        
+
         $jadwal = $this->laporan_service->getJadwalkerja($data);
         $check['masuk'] = $this->checkMasuk($get_masuk['value'], $jadwal['masuk']);
         $check['pulang'] = $this->checkPulang($get_pulang['value'], $jadwal['pulang']);
@@ -759,29 +822,29 @@ class backup_service extends system\Model {
 
         $rekap = [];
         foreach ($get['value'] as $i) {
-            $tgl = (int)date('d', strtotime($i['tanggal_apel']));
+            $tgl = (int) date('d', strtotime($i['tanggal_apel']));
             $rekap[$i['pin_absen']][$tgl] = true;
         }
-        
+
         return $rekap;
     }
 
     public function getMasukkerja($data) {
         parent::setConnection('db_presensi');
         //$params = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
-        /*$get = $this->getData("SELECT * FROM view_jadwal WHERE kdlokasi = ? 
-            AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?
-        ", $params);*/
+        /* $get = $this->getData("SELECT * FROM view_jadwal WHERE kdlokasi = ? 
+          AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?
+          ", $params); */
 
         $params = [$data['bulan'], $data['tahun']];
         $get = $this->getData("SELECT * FROM view_jadwal 
-            WHERE pin_absen in (". $data['personil'] .") AND MONTH(tanggal) = ? 
+            WHERE pin_absen in (" . $data['personil'] . ") AND MONTH(tanggal) = ? 
             AND YEAR(tanggal) = ?
         ", $params);
 
         $masuk = [];
         foreach ($get['value'] as $i) {
-            $tgl = (int)date('d', strtotime($i['tanggal']));
+            $tgl = (int) date('d', strtotime($i['tanggal']));
             $pin = $i['pin_absen'];
 
             if ($i['masuk'] == '00:00:00')
@@ -797,12 +860,12 @@ class backup_service extends system\Model {
 
         $q_cari = '';
         if ($id)
-            $q_cari = ' AND WHERE id_jam_apel = "'.$id.'"';
+            $q_cari = ' AND WHERE id_jam_apel = "' . $id . '"';
 
-        $data = $this->getData('SELECT * FROM tb_jam_apel WHERE is_default=0 '.$q_cari.' ORDER BY id_jam_apel DESC');
+        $data = $this->getData('SELECT * FROM tb_jam_apel WHERE is_default=0 ' . $q_cari . ' ORDER BY id_jam_apel DESC');
         $jamapel = [];
         foreach ($data['value'] as $i) {
-            for ($a = strtotime($i['tanggal_mulai']); $a <= strtotime($i['tanggal_akhir']);){
+            for ($a = strtotime($i['tanggal_mulai']); $a <= strtotime($i['tanggal_akhir']);) {
                 $jamapel[date('Y-m-d', $a)] = [
                     'awal' => $i['mulai_apel'],
                     'akhir' => $i['akhir_apel']
@@ -848,25 +911,25 @@ class backup_service extends system\Model {
         parent::setConnection('db_presensi');
         $idKey = array($data['bulan'], $data['tahun']);
         $batal = $this->getBatalApel($data);
-        /*$query = 'SELECT * FROM view_apel_all '
-                . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in ('.$data['personil'].') '
-                . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC';*/
+        /* $query = 'SELECT * FROM view_apel_all '
+          . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in ('.$data['personil'].') '
+          . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC'; */
         $query = 'SELECT * FROM tb_log_presensi '
-                . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in ('.$data['personil'].') AND status_log_presensi = 2 '
+                . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in (' . $data['personil'] . ') AND status_log_presensi = 2 '
                 . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC';
         $dataArr = $this->getData($query, $idKey);
 
         $result = [];
         //if ($dataArr['count'] == 0)
-            //return $result;
+        //return $result;
 
         $masuk = $this->getMasukkerja($data);
         $jadwal_apel = $this->getArrayJam();
         foreach ($dataArr['value'] as $i) {
-            $tgl = (int)date('d', strtotime($i['tanggal_log_presensi']));
+            $tgl = (int) date('d', strtotime($i['tanggal_log_presensi']));
             $pin_absen = $i['pin_absen'];
 
-            $jammasuk = ''; 
+            $jammasuk = '';
             if (isset($masuk[$pin_absen][$tgl])) {
                 if ($masuk[$pin_absen][$tgl] != 'HL') {
                     $jammasuk = \DateTime::createFromFormat('H:i:s', $masuk[$pin_absen][$tgl]);
@@ -876,7 +939,7 @@ class backup_service extends system\Model {
             }
 
             $compare = $this->compare($i['tanggal_log_presensi'], $i['jam_log_presensi'], $jadwal_apel, $jammasuk);
-            
+
             $kode = '';
             $waktu = substr($i['jam_log_presensi'], 0, 5);
             if ($compare == 1) {
@@ -884,7 +947,7 @@ class backup_service extends system\Model {
                     $kode = 'A0';
                 else
                     $kode = 'A1';
-            } 
+            }
 
             if ($compare && $compare == 'NR')
                 $kode = 'NR';
@@ -897,7 +960,7 @@ class backup_service extends system\Model {
 
         foreach ($masuk as $key => $i) {
             foreach ($i as $tgl => $val) {
-                $hari = date("l", strtotime($data['tahun'] . '-'. $data['bulan'] . '-' . $tgl));
+                $hari = date("l", strtotime($data['tahun'] . '-' . $data['bulan'] . '-' . $tgl));
                 if (!is_array($val) && $val == 'HL') {
                     if ($hari == 'Saturday' || $hari == 'Sunday')
                         $kode = 'HL';
@@ -923,7 +986,7 @@ class backup_service extends system\Model {
                             'kode' => $kode
                         ];
                     }
-                    
+
                     //jk masuk hari sabtu / minggu NR
                     if ($hari == 'Saturday' || $hari == 'Sunday') {
                         $kode = 'NR';
@@ -946,7 +1009,7 @@ class backup_service extends system\Model {
         $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
         $hitungmod = $moderasi['hitung'];
 
-        $data['pin_absen'] = $data['personil'];       
+        $data['pin_absen'] = $data['personil'];
         $log = $this->getLogPersonil($data);
         $masuk = $log['masuk'];
         $pulang = $log['pulang'];
@@ -955,9 +1018,12 @@ class backup_service extends system\Model {
 
         $allverified = true;
         foreach ($data['pegawai']['value'] as $peg) {
-            $tot = 0; $key = $peg['pin_absen'];
-            $sum_mk = 0; $sum_ap = 0; $sum_pk = 0;
-            $pot_penuh = []; 
+            $tot = 0;
+            $key = $peg['pin_absen'];
+            $sum_mk = 0;
+            $sum_ap = 0;
+            $sum_pk = 0;
+            $pot_penuh = [];
             $jumlah_tk = 0;
             $hitungpot = true;
             for ($i = 1; $i <= $hitungtgl; $i++) {
@@ -965,22 +1031,27 @@ class backup_service extends system\Model {
                 if ($data['bulan'] == 12 && $data['tahun'] == 2018 && $i > 14)
                     $hitungpot = false;
 
-                $tgl = $data['tahun'] . '-'. $data['bulan'] . '-' . $i;
+                $tgl = $data['tahun'] . '-' . $data['bulan'] . '-' . $i;
                 $hari = date("l", strtotime($tgl));
 
-                $kd_masuk = ''; $kd_apel = ''; $kd_pulang = '';
-                $pot_masuk = 0; $pot_apel = 0; $pot_pulang = 0;
-                $color1 = ''; $color2 = ''; $color3 = '';
+                $kd_masuk = '';
+                $kd_apel = '';
+                $kd_pulang = '';
+                $pot_masuk = 0;
+                $pot_apel = 0;
+                $pot_pulang = 0;
+                $color1 = '';
+                $color2 = '';
+                $color3 = '';
                 $hl = false;
                 if (isset($masuk[$key][$i])) {
                     if ($masuk[$key][$i]['kode'] == 'HL')
                         $hl = true;
-                    else 
+                    else
                         $kd_masuk = $masuk[$key][$i]['kode'];
 
                     if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0']))
                         $color1 = 'yellow accent-2';
-
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color1 = 'yellow accent-2';
                     $kd_masuk = 'M0';
@@ -992,7 +1063,6 @@ class backup_service extends system\Model {
 
                     if ($kd_apel == 'A0')
                         $color2 = 'yellow accent-2';
-
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color2 = 'yellow accent-2';
                     $kd_apel = 'A0';
@@ -1004,17 +1074,21 @@ class backup_service extends system\Model {
 
                     if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0']))
                         $color3 = 'yellow accent-2';
-
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
-                    $color3 = 'yellow accent-2';                    
+                    $color3 = 'yellow accent-2';
                     $kd_pulang = 'P0';
                 }
 
-                $gabung = false; $tampil_mod = true;
+                $gabung = false;
+                $tampil_mod = true;
                 if (in_array($i, $libur)) {
                     $tampil_mod = false;
-                    $kd_masuk = 'HL'; $kd_apel = 'HL'; $kd_pulang = 'HL';
-                    $color1 = ''; $color2 = ''; $color3 = '';
+                    $kd_masuk = 'HL';
+                    $kd_apel = 'HL';
+                    $kd_pulang = 'HL';
+                    $color1 = '';
+                    $color2 = '';
+                    $color3 = '';
                     //libur nasional tpi finger
                     if (isset($masuk[$key][$i]) && $masuk[$key][$i]['kode'] != 'HL') {
                         $tampil_mod = true;
@@ -1030,8 +1104,11 @@ class backup_service extends system\Model {
                     }
                 } elseif (strtotime($tgl) > strtotime(date('Y-m-d'))) {
                     $tampil_mod = false;
-                    $kd_masuk = ''; $kd_pulang = '';
-                    $color1 = ''; $color2 = ''; $color3 = '';
+                    $kd_masuk = '';
+                    $kd_pulang = '';
+                    $color1 = '';
+                    $color2 = '';
+                    $color3 = '';
                 }
 
                 if ($tampil_mod && isset($moderasi[$key][$i])) {
@@ -1058,19 +1135,20 @@ class backup_service extends system\Model {
 
                         //jk jenisnya semuanya atau kode moderasi masuk, apel, pulang sama dalam 1 hari maka potongan dijasikan 1
                         if ($jnsmod == 'JNSMOD04' || ($kd_apel == $kd_masuk && $kd_pulang == $kd_masuk))
-                            $gabung = true;                        
-                        /*
-                        //jk jenisnya semuanya, potongan dijadikan 1
-                        if ($jnsmod == 'JNSMOD04')
                             $gabung = true;
-                        */
+                        /*
+                          //jk jenisnya semuanya, potongan dijadikan 1
+                          if ($jnsmod == 'JNSMOD04')
+                          $gabung = true;
+                         */
                     }
                 }
 
                 //jk M0 && A0 && P0 ---> jadi TK (tidak masuk kerja tanpa alasan yg sah)
-                if ($kd_masuk == 'M0' && ($kd_apel == 'A0' || $kd_apel == 'NR') 
-                    && $kd_pulang == 'P0') {
-                    $kd_masuk = 'TK'; $kd_apel = 'TK'; $kd_pulang = 'TK';
+                if ($kd_masuk == 'M0' && ($kd_apel == 'A0' || $kd_apel == 'NR') && $kd_pulang == 'P0') {
+                    $kd_masuk = 'TK';
+                    $kd_apel = 'TK';
+                    $kd_pulang = 'TK';
                     $color2 = 'yellow accent-2';
                 }
 
@@ -1078,8 +1156,8 @@ class backup_service extends system\Model {
                     $hitung = 1;
                     if ($kd_masuk != 'M0')
                         $hitung = isset($hitungmod[$key][$kd_masuk]) ? $hitungmod[$key][$kd_masuk] : 1;
-                    
-                    if ($kd_masuk && isset($data_pot[$kd_masuk])) {                    
+
+                    if ($kd_masuk && isset($data_pot[$kd_masuk])) {
                         foreach ($data_pot[$kd_masuk] as $p) {
                             if ($hitung >= $p['minimal']) {
                                 $pot_masuk = $p['pot'];
@@ -1093,7 +1171,7 @@ class backup_service extends system\Model {
 
                     if ($kd_apel != 'A0')
                         $hitung = isset($hitungmod[$key][$kd_apel]) ? $hitungmod[$key][$kd_apel] : 1;
-                    
+
                     if ($kd_apel && isset($data_pot[$kd_apel])) {
                         foreach ($data_pot[$kd_apel] as $p) {
                             if ($hitung >= $p['minimal']) {
@@ -1112,7 +1190,7 @@ class backup_service extends system\Model {
 
                     if ($kd_pulang != 'P0')
                         $hitung = isset($hitungmod[$key][$kd_pulang]) ? $hitungmod[$key][$kd_pulang] : 1;
-                    
+
                     if ($kd_pulang && isset($data_pot[$kd_pulang])) {
                         foreach ($data_pot[$kd_pulang] as $p) {
                             if ($hitung >= $p['minimal']) {
@@ -1121,7 +1199,7 @@ class backup_service extends system\Model {
                             }
                         }
 
-                        if ($pot_pulang == 100) 
+                        if ($pot_pulang == 100)
                             $pot_penuh[] = $kd_pulang;
 
                         //jk kode sama, potongan jadi 1
@@ -1131,17 +1209,18 @@ class backup_service extends system\Model {
                 }
 
                 if ($gabung) {
-                    $pot_apel = 0; $pot_pulang = 0;
+                    $pot_apel = 0;
+                    $pot_pulang = 0;
                 }
 
-                $subtot = $pot_masuk+$pot_apel+$pot_pulang;
+                $subtot = $pot_masuk + $pot_apel + $pot_pulang;
                 $all[$key][$i] = [
                     'mk' => [
                         'waktu' => (isset($masuk[$key][$i]) ? $masuk[$key][$i]['waktu'] : $kd_masuk),
                         'kode' => $kd_masuk,
                         'pot' => ($pot_masuk > 0 ? $pot_masuk : ''),
                         'color' => $color1
-                    ], 
+                    ],
                     'ap' => [
                         'waktu' => (isset($apel[$key][$i]) ? $apel[$key][$i]['waktu'] : $kd_apel),
                         'kode' => $kd_apel,
@@ -1158,7 +1237,9 @@ class backup_service extends system\Model {
                 ];
 
                 if ($hitungpot)
-                    $sum_mk += $pot_masuk; $sum_ap += $pot_apel; $sum_pk += $pot_pulang;
+                    $sum_mk += $pot_masuk;
+                $sum_ap += $pot_apel;
+                $sum_pk += $pot_pulang;
 
                 if ($kd_masuk == 'TK')
                     $jumlah_tk++;
@@ -1168,12 +1249,12 @@ class backup_service extends system\Model {
             }
 
             $all[$key]['pot_penuh'] = array_unique($pot_penuh);
-            
+
             if (count($pot_penuh) == 0) {
-                $tot = ($sum_mk+$sum_ap+$sum_pk);
+                $tot = ($sum_mk + $sum_ap + $sum_pk);
             } else {
                 $implode = implode(",", $all[$key]['pot_penuh']);
-                $tot = "100% (".$implode.")";
+                $tot = "100% (" . $implode . ")";
             }
 
             $all[$key]['sum_pot'] = [
@@ -1185,4 +1266,5 @@ class backup_service extends system\Model {
         $all['allverified'] = $allverified;
         return $all;
     }
- }
+
+}
