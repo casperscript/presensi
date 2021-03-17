@@ -567,7 +567,7 @@ class laporan extends system\Controller {
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
-            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '' && $this->login['username'] == 'acil@adminopd') {
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
                 $this->tabeltppbc_v2($input);
                 exit;
             }
