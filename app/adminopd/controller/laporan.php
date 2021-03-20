@@ -584,11 +584,11 @@ class laporan extends system\Controller {
             }
 
             //ambil tambahan data pilih bendahara
-            $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
             $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
             if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
                 $parent = $get['value'][0]['kdlokasi_parent'];
-                $data['pilbendahara'] += $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+                $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
             }
 
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
@@ -596,7 +596,7 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
-
+            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
             $this->subView('tabeltpp2021', $data);
         }
     }
