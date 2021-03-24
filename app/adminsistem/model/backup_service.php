@@ -493,10 +493,8 @@ class backup_service extends system\Model {
         $pot_penuh = [];
         $sum_pot = [];
         $pin_absen = $peg['pin_absen'];
-//        if ($pin_absen == '10001140') :
-//            comp\FUNC::showPre($rekap[1][$pin_absen]);
-//        endif;
-//        exit;
+        $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
+        $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
 
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
@@ -517,13 +515,11 @@ class backup_service extends system\Model {
             'tpp_kotor' => $peg['nominal_tp']
         ];
 
-        $pot = ((is_numeric($final) ? $final : 1000) / 100 * $peg['nominal_tp']);
-        $tpp_kotor = $peg['nominal_tp'] - $pot;
+        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1); // potongan 60% dari nominal TPP
+        $tpp_kotor = ($nominal_tp40 + $nominal_tp60) - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
-//        $totgaji = $peg['totgaji'];
-//        $pot_bpjs = round((($presensi['tpp_bersih'] + $totgaji) > $kenabpjs['value']) ? ($kenabpjs['value'] - $totgaji) * 0.01 : $presensi['tpp_bersih'] * 0.01);
         $checkBpjsGaji = round((($peg['nominal_tp'] + $peg['totgaji']) > $kenabpjs['value']) ?
                 ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
                 $peg['nominal_tp'] * 0.01);
@@ -536,6 +532,12 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
+
+//        $presensi['x_nominal_tp'] = $peg['nominal_tp'];
+//        $presensi['x_pajak_tpp'] = $peg['pajak_tpp'];
+//        $presensi['x_pot'] = $pot;
+//        comp\FUNC::showPre($presensi);
+//        exit;
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :
