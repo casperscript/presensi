@@ -255,7 +255,7 @@ if ($tpp['nip_kepala'] != '' && $tpp['nip_bendahara'] != '') {
     <?php
 }
 
-require_once ('comp/mpdf610/mpdf.php');
+require_once ('comp/mpdf60/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
 $pdf = new mPDF('UTF8', 'F4-L');
