@@ -493,11 +493,8 @@ class backup_service extends system\Model {
         $pot_penuh = [];
         $sum_pot = [];
         $pin_absen = $peg['pin_absen'];
-<<<<<<< HEAD
         $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
         $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
-=======
->>>>>>> 591102ca48d4785b62345e590368c4aa04e57a12
 
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
@@ -535,12 +532,6 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-
-//        $presensi['x_nominal_tp'] = $peg['nominal_tp'];
-//        $presensi['x_pajak_tpp'] = $peg['pajak_tpp'];
-//        $presensi['x_pot'] = $pot;
-//        comp\FUNC::showPre($presensi);
-//        exit;
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :
