@@ -1058,7 +1058,7 @@ class laporan_service extends system\Model {
                 AND pegawai.`kd_stspeg` IN ("04", "29")
                 AND pegawai.`tunjangan_jabatan` = 0
                 AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
-            ORDER BY ISNULL(kelas.`kelas`), kelas.`kelas` DESC';
+            ORDER BY ISNULL(kelas.`kelas`), kelas.`kelas` DESC, nama_personil ASC';
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }

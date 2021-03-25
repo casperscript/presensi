@@ -597,6 +597,7 @@ class laporan extends system\Controller {
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
             $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+//            comp\FUNC::showPre($data);
             $this->subView('tabeltpp2021', $data);
         }
     }

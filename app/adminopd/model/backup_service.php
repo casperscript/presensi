@@ -223,7 +223,9 @@ class backup_service extends system\Model {
         if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
             $q_cari .= 'AND pin_absen IN (' . $data['pin_absen'] . ')';
         }
-        $result = $this->getData('SELECT * FROM tb_personil WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari);
+        $result = $this->getData('SELECT * FROM tb_personil '
+                . 'WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" '
+                . 'ORDER BY kelas DESC, nama_personil ASC' . $q_cari);
         return $result;
     }
 
