@@ -79,8 +79,8 @@ class laporan_service extends system\Model {
         $q_cari = 'WHERE 1 ';
         
         if (!empty($data['kdlokasi'])) :
-            $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
-            array_push($idKey, $data['kdlokasi']);
+            $q_cari .= 'AND (pegawai.kdlokasi = ? OR pegawai.kdsublokasi = ?) ';
+            array_push($idKey, $data['kdlokasi'], $data['kdlokasi']);
         endif;
         
         if (!empty($data['cari'])) :
@@ -387,9 +387,10 @@ class laporan_service extends system\Model {
         $awal = $Ym.'01';
         $akhir = $Ym.$hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
         $j_query = $sql = "SELECT * FROM tb_moderasi tmod WHERE kdlokasi = '".$data['kdlokasi']."' AND ('".$awal."' BETWEEN tanggal_awal AND tanggal_akhir OR '".$akhir."' BETWEEN tanggal_awal AND tanggal_akhir  OR tanggal_awal BETWEEN '".$awal."' AND '".$akhir."'  OR tanggal_akhir BETWEEN '".$awal."' AND '".$akhir."') AND flag_operator_opd IS NULL";
-
+        
         //$get['unverified'] = $this->getData($j_query, $idKey)['count'];
-        $unverified = $this->getData($j_query)['count'];
+        $unverified = $this->getData($j_query);
+//        $unverified = $this->getData($j_query)['count'];
         return $unverified;
     }
 
@@ -1006,10 +1007,6 @@ class laporan_service extends system\Model {
         /* END acil 20200802 */
 
         $query .= ' ORDER BY ISNULL(s.urutan_sotk), s.urutan_sotk ASC, IF(pp.kd_jabatan = "" OR pp.kd_jabatan = "-" OR pp.kd_jabatan IS NULL, 1, 0), v.nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, pp.nipbaru ASC';
-
-        /*$query = 'SELECT pin_absen, pp.nama_personil, pp.nipbaru, npwp, gol_jbtn, pp.golruang, nominal_tp, tunjangan_jabatan 
-		    FROM view_presensi_personal pp 
-		    JOIN view_tpp_pegawai v ON v.nipbaru = pp.nipbaru ' . $q_cari . ' ORDER BY ISNULL(v.kdsotk), v.kdsotk ASC, nipbaru ASC';*/
 
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;

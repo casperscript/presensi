@@ -515,7 +515,7 @@ class backup_service extends system\Model {
             'tpp_kotor' => $peg['nominal_tp']
         ];
 
-        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1); // potongan 60% dari nominal TPP
+        $pot = round(((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60), -1); // potongan 60% dari nominal TPP
         $tpp_kotor = ($nominal_tp40 + $nominal_tp60) - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
@@ -571,9 +571,10 @@ class backup_service extends system\Model {
         $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
         $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
         
-        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
+        $pot =((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60);
+//        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
 
-        $tpp_kotor = $peg['nominal_tp'] - $pot;
+        $tpp_kotor = $nominal_tp40 + $nominal_tp60 - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
@@ -589,6 +590,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
+        
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :

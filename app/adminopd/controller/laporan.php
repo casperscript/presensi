@@ -438,7 +438,6 @@ class laporan extends system\Controller {
 
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
-
             $this->subView('tabelrekapc1', $data);
         }
     }
@@ -597,7 +596,6 @@ class laporan extends system\Controller {
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
             $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
-//            comp\FUNC::showPre($data);
             $this->subView('tabeltpp2021', $data);
         }
     }
@@ -995,7 +993,7 @@ class laporan extends system\Controller {
             }
 
             $data['satker'] = $data['induk']['singkatan_lokasi'];
-            $data['pegawai'] = $this->backup_service->getDataPersonilBatch($data, true);
+            $data['pegawai'] = $this->backup_service->getDataPersonilBatch_v2($data, true);
             $data['personil'] = '';
             if ($data['pegawai']['count'] > 0) {
                 $personil = array_map(function ($i) {
