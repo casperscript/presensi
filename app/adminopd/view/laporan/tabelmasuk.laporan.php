@@ -222,7 +222,7 @@ if ($tingkat == 1 && $bulan == 2 && $tahun == 2018) {
 $all = [2 => 'admin_opd', 3 => 'kepala_opd', 4 => 'admin_kota', 5 => 'kepala_bkppd'];
 
 foreach ($all as $i => $level) {
-    $$level = "";
+    $level = "";
     $tipe = ($i == 2 ||$i == 4) ? 'ver' : 'sah';
 
     if ($i == 2)
@@ -241,26 +241,26 @@ foreach ($all as $i => $level) {
         $stempel = $path_stempel.$laporan[$level]['stempel'];
         $stempel_headers = @get_headers($stempel);
 
-        $$level = '<div class="teks-atas"><b>'.$ket.'</b></div>
+        $level = '<div class="teks-atas"><b>'.$ket.'</b></div>
             <div class="ttd-area">';
 
         if ($ttd_headers[0] == 'HTTP/1.1 200 OK') { 
             
-            $$level .= '<div class="ini-ttd">
+            $level .= '<div class="ini-ttd">
                 <img class="ttd" src="'.$path_ttd.$laporan[$level]['ttd'] .'">
             </div>';
 
             if (($level == 'kepala_opd' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK')
-                $$level .= '<div class="ini-stempel">
+                $level .= '<div class="ini-stempel">
                     <img class="stempel" src="'.$path_stempel.$laporan[$level]['stempel'].'">
                 </div>';
             else
-                $$level .= '<br><br>';
+                $level .= '<br><br>';
         } else {
             $$level .= '<br><br><br><br><br><br><br><br><br>';
         }
-        $$level .= '</div>';
-        $$level .= '<p class="teks-bawah">'
+        $level .= '</div>';
+        $level .= '<p class="teks-bawah">'
             .$laporan[$level]['nama_personil'].'<br>
             NIP '.$laporan[$level]['nipbaru'].'<br>
             ('.FUNC::tanggal($laporan['dt_'.$tipe.'_'.$level], 'short_date').')</p>';

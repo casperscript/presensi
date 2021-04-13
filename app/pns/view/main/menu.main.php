@@ -11,14 +11,14 @@ ul#ulModerasi > li a:hover i {
         <div class="sidebar-profile">
             <div class="sidebar-profile-image">
                 <!-- modified by husnanw -->
-                <img src="<?= $this->simpeg_url."/".$selfId["foto"] ?>" class="circle" alt="fotoku">
+                <img src="<?= (isset($selfId['foto'])) ? $this->simpeg_url."/".$selfId["foto"] : 'assets/images/profile-image.png' ?>" class="circle" alt="fotoku">
                 <!-- ### -->
             </div>
             <div class="sidebar-profile-info">
                 <a class="pointer">
                     <!-- modified by husnanw -->
-                    <p><?= $selfId["nama_lengkap"] ?></p>
-                    <span style="text-transform: lowercase">PNS@<?= $selfId["singkatan_lokasi"] ?></span>
+                    <p><?= (isset($selfId["nama_lengkap"])) ? $selfId['nama_lengkap'] : 'Nama Tidak Terdaftar' ?></p>
+                    <span style="text-transform: lowercase">PNS@<?= (isset($selfId["singkatan_lokasi"])) ? $selfId["singkatan_lokasi"] : 'Undefined'; ?></span>
                     <!-- ### -->
                 </a>
             </div>

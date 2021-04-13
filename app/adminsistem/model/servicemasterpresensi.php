@@ -18,27 +18,30 @@ class servicemasterpresensi extends system\Model {
             'id_kode_presensi' => null,
         );
     }
-    
+
     // START DUMP CETAK USER
-        public function getDataUserCetak() {
-            set_time_limit(0);
-            $data = $this->getData('SELECT a.username, a.password, a.nipbaru, b.nama_grup_pengguna FROM tb_pengguna_ACAK a, tb_grup_pengguna b WHERE a.grup_pengguna_kd=b.kd_grup_pengguna', array());
-            return $data['value'];
-        }
+    public function getDataUserCetak() {
+        set_time_limit(0);
+        $data = $this->getData('SELECT a.username, a.password, a.nipbaru, b.nama_grup_pengguna FROM tb_pengguna_ACAK a, tb_grup_pengguna b WHERE a.grup_pengguna_kd=b.kd_grup_pengguna', array());
+        return $data['value'];
+    }
+
     // END DUMP CETAK USER
-    
     // START MASTER JENIS MODERASI
     public function getPilihanSatuanPotongan() {
         return array('Hari Kerja' => 'Hari Kerja', 'Bulan Kerja' => 'Bulan Kerja');
     }
+
     public function getPilihanPetugasModerasi() {
         return array('OPD' => 'OPD', 'PNS' => 'PNS');
     }
+
     public function getDataJenisModerasiLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_jenis FROM tb_jenis_moderasi ORDER BY kd_jenis DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getTabelJenisModerasi($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -62,6 +65,7 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
+
     public function getDataJenisModerasiForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_jenis_moderasi WHERE (kd_jenis = ?)', array($id));
@@ -71,15 +75,15 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_jenis_moderasi');
         }
     }
+
     // END MASTER JENIS MODERASI
-    
-    
     // START MASTER JENIS CUTI
     public function getDataJenisCutiLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_jenis_cuti FROM tb_jenis_cuti ORDER BY kd_jenis_cuti DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getTabelJenisCuti($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -103,7 +107,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanJenisCuti() {        
+
+    public function getPilihanJenisCuti() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_jenis_cuti', array());
@@ -112,6 +117,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataJenisCutiForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_jenis_cuti WHERE (kd_jenis_cuti = ?)', array($id));
@@ -121,15 +127,15 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_jenis_cuti');
         }
     }
+
     // END MASTER JENIS CUTI
-    
-    
     // START MASTER JENIS DINAS
     public function getDataJenisDinasLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_jenis_dinas FROM tb_jenis_dinas ORDER BY kd_jenis_dinas DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getTabelJenisDinas($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -153,7 +159,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanJenisDinas() {        
+
+    public function getPilihanJenisDinas() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_jenis_dinas', array());
@@ -162,6 +169,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataJenisDinasForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_jenis_dinas WHERE (kd_jenis_dinas = ?)', array($id));
@@ -171,15 +179,15 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_jenis_dinas');
         }
     }
+
     // END MASTER JENIS DINAS
-    
-    
     // START MASTER GRUP PENGGUNA
     public function getDataGrupPenggunaLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_grup_pengguna FROM tb_grup_pengguna ORDER BY kd_grup_pengguna DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getTabelGrupPengguna($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -203,7 +211,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanGrupPengguna() {        
+
+    public function getPilihanGrupPengguna() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_grup_pengguna', array());
@@ -212,6 +221,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataGrupPenggunaForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_grup_pengguna WHERE (kd_grup_pengguna = ?)', array($id));
@@ -221,34 +231,39 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_grup_pengguna');
         }
     }
+
     // END MASTER GRUP PENGGUNA
-    
-    
     // START MASTER PENGGUNA
     public function getTabelPengguna($data) {
-        set_time_limit(0);
-        $cari = '%' . $data['cari'] . '%';
-        $page = $data['page'];
-
-        $q_cari = !empty($cari) ? ' WHERE ((username LIKE ?) || (grup_pengguna_kd LIKE ?)  || (kdlokasi LIKE ?) || (nama_grup_pengguna LIKE ?)) ' : '';
-        $query = 'SELECT * FROM view_pengguna' . $q_cari . '';
         $idKey = array();
-        array_push($idKey, $cari, $cari, $cari, $cari);
+        $q_cari = 'WHERE 1 ';
+        if (!empty($data['cari'])) :
+            $q_cari .= 'AND username LIKE ? ';
+            array_push($idKey, '%' . $data['cari'] . '%');
+        endif;
+        if (!empty($data['grup_pengguna_kd'])) :
+            $q_cari .= 'AND grup_pengguna_kd = ? ';
+            array_push($idKey, $data['grup_pengguna_kd']);
+        endif;
 
-        $batas = 10;
+        $j_query = 'SELECT COUNT(username) AS jml FROM tb_pengguna ' . $q_cari;
+        $query = 'SELECT * FROM tb_pengguna ' . $q_cari;
+
+        $batas = $data['limit'];
+        $page = $data['page'];
         $posisi = ($page - 1) * $batas;
-        $jmlData = $this->getData($query, $idKey);
+        $jmlData = $this->getData($j_query, $idKey);
         $dataArr = $this->getData($query . ' LIMIT ' . $posisi . ',' . $batas, $idKey);
         $result['no'] = $posisi + 1;
         $result['page'] = $page;
         $result['batas'] = $batas;
-        $result['jmlData'] = $jmlData['count'];
+        $result['jmlData'] = ($jmlData['count'] > 0) ? $jmlData['value'][0]['jml'] : 0;
         $result['dataTabel'] = $dataArr['value'];
-        $result['query'] = $dataArr['query'];
-        $result['query'] = '';
+//        $result['query'] = '';
         return $result;
     }
-    public function getPilihanPengguna() {        
+
+    public function getPilihanPengguna() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM view_pengguna', array());
@@ -257,11 +272,13 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function cekPrimaryKodePengguna($id) {
         set_time_limit(0);
         $dataArr = $this->getData('SELECT * FROM tb_pengguna WHERE (username = ?)', array($id));
         return $dataArr['count'];
     }
+
     public function getDataPenggunaForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_pengguna WHERE (username = ?)', array($id));
@@ -271,8 +288,8 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_pengguna');
         }
     }
+
     // END MASTER PENGGUNA
-    
     // START MASTER JAM KERJA
     public function getTabelJamKerja($data) {
         set_time_limit(0);
@@ -297,6 +314,7 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
+
     public function getPilihanJamKerja() {
         set_time_limit(0);
         $data = array();
@@ -306,6 +324,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataJamKerjaForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_jam_kerja WHERE (id_jam_kerja = ?)', array($id));
@@ -315,17 +334,19 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_jam_kerja');
         }
     }
+
     // END MASTER JAM KERJA
-    
     // START MASTER ATURAN
     public function getDataAturanLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_aturan FROM tb_aturan ORDER BY kd_aturan DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getPilihanStatusAturan() {
         return array('masuk' => 'Masuk', 'pulang' => 'Pulang', 'lupafinger' => 'Lupa Finger');
     }
+
     public function getTabelAturan($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -349,7 +370,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanAturan() {        
+
+    public function getPilihanAturan() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_aturan', array());
@@ -358,6 +380,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataAturanForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_aturan WHERE (kd_aturan = ?)', array($id));
@@ -367,13 +390,13 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_aturan');
         }
     }
+
     // END MASTER ATURAN
-    
-    
     // START MASTER SHIFT
     public function getPilihanUnitShift() {
         return array('harian' => 'Harian', 'mingguan' => 'Mingguan');
     }
+
     public function getTabelShift($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -397,7 +420,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanShift() {        
+
+    public function getPilihanShift() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_shift', array());
@@ -406,6 +430,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataShiftForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_shift WHERE (id_shift = ?)', array($id));
@@ -415,13 +440,13 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_shift');
         }
     }
+
     // END MASTER SHIFT
-    
-    
     // START MASTER POTONGAN PAJAK
     public function getPilihanGolongan() {
         return array('I' => 'I', 'II' => 'II', 'III' => 'III', 'IV' => 'IV');
     }
+
     public function getTabelPotonganPajak($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -445,7 +470,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanPotonganPajak() {        
+
+    public function getPilihanPotonganPajak() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_potongan_pajak', array());
@@ -454,6 +480,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataPotonganPajakForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_potongan_pajak WHERE (id_potongan_pajak = ?)', array($id));
@@ -463,11 +490,10 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_potongan_pajak');
         }
     }
+
     // END MASTER POTONGAN PAJAK
-    
-    
     // START MASTER MESIN
-    public function getPilihanKelompokMesin() {        
+    public function getPilihanKelompokMesin() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_kelompok_mesin', array());
@@ -476,6 +502,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getTabelMesin($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -499,7 +526,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanMesin() {        
+
+    public function getPilihanMesin() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_mesin', array());
@@ -508,6 +536,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataMesinForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_mesin WHERE (id_mesin = ?)', array($id));
@@ -517,15 +546,15 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_mesin');
         }
     }
+
     // END MASTER MESIN
-    
-    
     // START MASTER PANDUAN
     public function getDataPanduanLast() {
         set_time_limit(0);
         $data = $this->getData('SELECT kd_panduan FROM tb_panduan ORDER BY kd_panduan DESC LIMIT 1', array());
         return $data['value'][0];
     }
+
     public function getTabelPanduan($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -549,7 +578,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanPanduan() {        
+
+    public function getPilihanPanduan() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_panduan', array());
@@ -558,6 +588,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getDataPanduanForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_panduan WHERE (kd_panduan = ?)', array($id));
@@ -567,11 +598,10 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_panduan');
         }
     }
+
     // END MASTER PANDUAN
-    
-    
     // START MASTER KODE PRESENSI
-    public function getPilihanJenisModerasi() {        
+    public function getPilihanJenisModerasi() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_jenis_moderasi', array());
@@ -580,6 +610,7 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     public function getTabelKodePresensi($data) {
         set_time_limit(0);
         $cari = '%' . $data['cari'] . '%';
@@ -603,11 +634,13 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
+
     public function cekPrimaryKodePresensi($id) {
         set_time_limit(0);
         $dataArr = $this->getData('SELECT * FROM tb_kode_presensi WHERE (kode_presensi = ?)', array($id));
         return $dataArr['count'];
     }
+
     public function getDataKodePresensiForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_kode_presensi WHERE (id_kode_presensi = ?)', array($id));
@@ -617,17 +650,16 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_kode_presensi');
         }
     }
+
     // END MASTER KODE PRESENSI
-    
-    
     // START PENGATURAN PROFIL
-    public function getProfilGrupPengguna($id) {        
+    public function getProfilGrupPengguna($id) {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_grup_pengguna WHERE (kd_grup_pengguna = ?)', array($id));
         return $data['value'][0];
     }
+
     // END MASTER PENGATURAN PROFIL
-    
     // START PENGATURAN PENGGUNA ADMIN OPD
     public function getTabelPenggunaAdminOPD($data, $kdlokasi) {
         set_time_limit(0);
@@ -635,7 +667,7 @@ class servicemasterpresensi extends system\Model {
         $page = $data['page'];
 
         $q_cari = !empty($cari) ? ' WHERE ((username LIKE ?) || (grup_pengguna_kd LIKE ?) || (nama_grup_pengguna LIKE ?)) ' : '';
-        $query = 'SELECT * FROM view_pengguna' . $q_cari . 'AND (kdlokasi="'.$kdlokasi.'") AND (kd_grup_pengguna = "KDGRUP05")';
+        $query = 'SELECT * FROM view_pengguna' . $q_cari . 'AND (kdlokasi="' . $kdlokasi . '") AND (kd_grup_pengguna = "KDGRUP05")';
         $idKey = array();
         array_push($idKey, $cari, $cari, $cari);
 
@@ -652,7 +684,8 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
-    public function getPilihanGrupPenggunaAdminOPD() {        
+
+    public function getPilihanGrupPenggunaAdminOPD() {
         set_time_limit(0);
         $data = array();
         $dataArr = $this->getData('SELECT * FROM tb_grup_pengguna WHERE (kd_grup_pengguna = "KDGRUP05")', array());
@@ -661,8 +694,8 @@ class servicemasterpresensi extends system\Model {
         }
         return $data;
     }
+
     // END PENGATURAN PENGGUNA ADMIN OPD
-    
     // START MASTER LIBUR
     public function getTabelLibur($data) {
         set_time_limit(0);
@@ -687,6 +720,7 @@ class servicemasterpresensi extends system\Model {
         $result['query'] = '';
         return $result;
     }
+
     public function getDataLiburForm($id = '') {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_libur WHERE (id_libur = ?)', array($id));
@@ -696,8 +730,8 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_libur');
         }
     }
+
     // END MASTER LIBUR
-    
     // START MASTER TPP //
     public function getTabelTpp($data) {
         set_time_limit(0);
@@ -711,7 +745,7 @@ class servicemasterpresensi extends system\Model {
 
         $q_cari = '';
         if (isset($data['kd_tpp']))
-            $q_cari = ' WHERE kd_tpp = "'.$data['kd_tpp'].'"';
+            $q_cari = ' WHERE kd_tpp = "' . $data['kd_tpp'] . '"';
 
         $query = 'SELECT * FROM tb_tpp' . $q_cari . '';
         $order = ' ORDER BY tahun DESC, bulan DESC';
@@ -740,7 +774,6 @@ class servicemasterpresensi extends system\Model {
     }
 
     //END MASTER TPP //
-
     // START MASTER TEKS //
     public function getTabelTeks($data) {
         set_time_limit(0);
@@ -778,12 +811,11 @@ class servicemasterpresensi extends system\Model {
     }
 
     //END MASTER TEKS //
-
     //added by daniek
     public function getDataTppKecuali($data) {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_tpp_not WHERE (kd_tpp = ?)', [$data['kd_tpp']]);
-        
+
         return $data;
     }
 
@@ -796,6 +828,7 @@ class servicemasterpresensi extends system\Model {
             return $this->getTabel('tb_tpp_not');
         }
     }
+
 }
 
 ?>

@@ -144,7 +144,6 @@
                         app.toggleTglAkhir();
                     });
 
-
                     $(document).on("click", ".btn-info-mod", function () {
                         $(".tooltipped").trigger("mouseleave");
                         app.infoModerasi(this.id);
@@ -194,7 +193,6 @@
                                 kodeKatMod = kodeKatMod.join('|');
                             }
                         }
-
 
                         $("#kode_presensi").empty();
                         app.pilJenisModerasi(kodeKatMod);

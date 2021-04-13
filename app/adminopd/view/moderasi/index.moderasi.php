@@ -143,7 +143,7 @@
                                 <?php foreach ($data["kategoriModerasi"] as $v): ?>
                                     <?php $kategori = $v["kd_jenis"] === "JNSMOD04" ? "semua" : "individual" ?>
                                     <option value="<?= $v["kd_jenis"] ?>" kategori="<?= $kategori ?>"><?= $v["nama_jenis"] ?></option>
-<?php endforeach; ?>
+                                <?php endforeach; ?>
                             </select>
                             <div class="statinput disinput" title="Diaktifkan jika tgl awal dan akhir dipilih dengan benar."></div>
                         </div>
@@ -187,7 +187,7 @@
         <input type="hidden" id="hidAllPin" value="<?= implode(',', $listAllPin); ?>" />
 
         <!-- /.modal -->
-<?php $this->getView('adminopd', 'main', 'footer', ''); ?>
+        <?php $this->getView('adminopd', 'main', 'footer', ''); ?>
     </div>
     <!-- ./wrapper -->
 

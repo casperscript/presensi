@@ -19,10 +19,12 @@ class servicemasterpegawai extends system\Model {
             $q_where .= 'AND nipbaru IN (' . $inArray . ')';
         endif;
         $dataArr = $this->getData('SELECT '
-                . 'nipbaru, CONCAT(gelar_depan, IF((gelar_depan <> "")," ",""), namapeg, IF((gelar_blkg <> "")," ",""), gelar_blkg) AS nama_personil FROM texisting_personal ' 
+                . 'nipbaru, CONCAT(gelar_depan, IF((gelar_depan <> "")," ",""), namapeg, IF((gelar_blkg <> "")," ",""), gelar_blkg) AS nama_personil '
+                . 'FROM texisting_personal ' 
                 . $q_where, []);
         $key = array_column($dataArr['value'], 'nipbaru');
         $column = array_column($dataArr['value'], 'nama_personil');
+//        return $dataArr['query'];
         return array_combine($key, $column);
     }
 

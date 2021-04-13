@@ -8,6 +8,7 @@
             <th class="grey darken-3 white-text center-align">NO</th>
             <th class="grey darken-3 white-text">USERNAME</th>
             <th class="grey darken-3 white-text">NAMA PEGAWAI</th>
+            <th class="grey darken-3 white-text">Password</th>
             <th class="grey darken-3 white-text center-align">LOKASI</th>
             <th class="grey darken-3 white-text center-align">GRUP PENGGUNA</th>
             <th class="grey darken-3 white-text center-align">STATUS PENGGUNA</th>
@@ -51,14 +52,18 @@
                     <td id="<?= $kol['username']; ?>" class="btnDetail center-align"><?= $no; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail"><?= $kol['username']; ?></td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
+                        <?= (!empty($kol['jabatan_pengguna'])) ? '[' . $kol['jabatan_pengguna'] . '] ' : '' ?>
                         <?= $nama_pengguna ?>
+                    </td>
+                    <td id="<?= $kol['username']; ?>" class="btnDetail">
+                        <?= comp\FUNC::decryptor($kol['password']) ?>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
                         <?= $nama_lokasi ?>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="btnDetail">
                         <div class="center-align">
-                            <?= $kol['nama_grup_pengguna']; ?>
+                            <?= $listGrubPengguna[$kol['grup_pengguna_kd']]; ?>
                         </div>
                     </td>
                     <td id="<?= $kol['username']; ?>" class="center-align btnDetail">

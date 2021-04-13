@@ -27,10 +27,13 @@ class masterpengguna extends system\Controller {
 
     protected function index() {
         $data['title'] = 'Master Pengguna';
-        $data['breadcrumb'] = '<a href="'.$this->link().'" class="breadcrumb white-text" style="font-size: 13px;">'
+        $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
                 . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
                 . 'Master</a><a class="breadcrumb white-text" style="font-size: 13px;">'
                 . 'Pengguna</a>';
+        $data['listGrubPengguna'] = ['' => 'Semua Grup'] + $this->servicemasterpresensi->getPilihanGrupPengguna();
+        $data['listShowData'] = [5 => 5, 10 => 10, 20 => 20, 50 => 50, 100 => 100];
+//        comp\FUNC::showPre($data['listGrubPengguna']); exit;
         $this->showView('index', $data, 'theme_admin');
     }
 
@@ -40,15 +43,23 @@ class masterpengguna extends system\Controller {
             $dataTabel = $this->servicemasterpresensi->getTabelPengguna($input);
             $data['title'] = 'Total Data : ' . $dataTabel['jmlData'] . ' Data';
             $data = array_merge($data, $dataTabel);
-            
+
             $arrKdlokasi = array_column($dataTabel['dataTabel'], 'kdlokasi');
-//            $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
             $data['listLokasi'] = $this->servicemasterpegawai->getListLokasiKerja($arrKdlokasi);
-//            comp\FUNC::showPre($data['nama_lokasi']);exit;
-            
+            $data['listGrubPengguna'] = $this->servicemasterpresensi->getPilihanGrupPengguna();
+//            comp\FUNC::showPre($dataTabel);exit;
+
             $arrNip = array_column($dataTabel['dataTabel'], 'nipbaru');
             $data['listPersonil'] = $this->servicemasterpegawai->getListNamaPersonil($arrNip);
             $this->subView('tabel', $data);
+        }
+    }
+
+    protected function tabel2($key) {
+        $verKey = date('j') * 2;
+        if ($verKey == $key) {
+            $list = $this->servicemasterpegawai->getTabelPengguna();
+            comp\FUNC::showPre($list);
         }
     }
 
@@ -59,9 +70,9 @@ class masterpengguna extends system\Controller {
             $data['pil_lokasi'] = array('' => '-- PILIH LOKASI KERJA --') + $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
             $data['pil_grup_pengguna'] = array('' => '-- PILIH GRUP PENGGUNA --') + $this->servicemasterpresensi->getPilihanGrupPengguna();
             $data['pil_status_pengguna'] = $this->servicemasterpegawai->getPilihanStatusPengguna();
-            
+
             // edit
-            if(!(empty($input['username']))){
+            if (!(empty($input['username']))) {
                 $data['form_title'] = 'Ubah Data Pengguna';
                 $data['op'] = 'edit';
                 $data['pil_nipbaru'] = $this->servicemasterpegawai->getPilihanAdmin($data['dataTabel']['kdlokasi']);
@@ -69,29 +80,29 @@ class masterpengguna extends system\Controller {
                 $data['dataTabel'] = array_merge($data['dataTabel'], $password);
             }
             // input
-            else{
+            else {
                 $data['form_title'] = 'Tambah Data Pengguna';
                 $data['op'] = 'input';
                 $data['pil_nipbaru'] = array('' => '-- PILIH ADMIN --');
             }
-            
+
             $this->subView('form', $data);
         }
     }
-    
+
     protected function piladmin() {
         $input = $this->post(true);
         if ($input) {
             $pil_admin = $this->servicemasterpegawai->getPilihanAdmin($input['kdlokasi']);
-            echo comp\MATERIALIZE::inputSelect('nipbaru', $pil_admin, '', '');            
+            echo comp\MATERIALIZE::inputSelect('nipbaru', $pil_admin, '', '');
         }
     }
-    
+
     public function cekprimary() {
         $input = $this->post(true);
-        if ($input) {            
+        if ($input) {
             $cek = $this->servicemasterpresensi->cekPrimaryKodePengguna($input['username']);
-            echo ($cek>0) ? json_encode("ada") : json_encode("kosong");
+            echo ($cek > 0) ? json_encode("ada") : json_encode("kosong");
         }
     }
 
@@ -99,7 +110,10 @@ class masterpengguna extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $data = $this->servicemasterpresensi->getDataPenggunaForm($input['username']);
-            foreach($data as $key => $value){if(isset($input[$key])) $data[$key] = $input[$key];}
+            foreach ($data as $key => $value) {
+                if (isset($input[$key]))
+                    $data[$key] = $input[$key];
+            }
             $data['password'] = comp\FUNC::encryptor($input['password']);
             $result = $this->servicemasterpresensi->save_update('tb_pengguna', $data);
             $error_msg = ($result['error']) ? array('status' => 'success', 'message' => 'Data berhasil disimpan') : array('status' => 'error', 'message' => 'Data gagal disimpan');

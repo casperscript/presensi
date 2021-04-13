@@ -157,7 +157,6 @@
                     });
                     $(document).on("click", ".btn-info-mod", function () {
                         app.infoModerasi(this.id);
-                        //alert(this.id);
                     });
 
                     $(document).on("submit", "#frmData", function () {
