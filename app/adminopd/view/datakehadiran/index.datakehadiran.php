@@ -102,11 +102,12 @@
                         <form id="frmData" class="navbar-search expanded" onsubmit="return false" role="search" >
                             <div class="card-action" style="padding-bottom: 0px">
                                 <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
-                                <?= comp\MATERIALIZE::inputKey('pin_absen', ''); ?>
                                 <div class="row">
                                     <div class="input-field col s12 m4 l6" style="margin-top: 0px">
-                                        <h5 id="nama_personil"></h5>
-                                        <h6 id="nip_personil"></h6>
+                                        <div class="input-field col s12">
+                                            <label for="pin_absen" class="active">Pilih Nama Pegawai</label>
+                                            <?= comp\MATERIALIZE::inputSelect('pin_absen', $listPersonil, '', 'class="select2" style="width: 100%"') ?>
+                                        </div>
                                     </div>
                                     <div class="col s12 m8 l6">
                                         <div class="input-field col s3">
@@ -157,6 +158,10 @@
     <script>
                             (function ($) {
                                 "use strict";
+                                $(".select2").select2({
+                                    width: "resolve"
+                                });
+
                                 app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
                                 app.loadTabel();
 
@@ -186,6 +191,9 @@
                                 });
                                 $("#showDetail").on("click", ".paging", function () {
                                     app.detailPagging($(this).attr("number-page"));
+                                });
+                                $("#showDetail").on("change", "#pin_absen", function () {
+                                    app.loadRecord();
                                 });
 
                                 // Action Form

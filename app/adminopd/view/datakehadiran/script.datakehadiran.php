@@ -59,22 +59,16 @@ header('application/javascript');
 
         showDetail: function (id_absen) {
             $("#showTabel, #showDetail #data-detail").fadeOut(300).promise().then(function () {
-                $("#pin_absen").val("");
-                $("#nama_personil").html("");
-                $("#nip_personil").html("NIP. ");
                 $("#sdate").val("");
                 $("#edate").val("");
                 $("#showDetail").fadeIn(300).promise().then(function () {
                     $.post(url_detail, {pin_absen: id_absen}, function (data) {
-                        $("#pin_absen").val(data.pin_absen);
-                        $("#nama_personil").html(data.nama_personil);
-                        $("#nip_personil").html("NIP. " + data.nipbaru);
                         $("#sdate").val(data.sdate);
                         $("#edate").val(data.edate);
                         Materialize.updateTextFields();
 
                         $("#showDetail #showSpinner").hide();
-                        /*app.loadRecord();*/
+                        app.loadRecord();
                     }, "json");
                 });
             });

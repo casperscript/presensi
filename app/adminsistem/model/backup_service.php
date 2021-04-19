@@ -415,7 +415,7 @@ class backup_service extends system\Model {
             $field = array_keys($this->getTabel('tb_personil'));
 
             foreach ($field as $i) :
-                $p[$i] = (isset($peg[$i])) ? $peg[$i] : NULL;
+                $p[$i] = (isset($peg[$i])) ? $peg[$i] : '';
             endforeach;
 
             if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
@@ -432,7 +432,7 @@ class backup_service extends system\Model {
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
             $tbpersonil = $this->save('tb_personil', $p);
-            //simpan presensi
+            #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
                 $tbpresensi = $this->save_presensi_v2($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
@@ -571,7 +571,7 @@ class backup_service extends system\Model {
         $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
         $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
         
-        $pot =((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60);
+        $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
 //        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
 
         $tpp_kotor = $nominal_tp40 + $nominal_tp60 - $pot;

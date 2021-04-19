@@ -140,6 +140,23 @@ class pegawai_service extends system\Model {
         return $result;
     }
 
+    public function getPilPersonil($kdlokasi) {
+        $idKey = [$kdlokasi];
+        $q_where = 'WHERE 1 AND kdlokasi = ?';
+
+        $data = $this->getData('SELECT '
+                . '     pegawai.nipbaru, '
+                . '     pegawai.pin_absen, '
+                . '     CONCAT(personal.gelar_depan, IF((personal.gelar_depan <> "")," ",""), personal.namapeg, IF((personal.gelar_blkg <> ""),", ",""), personal.gelar_blkg) AS nama_personil, '
+                . '     pegawai.kdlokasi '
+                . 'FROM texisting_kepegawaian pegawai '
+                . ' JOIN texisting_personal personal '
+                . '     ON pegawai.nipbaru = personal.nipbaru ' . $q_where, $idKey);
+        $keys = array_column($data['value'], 'pin_absen');
+        $values = array_column($data['value'], 'nama_personil');
+        return array_combine($keys, $values);
+    }
+
     /*     * **************** Get Data ************************** */
 
     public function getDataPersonil($id) {

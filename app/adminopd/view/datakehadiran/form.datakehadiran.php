@@ -1,7 +1,7 @@
 <?php
 //comp\FUNC::showPre($data);
 extract($dataForm);
-$stsHadir = array('0' => 'Masuk', '1' => 'Pulang', '2' => 'Apel');
+$stsHadir = array('0' => 'Masuk', '1' => 'Pulang', '2' => 'Apel', '9' => 'Abaikan !!');
 echo comp\MATERIALIZE::inputKey('op', 'editStatus');
 echo comp\MATERIALIZE::inputKey('tanggal_log_presensi', $tanggal_log_presensi);
 echo comp\MATERIALIZE::inputKey('jam_log_presensi', $jam_log_presensi);

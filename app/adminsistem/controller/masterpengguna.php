@@ -47,10 +47,10 @@ class masterpengguna extends system\Controller {
             $arrKdlokasi = array_column($dataTabel['dataTabel'], 'kdlokasi');
             $data['listLokasi'] = $this->servicemasterpegawai->getListLokasiKerja($arrKdlokasi);
             $data['listGrubPengguna'] = $this->servicemasterpresensi->getPilihanGrupPengguna();
-//            comp\FUNC::showPre($dataTabel);exit;
 
             $arrNip = array_column($dataTabel['dataTabel'], 'nipbaru');
             $data['listPersonil'] = $this->servicemasterpegawai->getListNamaPersonil($arrNip);
+//            comp\FUNC::showPre($data);
             $this->subView('tabel', $data);
         }
     }

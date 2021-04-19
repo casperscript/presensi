@@ -26,8 +26,9 @@ class datakehadiran extends system\Controller {
     }
 
     protected function index() {
-        $data['listMesin'] = $this->presensi_service->getPilKrit('view_mesin', $this->login, array('key' => 'id_mesin', 'value' => 'nama_mesin'));
         $data['title'] = 'Data Kehadiran Pegawai';
+        $data['listPersonil'] = $this->pegawai_service->getPilPersonil($this->login['kdlokasi']);
+        $data['listMesin'] = $this->presensi_service->getPilKrit('view_mesin', $this->login, array('key' => 'id_mesin', 'value' => 'nama_mesin'));
         $this->showView('index', $data, 'theme_admin');
     }
 
@@ -78,16 +79,15 @@ class datakehadiran extends system\Controller {
                 $errno = "";
                 $errstr = "";
                 $newLog = 0;
-                
+
                 $Connect = fsockopen($ip, $port, $errno, $errstr, 1);
                 if (!$Connect) {
                     // Fail connect log
                     $logTemp['method'] = '3';
-                    $message = (self::update_log($logTemp)) ? 
+                    $message = (self::update_log($logTemp)) ?
                             'Koneksi ke mesin tidak dapat dilakukan' :
                             'Koneksi ke mesin dan database riwayat gagal dilakukan';
                     $msg = array('status' => 'error', 'info' => 'Gagal', 'message' => $message);
-
                 } else {
                     $soap_request = "<GetAttLog>
                                     <ArgComKey xsi:type=\"xsd:string\">" . $pswdComp . "</ArgComKey>
@@ -129,7 +129,7 @@ class datakehadiran extends system\Controller {
                             $log['verifikasi'] = $verified;
                             $log['id_mesin'] = $dataMesin['id_mesin'];
                             $log['update_id'] = $getLog['id_update'];
-                            
+
                             $insert = $this->presensi_service->save('tb_log_presensi', $log);
                             if ($insert['error']) {
                                 $newLog++;
@@ -137,30 +137,30 @@ class datakehadiran extends system\Controller {
                             unset($log);
                         }
                     }
-                    
+
                     // Resume log update
                     $jumlahRecord = count($buffer) - 1;
                     $logTemp['method'] = '1';
                     $logTemp['count_log'] = $jumlahRecord;
                     $logTemp['count_inserted'] = $newLog;
                     self::update_log($logTemp);
-                    
+
                     // Alert message
                     $lastUpdate = $this->presensi_service->getDataLastUpdate($dataMesin['id_mesin']);
                     $textLastUpdate = comp\FUNC::tanggal(current($lastUpdate), 'long_date');
-                    
+
                     if ($jumlahRecord > 0 && $newLog == 0) {
                         $msg = array(
-                            'status' => 'warning', 
-                            'info' => 'Perhatian', 
+                            'status' => 'warning',
+                            'info' => 'Perhatian',
                             'message' => 'Tidak ada data baru yang tambahkan. Jumlah data mesin ' . $jumlahRecord,
                             'last' => comp\FUNC::HTMLchip($textLastUpdate, 1)
                         );
                     } elseif ($jumlahRecord > 0 && $newLog > 0) {
                         $msg = array(
-                            'status' => 'success', 
-                            'info' => 'Sukses', 
-                            'message' => 'Data berhasil diupdate. Jumlah data mesin ' . $jumlahRecord . ', data baru ' . $newLog, 
+                            'status' => 'success',
+                            'info' => 'Sukses',
+                            'message' => 'Data berhasil diupdate. Jumlah data mesin ' . $jumlahRecord . ', data baru ' . $newLog,
                             'last' => comp\FUNC::HTMLchip($textLastUpdate)
                         );
                     } else {
@@ -171,7 +171,6 @@ class datakehadiran extends system\Controller {
                             'last' => comp\FUNC::HTMLchip($textLastUpdate, 2),
                         );
                     }
-                    
                 }
             }
 
@@ -206,6 +205,7 @@ class datakehadiran extends system\Controller {
             $arrRecordLap = array('sdate' => $input['sdate'], 'edate' => $input['edate'], 'pin_absen' => array($input['pin_absen'] => $input['pin_absen']));
             $data['dataTabel'] = $this->presensi_service->getTabelRecordPersonil($input);
             $data['dataLaporan'] = $this->presensi_service->getArrayRecord($arrRecordLap);
+//            comp\FUNC::showPre($data['dataLaporan']); exit;
             $this->subView('record', $data);
         }
     }

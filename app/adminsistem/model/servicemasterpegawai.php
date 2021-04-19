@@ -15,8 +15,8 @@ class servicemasterpegawai extends system\Model {
     public function getListNamaPersonil($arrNip = array()) {
         $q_where = 'WHERE 1 ';
         if (count($arrNip) > 0) :
-            $inArray = implode(',', $arrNip);
-            $q_where .= 'AND nipbaru IN (' . $inArray . ')';
+            $inArray = implode('\',\'', $arrNip);
+            $q_where .= 'AND nipbaru IN (\'' . $inArray . '\')';
         endif;
         $dataArr = $this->getData('SELECT '
                 . 'nipbaru, CONCAT(gelar_depan, IF((gelar_depan <> "")," ",""), namapeg, IF((gelar_blkg <> "")," ",""), gelar_blkg) AS nama_personil '

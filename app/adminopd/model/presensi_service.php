@@ -291,9 +291,34 @@ class presensi_service extends system\Model {
         }
         $inArray = implode(', ', array_fill(0, count($input['pin_absen']), ' ? '));
         $result = array();
-        $data = $this->getData('SELECT * FROM view_lap_harian '
-                . 'WHERE (tanggal BETWEEN ? AND ?) AND pin_absen IN (' . $inArray . ') '
-                . 'GROUP BY pin_absen, tanggal, stsHadir', $idKey);
+        
+        
+        $data = $this->getData('SELECT '
+                . ' absen.`pin_absen`            AS `pin_absen`, '
+                . ' absen.`tanggal_log_presensi` AS `tanggal`, '
+                . ' CONCAT(DATE_FORMAT(`j_detail`.`masuk`,"%H:%i")," - ",DATE_FORMAT(`j_detail`.`pulang`,"%H:%i")) AS `jamkerja`, '
+                . ' absen.`jam_log_presensi`     AS `jam`, '
+                . ' absen.`status_log_presensi`  AS `stsMesin`, '
+                . ' IF(((TIME_TO_SEC(`absen`.`jam_log_presensi`) BETWEEN TIME_TO_SEC(`jamkerja`.`mulai_masuk`) AND IF((TIME_TO_SEC(`jamkerja`.`mulai_masuk`) > TIME_TO_SEC(`jamkerja`.`akhir_masuk`)),(TIME_TO_SEC("24:00:00") + TIME_TO_SEC(`jamkerja`.`akhir_masuk`)),TIME_TO_SEC(`jamkerja`.`akhir_masuk`))) AND (`absen`.`status_log_presensi` = "0")),"0",IF(((TIME_TO_SEC(`absen`.`jam_log_presensi`) BETWEEN TIME_TO_SEC(`jamkerja`.`mulai_pulang`) AND IF((TIME_TO_SEC(`jamkerja`.`mulai_pulang`) > TIME_TO_SEC(`jamkerja`.`akhir_pulang`)),(TIME_TO_SEC("24:00:00") + TIME_TO_SEC(`jamkerja`.`akhir_pulang`)),TIME_TO_SEC(`jamkerja`.`akhir_pulang`))) AND (`absen`.`status_log_presensi` = "1")),"1","-")) AS `stsHadir`, '
+                . ' IF(((SELECT `stsHadir`) = "0"),CONCAT(DATE_FORMAT(`jamkerja`.`mulai_masuk`,"%H:%i")," - ",DATE_FORMAT(`jamkerja`.`akhir_masuk`,"%H:%i")),CONCAT(DATE_FORMAT(`jamkerja`.`mulai_pulang`,"%H:%i")," - ",DATE_FORMAT(`jamkerja`.`akhir_pulang`,"%H:%i"))) AS `batasScan`, '
+                . ' FLOOR(IF((((SELECT `stsHadir`) = "0") AND (`absen`.`jam_log_presensi` > `j_detail`.`masuk`)),((TIME_TO_SEC(`absen`.`jam_log_presensi`) - TIME_TO_SEC(`j_detail`.`masuk`)) / 60),IF((((SELECT `stsHadir`) = "1") AND (`absen`.`jam_log_presensi` < `j_detail`.`pulang`)),((TIME_TO_SEC(`j_detail`.`pulang`) - TIME_TO_SEC(`absen`.`jam_log_presensi`)) / 60),"0"))) AS `telat`, '
+                . ' absen.`verifikasi`           AS `verifikasi`, '
+                . ' absen.`id_mesin`             AS `id_mesin`, '
+                . ' jadwal.`kdlokasi`            AS `kdlokasi`'
+                . 'FROM tb_log_presensi `absen` '
+                . ' JOIN tb_jadwal `jadwal` '
+                . '     ON absen.`pin_absen` = `jadwal`.`pin_absen` '
+                . ' JOIN tb_jadwal_detail `j_detail` '
+                . '     ON jadwal.`id_jadwal` = j_detail.`id_jadwal` AND absen.`tanggal_log_presensi` = j_detail.`tanggal` '
+                . ' LEFT JOIN tb_jam_kerja `jamkerja` '
+                . '     ON j_detail.`id_jam_kerja` = jamkerja.`id_jam_kerja` '
+                . 'WHERE 1 AND (tanggal BETWEEN ? AND ?) AND absen.`pin_absen` IN (' . $inArray . ') '
+                . 'GROUP BY `pin_absen`, tanggal, stsHadir', $idKey);
+        
+        
+//        $data = $this->getData('SELECT * FROM view_lap_harian '
+//                . 'WHERE (tanggal BETWEEN ? AND ?) AND pin_absen IN (' . $inArray . ') '
+//                . 'GROUP BY pin_absen, tanggal, stsHadir', $idKey);
         foreach ($data['value'] as $kol) {
             $result[$kol['pin_absen']][$kol['tanggal']]['jamkerja'] = $kol['jamkerja'];
             $result[$kol['pin_absen']][$kol['tanggal']]['jam'] = $kol['jam'];
