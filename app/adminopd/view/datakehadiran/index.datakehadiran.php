@@ -89,9 +89,7 @@
                             <!-- end Spinner -->
 
                             <!-- Show Tabel Personal -->
-                            <div id="data-tabel">
-                                <?php // comp\FUNC::showPre($data) ?>
-                            </div>
+                            <div id="data-tabel"></div>
                             <!-- End Tabel -->
                         </div>
                     </div>
