@@ -368,7 +368,7 @@ class backuplaporan extends system\Controller {
             //hapus jika terjadi gagal backup
             if (!$tblaporan['error'] || !$tbpersonil['error'] || !$tbtpp['error']) {
                 $this->backup_service->hapusBackup($input);
-                $result['error'] = false;
+                $result['error'] = $tbpersonil;
                 return $result;
             }
         }

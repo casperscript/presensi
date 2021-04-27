@@ -103,6 +103,7 @@ if (count($rekap) == 0) {
             <th class="grey lighten-2 center-align" rowspan="2">Pajak X</th>
             <th class="grey lighten-2 center-align" rowspan="2">TPP Bersih X</th>
             <th class="grey lighten-2 center-align" rowspan="2">BPJS X</th>
+            <th class="grey lighten-2 center-align" rowspan="2">Kurang BPJS X</th>
             <th class="grey lighten-2 center-align" rowspan="2">Terima X</th>
         </tr>
         <tr>	
@@ -150,7 +151,7 @@ if (count($rekap) == 0) {
             $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
 
             $terima = $tpp_kotor - $pot_pajak;
-            $pot_bpjs = $find['pot_bpjskes'];
+            $pot_bpjs = $find['pot_bpjskes_peserta'];
             $terima_potbpjs = $find['tpp_terima'];
 
             //start desember 2020
@@ -196,7 +197,7 @@ if (count($rekap) == 0) {
                     $presensi = json_decode($find['t' . $a], true);
                     $vPr = $presensi[$tingkat];
                     ?>
-                    <td class="center-align"><?= $vPr['all'] ?></td>
+                    <td class="center-align"><?= $vPr['mk']['kode'] . ' ' . $vPr['ap']['kode'] . ' ' . $vPr['pk']['kode'] . ' ' . $vPr['all'] ?></td>
                     <?php
                     $sumProsentase += is_numeric($vPr['all']) ? $vPr['all'] : 0;
                 }
@@ -211,15 +212,16 @@ if (count($rekap) == 0) {
                         ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
                         $peg['nominal_tp'] * 0.01);
                 $pot_bpjs_2020 = ($tpp_bersih_2020 > $checkBpjsGaji_2020) ? $checkBpjsGaji_2020 : $tpp_bersih_2020;
-                $terima_potbpjs_2020 = round($tpp_bersih_2020 - $pot_bpjs_2020);
+                $terima_potbpjs_2020 = round($tpp_bersih_2020 - ($pot_bpjs_2020 + $find['kurang_bpjs_peserta']));
                 ?>
                 <td><?= $prosentase_2020 ?></td>
-                <td><?= $pot_2020 ?></td>
-                <td><?= $tpp_kotor_2020 ?></td>
-                <td><?= $pajak_2020 ?></td>
-                <td><?= $tpp_bersih_2020 ?></td>
-                <td><?= $pot_bpjs_2020 ?></td>
-                <td><?= $terima_potbpjs_2020 ?></td>
+                <td><?= number_format($pot_2020, 0, ",", ".") ?></td>
+                <td><?= number_format($tpp_kotor_2020, 0, ",", ".") ?></td>
+                <td><?= number_format($pajak_2020, 0, ",", ".") ?></td>
+                <td><?= number_format($tpp_bersih_2020, 0, ",", ".") ?></td>
+                <td><?= number_format($pot_bpjs_2020, 0, ",", ".") ?></td>
+                <td><?= number_format($find['kurang_bpjs_peserta'], 0, ",", ".") ?></td>
+                <td><?= number_format($terima_potbpjs_2020, 0, ",", ".") ?></td>
             </tr>
             <?php
             $pin_absen .= $pin . (count($pegawai['value']) != $no ? ',' : '');
@@ -264,6 +266,7 @@ if (count($rekap) == 0) {
             <th><?= number_format($tot_pajak_2020, 0, ",", ".") ?></th>
             <th><?= number_format($tot_tppbersih_2020, 0, ",", ".") ?></th>
             <th><?= number_format($tot_bpjs_2020, 0, ",", ".") ?></th>
+            <th></th>
             <th><?= number_format($tot_terimapotbpjs_2020, 0, ",", ".") ?></th>
         </tr>
     </tbody>

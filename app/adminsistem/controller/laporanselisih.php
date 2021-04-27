@@ -125,11 +125,11 @@ class laporanselisih extends system\Controller {
         //ambil dari presensi backup
         $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
         
-        $data['tingkat'] = 6;
         $data['download'] = 0;
         $data['tpp_periodik'] = $this->materpresensi_service->getDataTppForm(5);
+        $data['tingkat'] = $data['tpp_periodik']['tingkat'];
         $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
-//        comp\FUNC::showPre($data['pegawai']); exit;
+//        comp\FUNC::showPre($data['rekap']); exit;
         
         $this->subView('tabeltppbcall_v1', $data);
     }

@@ -1162,13 +1162,15 @@ class laporan_service extends system\Model {
                 $color1 = ''; $color2 = ''; $color3 = '';
                 $hl = false;
                 if (isset($masuk[$key][$i])) {
-                    if ($masuk[$key][$i] == 'HL')
+                    if ($masuk[$key][$i] == 'HL') :
                         $hl = true;
-                    else 
+                    else :
                         $kd_masuk = $masuk[$key][$i];
+                    endif;
 
-                    if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0']))
+                    if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) :
                         $color1 = 'yellow accent-2';
+                    endif;
 
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color1 = 'yellow accent-2';
@@ -1176,11 +1178,13 @@ class laporan_service extends system\Model {
                 }
 
                 if (isset($apel[$key][$i])) {
-                    if ($apel[$key][$i] != 'HL')
+                    if ($apel[$key][$i] != 'HL') :
                         $kd_apel = $apel[$key][$i];
+                    endif;
 
-                    if ($kd_apel == 'A0')
+                    if ($kd_apel == 'A0') :
                         $color2 = 'yellow accent-2';
+                    endif;
 
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color2 = 'yellow accent-2';
@@ -1188,11 +1192,13 @@ class laporan_service extends system\Model {
                 }
 
                 if (isset($pulang[$key][$i])) {
-                    if ($pulang[$key][$i] != 'HL')
+                    if ($pulang[$key][$i] != 'HL') {
                         $kd_pulang = $pulang[$key][$i];
+                    }
 
-                    if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0']))
+                    if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0'])) {
                         $color3 = 'yellow accent-2';
+                    }
 
                 } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
                     $color3 = 'yellow accent-2';                    
@@ -1208,8 +1214,9 @@ class laporan_service extends system\Model {
                     if (isset($masuk[$key][$i]) && $masuk[$key][$i] != 'HL') {
                         $tampil_mod = true;
                         $kd_masuk = $masuk[$key][$i];
-                        if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0']))
+                        if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) {
                             $color1 = 'yellow accent-2';
+                        }
                     }
                     if (isset($pulang[$key][$i]) && $pulang[$key][$i] != 'HL') {
                         $tampil_mod = true;
@@ -1345,11 +1352,13 @@ class laporan_service extends system\Model {
 
                 $sum_mk += $pot_masuk; $sum_ap += $pot_apel; $sum_pk += $pot_pulang;
 
-                if ($hitungpot && $kd_masuk == 'TK')
+                if ($hitungpot && $kd_masuk == 'TK') {
                     $jumlah_tk++;
+                }
 
-                if ($jumlah_tk >= 7)
+                if ($jumlah_tk >= 10) {
                     $pot_penuh[] = 'TK';
+                }
             }
 
             $all[$key]['pot_penuh'] = array_unique($pot_penuh);
