@@ -263,7 +263,7 @@ class laporan extends system\Controller {
     protected function tabelpresensi_v2($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+//            $input['satker'] = $this->satker;
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -276,6 +276,7 @@ class laporan extends system\Controller {
                 exit;
             }
 
+            $data['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             $data['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
 
             $arrPin = array_column($data['pegawai']['value'], 'pin_absen');
@@ -289,9 +290,11 @@ class laporan extends system\Controller {
                 $view = 'tabelpulang';
             endif;
 
+            
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
+//            comp\FUNC::showPre($data['satker']); exit;
             $this->subView($view, $data);
         }
     }

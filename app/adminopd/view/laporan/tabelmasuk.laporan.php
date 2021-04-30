@@ -79,7 +79,7 @@ if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
 </div>
 <h5 class="center-align"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Masuk Kerja Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
@@ -90,8 +90,9 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
         </tr>
         <tr>
             <?php
-                for ($i = 1; $i <= $hitungtgl; $i++)
+                for ($i = 1; $i <= $hitungtgl; $i++) {
                     echo "<th class='orange lighten-4 center-align' width='25'>$i</th>";
+                }
             ?>
         </tr>
     </thead>

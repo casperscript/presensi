@@ -297,15 +297,17 @@ class laporan_service extends system\Model {
     
     public function getLibur($data) {
         parent::setConnection('db_presensi');
-        $idKey = array($data['bulan'], $data['tahun']);
+        $kdGrubSatker = isset($data['satker']) ? $data['satker']['kd_kelompok_lokasi_kerja'] : '';
+        $idKey = array($data['bulan'], $data['tahun'], $kdGrubSatker, 'red');
         $libur = [];
         $dataLibur = $this->getData('SELECT * FROM tb_libur ' 
-            . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?)', $idKey);
-        if ($dataLibur['count'] > 0)
+            . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?) AND (FIND_IN_SET(?, kdlokasi) OR kdlokasi = ?)', $idKey);
+        if ($dataLibur['count'] > 0) {
             $libur = array_map(function ($i) {
                 $tgl = (int)date('d', strtotime($i['tgl_libur']));
                 return $tgl;
             }, $dataLibur['value']);
+        }
 
         return $libur;
     }
@@ -1127,6 +1129,7 @@ class laporan_service extends system\Model {
     public function getRekapAll($data, $laporan, $hitungpot = false, $custom = false) {
         $moderasi = $this->getArraymodAll($data, $laporan);
         $libur = $this->getLibur($data);
+//        return $libur;
         $data_pot = $this->getArraypot();
         if (is_array($custom)) {
             $tglawal = $custom['awal'];
