@@ -47,7 +47,7 @@ class laporan extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             foreach ($input as $key => $i) {
                 $data[$key] = $i;
             }
@@ -263,7 +263,6 @@ class laporan extends system\Controller {
     protected function tabelpresensi_v2($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-//            $input['satker'] = $this->satker;
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -792,7 +791,7 @@ class laporan extends system\Controller {
             //check unverified moderasi
             $input['kdlokasi'] = $this->login['kdlokasi'];
             $unverified = $this->laporan_service->hitungModUnverified($input);
-            if ($unverified > 0) {
+            if ($unverified['count'] > 0) {
                 $error_msg = array('status' => 'unverified', 'message' => 'Maaf, Anda belum bisa mengesahkan laporan karena ada moderasi yang belum Anda verifikasi.');
                 header('Content-Type: application/json');
                 echo json_encode($error_msg);

@@ -298,6 +298,7 @@ class laporan_service extends system\Model {
     public function getLibur($data) {
         parent::setConnection('db_presensi');
         $kdGrubSatker = isset($data['satker']) ? $data['satker']['kd_kelompok_lokasi_kerja'] : '';
+//        FUNC::showPre($data['satker']);exit;
         $idKey = array($data['bulan'], $data['tahun'], $kdGrubSatker, 'red');
         $libur = [];
         $dataLibur = $this->getData('SELECT * FROM tb_libur ' 
