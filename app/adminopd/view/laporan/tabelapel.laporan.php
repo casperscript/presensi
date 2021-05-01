@@ -79,7 +79,7 @@ if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
 </div>
 <h5 class="center-align"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Apel Pagi Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
