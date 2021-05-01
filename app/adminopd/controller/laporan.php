@@ -293,7 +293,7 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
-//            comp\FUNC::showPre($data['satker']); exit;
+//            comp\FUNC::showPre($data['laporan']); exit;
             $this->subView($view, $data);
         }
     }

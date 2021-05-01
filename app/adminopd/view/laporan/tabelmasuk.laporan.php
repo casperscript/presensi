@@ -197,7 +197,7 @@ OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan 
     </table>
 </div>  
 <?php
-exit;
+//exit;
 }
 
 //BEGIN -- khusus bulan februari 2018 cetak tingkat 1 sudah ada kolom tanda tangan
@@ -226,14 +226,15 @@ foreach ($all as $i => $level) {
     $level = "";
     $tipe = ($i == 2 ||$i == 4) ? 'ver' : 'sah';
 
-    if ($i == 2)
+    if ($i == 2) {
         $ket = 'Telah diverifikasi '.(isset($laporan[$level]) ? $laporan[$level]['jabatan_pengguna'] : '').' Admin OPD';
-    elseif ($i == 3)
+    } elseif ($i == 3) {
         $ket = 'Mengesahkan '.(isset($laporan[$level]) ? $laporan[$level]['jabatan_pengguna'] : '').' Kepala OPD';
-    elseif ($i == 4)
+    } elseif ($i == 4) {
         $ket = 'Telah diverifikasi '.(isset($laporan[$level]) ? $laporan[$level]['jabatan_pengguna'] : '').' Admin Kota';
-    elseif ($i == 5)
+    } elseif ($i == 5) {
         $ket = 'Mengesahkan '.(isset($laporan[$level]) ? $laporan[$level]['jabatan_pengguna'] : '').' Kepala BKPPD';
+    }
 
     if ($tingkat >= $i && isset($laporan[$level])) {
         $ttd = $path_ttd.$laporan[$level]['ttd'];
@@ -251,14 +252,15 @@ foreach ($all as $i => $level) {
                 <img class="ttd" src="'.$path_ttd.$laporan[$level]['ttd'] .'">
             </div>';
 
-            if (($level == 'kepala_opd' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK')
+            if (($level == 'kepala_opd' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK') {
                 $level .= '<div class="ini-stempel">
                     <img class="stempel" src="'.$path_stempel.$laporan[$level]['stempel'].'">
                 </div>';
-            else
+            } else {
                 $level .= '<br><br>';
+            }
         } else {
-            $$level .= '<br><br><br><br><br><br><br><br><br>';
+            $level .= '<br><br><br><br><br><br><br><br><br>';
         }
         $level .= '</div>';
         $level .= '<p class="teks-bawah">'
@@ -277,6 +279,7 @@ foreach ($all as $i => $level) {
 <div class="kanan-bawah"><?= $tingkat > 3 ? $kepala_opd : '' ?></div>
 
 <?php
+exit;
 require_once ('comp/mpdf60/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
