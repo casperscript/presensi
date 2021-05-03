@@ -293,7 +293,7 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
-//            comp\FUNC::showPre($data['laporan']); exit;
+            comp\FUNC::showPre($data['laporan']);
             $this->subView($view, $data);
         }
     }
@@ -405,7 +405,7 @@ class laporan extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -448,7 +448,7 @@ class laporan extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -510,7 +510,7 @@ class laporan extends system\Controller {
     protected function tabeltpp_v1($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -560,7 +560,7 @@ class laporan extends system\Controller {
     protected function tabeltpp_v2($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
-            $input['satker'] = $this->satker;
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;

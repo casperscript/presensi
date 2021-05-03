@@ -197,7 +197,7 @@ OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan 
     </table>
 </div>  
 <?php
-//exit;
+exit;
 }
 
 //BEGIN -- khusus bulan februari 2018 cetak tingkat 1 sudah ada kolom tanda tangan

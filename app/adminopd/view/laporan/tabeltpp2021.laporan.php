@@ -141,7 +141,7 @@ if ($download == 0) {
 <h5 class="center-align">
     <b>
         DAFTAR PENERIMAAN TAMBAHAN PENGHASILAN<br>
-        <?= $satker ?><br>
+        <?= $satker['nmlokasi'] ?><br>
         <small>Bulan <?= $namabulan[$bulan - 1] ?> Tahun <?= $tahun ?></small>
     </b>
 </h5>
