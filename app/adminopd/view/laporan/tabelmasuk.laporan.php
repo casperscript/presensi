@@ -279,7 +279,6 @@ foreach ($all as $i => $level) {
 <div class="kanan-bawah"><?= $tingkat > 3 ? $kepala_opd : '' ?></div>
 
 <?php
-exit;
 require_once ('comp/mpdf60/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
