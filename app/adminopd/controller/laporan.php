@@ -244,6 +244,8 @@ class laporan extends system\Controller {
 
                 $data['personil'] = implode(',', $personil);
             }
+            
+//            comp\FUNC::showPre($laporan);exit;
 
             if ($data['jenis'] == 1) :
                 $view = 'tabelmasuk';

@@ -809,19 +809,20 @@ class laporan_service extends system\Model {
                 if ($laporan['ver_admin_opd'] == $i['nipbaru']) {
                     $pengguna = $this->getData("SELECT * FROM tb_pengguna 
                         WHERE grup_pengguna_kd = 'KDGRUP01' AND nipbaru = '".$i['nipbaru']."' 
-                        AND kdlokasi = '".$data['kdlokasi']."' AND jabatan_pengguna IS NOT NULL
+                        AND kdlokasi = '".$data['kdlokasi']."'
                     ", []);
 
                     $i['jabatan_pengguna'] = '';
-                    if ($pengguna['count'] > 0) 
+                    if ($pengguna['count'] > 0) {
                         $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
+                    }
 
                     $laporan['admin_opd'] = $i;
                 }
                 if ($laporan['sah_kepala_opd'] == $i['nipbaru']) {
                     $pengguna = $this->getData("SELECT * FROM tb_pengguna 
                         WHERE grup_pengguna_kd = 'KDGRUP02' AND nipbaru = '".$i['nipbaru']."' 
-                        AND kdlokasi = '".$data['kdlokasi']."' AND jabatan_pengguna IS NOT NULL
+                        AND kdlokasi = '".$data['kdlokasi']."'
                     ", []);
 
                     $i['jabatan_pengguna'] = '';
@@ -846,7 +847,6 @@ class laporan_service extends system\Model {
                 if ($laporan['sah_kepala_bkppd'] == $i['nipbaru']) {
                     $pengguna = $this->getData("SELECT * FROM tb_pengguna 
                         WHERE grup_pengguna_kd = 'KDGRUP04' AND nipbaru = '".$i['nipbaru']."' 
-                        AND jabatan_pengguna IS NOT NULL
                     ", []);
 
                     $i['jabatan_pengguna'] = '';
