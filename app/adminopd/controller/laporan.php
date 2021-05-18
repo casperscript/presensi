@@ -244,7 +244,7 @@ class laporan extends system\Controller {
 
                 $data['personil'] = implode(',', $personil);
             }
-            
+
 //            comp\FUNC::showPre($laporan);exit;
 
             if ($data['jenis'] == 1) :
@@ -291,7 +291,7 @@ class laporan extends system\Controller {
                 $view = 'tabelpulang';
             endif;
 
-            
+
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
@@ -345,7 +345,7 @@ class laporan extends system\Controller {
         $data['satker'] = $this->satker;
         $this->showView('individu', $data, 'theme_admin');
     }
-    
+
     protected function tabelpersonil() {
         $input = $this->post(true);
         if ($input) {
@@ -1205,4 +1205,29 @@ class laporan extends system\Controller {
         $this->subView('script', $data);
     }
 
+    public function test() {
+        $nipk = '3375011310900004';
+        $url = 'http://192.168.254.213/api/diskominfo_pekalongan/ws_biodata_wni/';
+        $method_nik = 'get_biodata_by_nik';
+        
+        $accesskey = '51b94130';
+        $request = array('NIK' => $nipk);
+        $data = $this->laporan_service->callAPI($url, $method_nik, $accesskey, $request, false, 'POST');
+        //$data2 = self::callAPI(self::WS_NIK_URL, self::METHOD_NIK, $accesskey, $request, false, 'POST');
+        
+        comp\FUNC::showPre($data);
+        
+        
+//        if (isset($data[$method_nik]) && count($data[$method_nik]) > 0) {
+//            $results = $data[$method_nik][0];
+//            $results = IO::mappingKel($results, $results['NO_KEC'], $results['NO_KEL']);
+//
+//            if ($toJson) {
+//                return Json::encode($results);
+//            }
+//
+//            return $results;
+//        }
+    }
 }
+    
