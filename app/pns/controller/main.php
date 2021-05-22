@@ -36,7 +36,7 @@ class main extends system\Controller {
         $data['title'] = '<!-- Loading -->';
         $this->subView('loading', $data);
     }
-    
+
     protected function header() {
         $data['title'] = '<!-- Header -->';
         $data['user'] = 'Administrator';
@@ -45,7 +45,7 @@ class main extends system\Controller {
         $data['link_logout'] = $this->link('pns/logout/');
         $this->subView('header', $data);
     }
-    
+
     protected function menu() {
         $data['title'] = '<!-- Menu -->';
         $data['user'] = 'Administrator';
@@ -56,35 +56,32 @@ class main extends system\Controller {
         // -- start husnanw moderasi menu -- //
         $data['link_husnanw_moderasi'] = $this->link('pns/HusnanWModerasi/');
         $data['link_husnanw_daftar_mod_proses'] = $this->link
-        ('pns/HusnanWModerasi/daftarMod/');
+                ('pns/HusnanWModerasi/daftarMod/');
         $data['link_husnanw_daftar_mod_hasil'] = $this->link
-        ('pns/HusnanWModerasi/daftarModHasil/');
+                ('pns/HusnanWModerasi/daftarModHasil/');
         // -- end husnanw moderasi menu -- //
-        
         // MENU PENGATURAN
         $data['link_pengaturan_profil'] = $this->link('pns/pengaturanprofil/');
-        
+
         // MENU PANDUAN
         $data['link_panduan'] = $this->link('pns/panduan/');
 
         $data["selfId"] = $this->husnanWModel->getCurrentPns($this->login["nipbaru"]); // added by husnanw
         $data['link_apelpagi'] = $this->link('pns/apelpagi/');
-		$data['link_laporan'] = $this->link('pns/laporan/');
-		
-		/******** Acil *********/
+        $data['link_laporan'] = $this->link('pns/laporan/');
+
         $data['link_datakehadiran'] = $this->link($this->getProject() . 'datakehadiran/');
         $data['link_moderasi'] = $this->link($this->getProject() . 'moderasi/');
-        /******** End Acil *****/
-		
+
         $data['link_logout'] = $this->link('pns/logout/');
         $this->subView('menu', $data);
     }
-    
+
     protected function modalInput() {
         $data['title'] = '<!-- Modal -->';
         $this->subView('modalInput', $data);
     }
-    
+
     protected function footer() {
         $data['title'] = '<!-- Footer -->';
         $this->subView('footer', $data);
@@ -94,7 +91,7 @@ class main extends system\Controller {
         $data['title'] = '<!-- Loading -->';
         $this->subView('spinner', $data);
     }
-    
+
     public function script() {
         $data['title'] = '<!-- Script -->';
         $this->subView('script', $data);
