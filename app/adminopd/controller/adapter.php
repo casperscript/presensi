@@ -5,7 +5,7 @@ namespace app\adminopd\controller;
 use system;
 use comp;
 
-class api extends system\Controller {
+class adapter extends system\Controller {
 
     public function __construct() {
         parent::__construct();
