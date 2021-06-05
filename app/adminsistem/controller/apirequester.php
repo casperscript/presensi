@@ -16,7 +16,8 @@ class apirequester extends system\Controller {
     }
 
     public function getBiodata() {
-        $input = $this->post(true);
+//        $input = $this->post(true);
+        $input = [];
         print_r($input);
         echo 'test';
         if ($input) {
