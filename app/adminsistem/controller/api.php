@@ -53,7 +53,7 @@ class api extends system\Controller {
                 exit;
             }
 
-            $msg = ['status' => 'error', 'msg' => 'Pegawai tidak bukan penerima TPP'];
+            $msg = ['status' => 'error', 'msg' => 'Pegawai bukan penerima TPP', 'data' => []];
             echo json_encode($msg);
         } else {
             $msg = ['status' => 'error', 'msg' => 'Parameter yang dikirim tidak sesuai', 'parameter' => $this->param];

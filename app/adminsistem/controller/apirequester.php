@@ -10,6 +10,10 @@ class apirequester extends system\Controller {
     public function __construct() {
         parent::__construct();
     }
+    
+    public function index() {
+        echo 'Silahkan pilih method';
+    }
 
     public function getBiodata() {
         $input = $this->post(true);
