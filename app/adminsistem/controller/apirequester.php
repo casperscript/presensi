@@ -17,7 +17,7 @@ class apirequester extends system\Controller {
 
     public function getBiodata() {
         $input = $this->post(true);
-        echo comp\FUNC::showPre($input);
+        print_r($input);
         echo 'test';
         if ($input) {
             $parameter = array('method' => 'get_nominal_tpp', 'nip' => $input['nip'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
