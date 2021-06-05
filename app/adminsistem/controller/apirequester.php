@@ -16,25 +16,22 @@ class apirequester extends system\Controller {
     }
 
     public function getBiodata() {
-//        $input = $this->post(true);
-        $input = ['test'];
-        print_r($input);
-        echo 'test';
-//        if ($input) {
-//            $parameter = array('method' => 'get_nominal_tpp', 'nip' => $input['nip'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
-//            $accesskey = 'aEFpbEJtUHQzTjA0WlJvRVN1UHV4QT09';
-//
-//            $ch = curl_init();
-//            curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
-//            curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
-//            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-//            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
-//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//
-//            $output = curl_exec($ch);
-//            curl_close($ch);
-//            $data['output'] = $output;
-//        }
+        $input = $this->post(true);
+        if ($input) {
+            $parameter = array('method' => 'get_nominal_tpp', 'nip' => $input['nip'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
+            $accesskey = 'aEFpbEJtUHQzTjA0WlJvRVN1UHV4QT09';
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $data['output'] = $output;
+        }
         $data['nip'] = isset($input['nip']) ? $input['nip'] : '';
         $data['bulan'] = isset($input['bulan']) ? $input['bulan'] : date('m');
         $data['tahun'] = isset($input['tahun']) ? $input['tahun'] : date('Y');
