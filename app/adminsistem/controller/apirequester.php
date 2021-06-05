@@ -22,7 +22,7 @@ class apirequester extends system\Controller {
             $accesskey = 'aEFpbEJtUHQzTjA0WlJvRVN1UHV4QT09';
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "http://localhost/git/presensi2021/adminsistem/api/");
+            curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
@@ -45,7 +45,7 @@ class apirequester extends system\Controller {
             $accesskey = 'TXhmMWs1QjMwUHExVUJDcEZnRWVBZz09';
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "http://localhost/git/presensi2021/adminsistem/api/");
+            curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
