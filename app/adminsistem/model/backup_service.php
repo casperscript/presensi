@@ -157,7 +157,7 @@ class backup_service extends system\Model {
             return $result;
 
         $dataArr = [];
-        if (isset($result['value']))
+        if (isset($result['value'])) :
             foreach ($result['value'] as $i) {
                 $dataArr[$i['pin_absen']] = [
                     'nip' => $i['nipbaru'],
@@ -165,24 +165,26 @@ class backup_service extends system\Model {
                     'no_' => $i['nama_personil'],
                 ];
             }
+        endif;
 
         return $dataArr;
     }
 
     public function getBelumBackup($input, $induk) {
+        $idKey = [$input['bulan'], $input['tahun']];
         $sudah = [];
-        foreach ($induk['value'] as $i)
+        foreach ($induk['value'] as $i) :
             $sudah[] = $i['kdlokasi'];
+        endforeach;
 
-        $lap = $this->laporan_service->getData('SELECT * FROM tb_laporan
-            WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"
-            AND sah_final IS NOT NULL
-        ');
+        $lap = $this->laporan_service->getData('SELECT * FROM tb_laporan '
+                . 'WHERE bulan = ? AND tahun = ? AND sah_final IS NOT NULL ', $idKey);
 
         $belum = [];
         foreach ($lap['value'] as $j) {
-            if (!in_array($j['kdlokasi'], $sudah))
+            if (!in_array($j['kdlokasi'], $sudah)) :
                 $belum[] = $j['kdlokasi'];
+            endif;
         }
 
         return $belum;
@@ -570,7 +572,7 @@ class backup_service extends system\Model {
 
         $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
         $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
-        
+
         $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
 //        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
 
@@ -590,7 +592,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-        
+
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :

@@ -55,14 +55,6 @@ class masterpengguna extends system\Controller {
         }
     }
 
-    protected function tabel2($key) {
-        $verKey = date('j') * 2;
-        if ($verKey == $key) {
-            $list = $this->servicemasterpegawai->getTabelPengguna();
-            comp\FUNC::showPre($list);
-        }
-    }
-
     public function form() {
         $input = $this->post(true);
         if ($input) {

@@ -40,13 +40,28 @@ class laporan_service extends system\Model {
             return $this->getTabel('tref_lokasi_kerja');
         }
     }
+    
+    public function getDataVersi($id, $param) {
+        parent::setConnection('db_presensi');
+        $data = $this->getData('SELECT * FROM tb_variabel_versi '
+                . 'WHERE 1 '
+                . ' AND kode_variabel = ? '
+                . ' AND ? BETWEEN YEAR(tgl_mulai) AND YEAR(tgl_akhir) '
+                . ' AND ? BETWEEN MONTH(tgl_mulai) AND MONTH(tgl_akhir)', [$id, $param['tahun'], $param['bulan']]);
+        if ($data['count'] > 0) {
+            return $data['value'][0];
+        } else {
+            return $this->getTabel('tb_variabel_versi');
+        }
+    }
    
     public function getLibur($data) {
         parent::setConnection('db_presensi');
-        $idKey = array($data['bulan'], $data['tahun']);
+        $kdGrubSatker = isset($data['satker']) ? $data['satker']['kd_kelompok_lokasi_kerja'] : '';
+        $idKey = array($data['bulan'], $data['tahun'], $kdGrubSatker, 'red');
         $libur = [];
         $dataLibur = $this->getData('SELECT * FROM tb_libur ' 
-            . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?)', $idKey);
+            . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?) AND (FIND_IN_SET(?, kdlokasi) OR kdlokasi = ?)', $idKey);
         if ($dataLibur['count'] > 0)
             $libur = array_map(function ($i) {
                 $tgl = (int)date('d', strtotime($i['tgl_libur']));
@@ -666,7 +681,7 @@ class laporan_service extends system\Model {
     public function getTpp($nip) {
         parent::setConnection('db_pegawai');
 
-        $q_cari = "WHERE pp.nipbaru in (".$nip.")";;
+        $q_cari = "WHERE pp.nipbaru in (".$nip.")";
         $query = 'SELECT pin_absen, pp.nama_personil, pp.nipbaru, npwp, gol_jbtn, pp.golruang, nominal_tp, tunjangan_jabatan 
             FROM view_presensi_personal pp 
             JOIN view_tpp_pegawai v ON v.nipbaru = pp.nipbaru ' . $q_cari . ' ORDER BY ISNULL(v.kdsotk), v.kdsotk ASC, nipbaru ASC';
@@ -678,6 +693,58 @@ class laporan_service extends system\Model {
             $tpp[$key] = $i['nominal_tp'];
         }
         return $tpp;
+    }
+    
+    public function getTpp_v2($data){
+        parent::setConnection('db_pegawai');
+        
+        $idKey = array();
+        $q_carigaji = '';
+        if (!empty($data['bulan']) && !empty($data['tahun'])) {
+            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
+            $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
+            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            array_push($idKey, $bulan, $tahun);
+        }
+        
+        $q_cari = '';
+        if (!empty($data['nipbaru'])) {
+            $q_cari .= 'AND (pegawai.nipbaru = ?) ';
+            array_push($idKey, $data['nipbaru']);
+        }
+        
+        $query = 'SELECT 
+		pegawai.`nipbaru`               AS nipbaru,
+		pegawai.`pin_absen`             AS pin_absen,
+		jabatan.`kdsotk`                AS kdsotk,
+		CONCAT(`personal`.`gelar_depan`,IF((`personal`.`gelar_depan` <> "")," ",""),`personal`.`namapeg`,IF((`personal`.`gelar_blkg` <> "")," ",""),`personal`.`gelar_blkg`) AS `nama_personil`,
+		IF((`pegawai`.`kdsublokasi` = ""),`pegawai`.`kdlokasi`,`pegawai`.`kdsublokasi`) AS `kdlokasi`,
+		pegawai.`kd_jabatan`            AS kd_jabatan,
+		personal.`npwp`                 AS npwp,
+		personal.`nama_R_jabatan`       AS nama_R_jabatan,
+		pegawai.`golruang`              AS golruang,
+		personal.`path_foto_pegawai`    AS foto_pegawai,
+		jabatan.`kode_kelas`            AS kode_kelas,
+		IF (pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
+		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
+		gaji.`total`                    AS totgaji,
+		pegawai.`kode_sert_guru`        AS kode_sert_guru
+            FROM `texisting_kepegawaian` `pegawai` 
+		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
+		LEFT JOIN `tref_jabatan_campur` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
+		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
+		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
+            WHERE 1 ' . $q_cari . '
+                AND pegawai.`kd_stspeg` IN ("04", "29")
+                AND pegawai.`tunjangan_jabatan` = 0
+                AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
+            ORDER BY ISNULL(kelas.`kelas`), IF(COALESCE(pegawai.`kelas_on_pegawai`), pegawai.`kelas_on_pegawai`, kelas.`kelas`) DESC, nama_personil ASC';
+        $result = $this->getData($query, $idKey);
+        if (!empty($data['nipbaru'])) {
+            return $result['value'][0];
+        } else {
+            return $result;
+        }
     }
 
     public function getArraypajak() {

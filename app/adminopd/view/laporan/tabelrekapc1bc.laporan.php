@@ -263,7 +263,7 @@ foreach ($all as $i => $level) {
     if ($tingkat == 6 && $level == 'kepala_opd')
         $level = 'final';
 
-    $$level = '<div class="teks-atas"><b>'.$ket.'</b></div>
+    $level = '<div class="teks-atas"><b>'.$ket.'</b></div>
         <div class="ttd-area ttd-area-portrait">';
 
     if ($ttd_headers[0] == 'HTTP/1.1 200 OK') { 

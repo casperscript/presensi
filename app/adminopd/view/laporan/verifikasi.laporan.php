@@ -28,23 +28,25 @@ $path_ttd = $this->link()."upload/ttd/";
         </span>
     </div>
 <?php
-    if (!isset($laporan['final']))
+    if (!isset($laporan['final'])) {
         exit;
+    }
 } ?>
 <div class="row lap">
     <div class="format-lap">
         Format <?= $format ?>1 - <?= $tingkat == 6 ? 'Final' : $tingkat ?>
         <span class="ket-small">
             <?php
-            if ($tingkat == 6)
+            if ($tingkat == 6) {
                 echo '<br>Telah Diverifikasi / Disahkan Admin OPD, Kepala OPD, Admin Kota dan Kepala BKPPD.';
+            }
             ?>
         </span>
     </div>
 </div>
 <h5 class="center-align" style="color: #e65100"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Masuk Kerja Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
@@ -55,8 +57,9 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
         </tr>
         <tr>
             <?php
-                for ($i = 1; $i <= $hitungtgl; $i++)
+                for ($i = 1; $i <= $hitungtgl; $i++) {
                     echo "<th class='orange lighten-4 center-align' width='25'>$i</th>";
+                }
             ?>
         </tr>
     </thead>
@@ -91,7 +94,7 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
 </div>
 <h5 class="center-align" style="color: #01579b"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Apel Pagi Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
@@ -102,8 +105,9 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
         </tr>
         <tr>
             <?php
-                for ($i = 1; $i <= $hitungtgl; $i++)
+                for ($i = 1; $i <= $hitungtgl; $i++) {
                     echo "<th class='light-blue lighten-4 center-align' width='25'>$i</th>";
+                }
             ?>
         </tr>
     </thead>
@@ -138,7 +142,7 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
 </div>
 <h5 class="center-align" style="color: #33691e"><b>
 Laporan Rekap Finger Print Pulang Kerja Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>

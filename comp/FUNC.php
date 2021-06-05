@@ -185,7 +185,7 @@ class FUNC {
         $output = base64_encode(openssl_encrypt(($string), $encrypt_method, $key1, 0, $key2));
         return $output;
     }
-
+    
     public static function decryptor($string) {
         $output = false;
         $encrypt_method = 'AES-256-CBC';
@@ -196,7 +196,7 @@ class FUNC {
         $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key1, 0, $key2);
         return $output;
     }
-
+    
     public static function showPre($data) {
         echo '<pre>';
         print_r($data);

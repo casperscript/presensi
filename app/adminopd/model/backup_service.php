@@ -1269,5 +1269,16 @@ class backup_service extends system\Model {
         $all['allverified'] = $allverified;
         return $all;
     }
+    
+    public function getTppTerima($param) {
+        $idKey = [$param['kdlokasi'], $param['bulan'], $param['tahun']];
+        $data = $this->getData('SELECT nipbaru, nominal_tp, pot_final, tpp_kotor, tpp_bersih, pot_bpjskes, tpp_terima '
+                . 'FROM tb_induk a '
+                . ' JOIN tb_personil b ON a.id = b.induk_id '
+                . ' JOIN tb_presensi c ON b.id = c.personil_id '
+                . 'WHERE a.kdlokasi = ? AND a.bulan = ? AND a.tahun = ?', $idKey);
+        $keys = array_column($data['value'], 'nipbaru');
+        return array_combine($keys, $data['value']);
+    }
 
 }

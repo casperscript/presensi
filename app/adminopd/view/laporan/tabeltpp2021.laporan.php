@@ -141,7 +141,7 @@ if ($download == 0) {
 <h5 class="center-align">
     <b>
         DAFTAR PENERIMAAN TAMBAHAN PENGHASILAN<br>
-        <?= $satker ?><br>
+        <?= $satker['nmlokasi'] ?><br>
         <small>Bulan <?= $namabulan[$bulan - 1] ?> Tahun <?= $tahun ?></small>
     </b>
 </h5>
@@ -340,7 +340,6 @@ if ($bendahara != '') {
     <br>
     <?php
 }
-
 require_once ('comp/mpdf60/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
@@ -358,7 +357,7 @@ if (!isset($laporan['sah_final']) && $period != '12018' && $period != '22018') {
 
 $pdf->WriteHTML($stylesheet, 1);
 $pdf->WriteHTML(utf8_encode($html));
-$filename = 'Laporan' . $format . '-' . $satker . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
+$filename = 'Laporan' . $format . '-' . $satker[''] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
 
 $pdf->Output($filename, 'D');
 ?>
