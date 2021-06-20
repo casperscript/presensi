@@ -10,19 +10,20 @@ class apirequester extends system\Controller {
     public function __construct() {
         parent::__construct();
     }
-    
+
     public function index() {
         echo 'Silahkan pilih method';
     }
 
     public function getBiodata() {
-        $input = $this->post(true);
+        $input = $this->post(false);
         if ($input) {
             $parameter = array('method' => 'get_nominal_tpp', 'nip' => $input['nip'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
             $accesskey = 'aEFpbEJtUHQzTjA0WlJvRVN1UHV4QT09';
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
+//            curl_setopt($ch, CURLOPT_URL, "http://localhost/git/presensi2021/adminsistem/api/");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
@@ -37,15 +38,39 @@ class apirequester extends system\Controller {
         $data['tahun'] = isset($input['tahun']) ? $input['tahun'] : date('Y');
         $this->subView('biodata', $data);
     }
-    
+
+    public function getListTPP() {
+        $input = $this->post(false);
+        if ($input) {
+            $parameter = array('method' => 'get_list_tpp', 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
+            $accesskey = 'T3hNWFZUeEluNnZyOVhsalZVa1FDUT09';
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
+//            curl_setopt($ch, CURLOPT_URL, "http://localhost/git/presensi2021/adminsistem/api/");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $data['output'] = $output;
+        }
+        $data['bulan'] = isset($input['bulan']) ? $input['bulan'] : date('m');
+        $data['tahun'] = isset($input['tahun']) ? $input['tahun'] : date('Y');
+        $this->subView('listtpp', $data);
+    }
+
     public function getPresensi() {
-        $input = $this->post(true);
+        $input = $this->post(false);
         if ($input) {
             $parameter = array('method' => 'get_presensi', 'nip' => $input['nip'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
             $accesskey = 'TXhmMWs1QjMwUHExVUJDcEZnRWVBZz09';
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "http://new-presensi.pekalongankota.go.id/adminsistem/api/");
+//            curl_setopt($ch, CURLOPT_URL, "http://localhost/git/presensi2021/adminsistem/api/");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("AccessKey:" . $accesskey));
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);

@@ -12,8 +12,6 @@ class api extends system\Controller {
         parent::__construct();
         $this->webservice = new webservice();
         $getParam = $_POST;
-//        comp\FUNC::showPre($this->post(true)); exit;
-//        $getParam = json_decode(file_get_contents("php://input"), true);
         $getAccesskey = $_SERVER['HTTP_ACCESSKEY'];
         $check = $this->webservice->checkaccesskey($getAccesskey, $getParam);
         if ($check['count']) {
@@ -31,7 +29,7 @@ class api extends system\Controller {
         self::$func();
     }
 
-    protected function svcTpp() {
+    protected function svcDataTpp() {
         $nip = isset($this->param['nip']) ? $this->param['nip'] : false;
         $bulan = isset($this->param['bulan']) ? $this->param['bulan'] : false;
         $tahun = isset($this->param['tahun']) ? $this->param['tahun'] : false;
@@ -61,11 +59,28 @@ class api extends system\Controller {
         }
     }
 
+    protected function svcListTpp() {
+        $bulan = isset($this->param['bulan']) ? $this->param['bulan'] : false;
+        $tahun = isset($this->param['tahun']) ? $this->param['tahun'] : false;
+
+        if ($bulan && $tahun) {
+            $getListTppBc = $this->webservice->getListTppBc($this->param);
+            if ($getListTppBc['count'] > 0) {
+                $msg = ['status' => 'success', 'source' => 'backup', 'data' => $getListTppBc['value']];
+                echo json_encode($msg);
+                exit;
+            }
+        } else {
+            $msg = ['status' => 'error', 'msg' => 'Parameter yang dikirim tidak sesuai', 'parameter' => $this->param];
+            echo json_encode($msg);
+        }
+    }
+
     protected function svcPresensiBulan() {
         $nip = isset($this->param['nip']) ? $this->param['nip'] : false;
         $bulan = isset($this->param['bulan']) ? $this->param['bulan'] : false;
         $tahun = isset($this->param['tahun']) ? $this->param['tahun'] : false;
-        
+
         if ($nip && $bulan && $tahun) {
             // ambil dari data backup
             $getPresensiBc = $this->webservice->getPresensiBc($this->param);
@@ -107,5 +122,6 @@ class api extends system\Controller {
             return $result;
         }
     }
+    
 
 }

@@ -45,6 +45,10 @@ class webservice extends system\Model {
                 . ' WHERE 1 AND b.`nipbaru` = ? AND a.`bulan` = ? AND a.`tahun` = ?', $idKey);
         return $data;
     }
+    
+    public function getPresensi($param = array()) {
+        
+    }
 
     public function getPresensiBc($param = array()) {
         parent::setConnection('db_backup');
@@ -57,5 +61,17 @@ class webservice extends system\Model {
                 . ' WHERE 1 AND b.`nipbaru` = ? AND a.`bulan` = ? AND a.`tahun` = ?', $idKey);
         return $data;
     }
+    
+    public function getListTppBc($param = array()) {
+        parent::setConnection('db_backup');
+        $idKey = [$param['bulan'], $param['tahun']];
+        $data = $this->getData('SELECT a.`kdlokasi`, a.`nmlokasi`, a.`singkatan_lokasi`, a.`bulan`, a.`tahun`, b.`nipbaru`, b.`pin_absen`, b.`nama_personil`, b.`nominal_tp`'
+                . ' FROM tb_induk a '
+                . ' JOIN tb_personil b ON a.id = b.induk_id'
+                . ' WHERE a.bulan = ? AND a.tahun = ?', $idKey);
+        return $data;
+    }
+    
+    
 
 }

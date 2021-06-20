@@ -577,6 +577,9 @@ class laporan extends system\Controller {
                 case 'v2':
                     $this->tabeltpp_v2($input, true);
                     break;
+                case 'v3':
+                    $this->tabeltpp_v3($input, true);
+                    break;
             }
         }
     }
@@ -672,7 +675,52 @@ class laporan extends system\Controller {
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
             $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
-            $this->subView('tabeltpp2021', $data);
+            $this->subView('tabeltpp_v2', $data);
+        }
+    }
+    
+    protected function tabeltpp_v3($input, $verified) {
+        if ($verified) {
+            $input['kdlokasi'] = $this->login['kdlokasi'];
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            //admbil dari data backupan
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc_v2($input);
+                exit;
+            }
+
+            $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            //ambil tambahan data pilih bendahara
+            $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
+            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+                $parent = $get['value'][0]['kdlokasi_parent'];
+                $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            }
+
+            $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+            $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
+            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+            $this->subView('tabeltpp_v3', $data);
         }
     }
 
