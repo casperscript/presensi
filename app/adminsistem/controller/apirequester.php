@@ -14,6 +14,10 @@ class apirequester extends system\Controller {
     public function index() {
         echo 'Silahkan pilih method';
     }
+    
+    public function phpinfo() {
+        phpinfo();
+    }
 
     public function getBiodata() {
         $input = $this->post(false);
