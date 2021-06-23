@@ -75,13 +75,6 @@ if ($download == 0) {
             <select id="pilihbendahara">
                 <option value="">-- Pilih Pegawai --</option>
                 <?php
-                /* foreach ($pegawai['value'] as $peg) {
-                  $selected = '';
-                  if (is_array($bendahara) && $bendahara['nipbaru'] == $peg['nipbaru'])
-                  $selected = 'selected';
-
-                  echo '<option value="'.$peg['nipbaru'].'" '.$selected.'>'.$peg['nama_personil'].'</option>';
-                  } */
                 foreach ($pilbendahara as $bend) {
                     $selected = '';
                     if (is_array($bendahara) && $bendahara['nipbaru'] == $bend['nipbaru']) {

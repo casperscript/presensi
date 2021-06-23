@@ -569,6 +569,7 @@ class laporan extends system\Controller {
     protected function tabeltpp() {
         $input = $this->post(true);
         if ($input) {
+//            $versi = $this->laporan_service->getDataVersi('history_of_report_rules_test', $input);
             $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
@@ -691,7 +692,7 @@ class laporan extends system\Controller {
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
             if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-                $this->tabeltppbc_v2($input);
+                $this->tabeltppbc_v3($input);
                 exit;
             }
 
@@ -1270,8 +1271,33 @@ class laporan extends system\Controller {
 
             //ambil dari presensi backup
             $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
-//            comp\FUNC::showPre($data['rekap']); exit;
             $this->subView('tabeltppbcall_v2', $data);
+        }
+    }
+    
+    protected function tabeltppbc_v3($input) {
+        if ($input) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            if (!$data['induk']) {
+                $this->subView('notfound', $data);
+                exit;
+            }
+
+            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['pegawai'] = $this->backup_service->getDataPersonilBatch_v2($data, true);
+
+            $arrPin = array_column($data['pegawai']['value'], 'pin_absen');
+            $data['personil'] = implode(',', $arrPin);
+            $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
+            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
+
+            //ambil dari presensi backup
+            $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+            $this->subView('tabeltppbcall_v3', $data);
         }
     }
 

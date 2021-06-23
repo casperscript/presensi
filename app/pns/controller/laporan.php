@@ -46,13 +46,16 @@ class laporan extends system\Controller {
     protected function tabelrekapc1() {
         $input = $this->post(true);
         if ($input) {
-            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_rules_test', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $this->tabelrekapc1_v1($input, true);
                     break;
                 case 'v2':
                     $this->tabelrekapc1_v2($input, true);
+                    break;
+                case 'v3':
+                    $this->tabelrekapc1_v3($input, true);
                     break;
             }
         }
@@ -122,6 +125,37 @@ class laporan extends system\Controller {
 
 //            comp\FUNC::showPre($data['tpp_pegawai']);
             $this->subView('tabelrekapc1_v2', $data);
+        }
+    }
+    
+    protected function tabelrekapc1_v3($input) {
+        if ($input) {
+            foreach ($input as $key => $i) {
+                $data[$key] = $i;
+            }
+
+            $data['format'] = 'A'; $data['jenis'] = '';
+            $data['personil'] = $this->pinAbsen;
+            $data['kdlokasi'] = $this->login['kdlokasi'];
+            $data['satker'] = $this->laporan_service->getDataSatker($this->login['kdlokasi']);
+            $data['pegawai'] = $this->laporan_service->getDataPersonil($this->pinAbsen);
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['backup'] = $this->backup_service->getData("SELECT tb_induk.* FROM tb_induk 
+                JOIN tb_personil ON tb_personil.induk_id = tb_induk.id
+                LEFT JOIN tb_presensi ON tb_presensi.personil_id = tb_personil.id
+                WHERE tb_personil.pin_absen = ? AND tb_induk.bulan = ? AND tb_induk.tahun = ?", [$this->pinAbsen, $data['bulan'], $data['tahun']]);
+            //admbil dari data backupan
+            if ($data['backup']['count'] > 0 && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabelrekapc1bc($data);
+                exit;
+            }
+
+            $data['tpp_pegawai'] = $this->laporan_service->getTpp_v2($input + ['nipbaru' => $data['pegawai']['nipbaru']]);
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
+
+            $this->subView('tabelrekapc1_v3', $data);
         }
     }
 

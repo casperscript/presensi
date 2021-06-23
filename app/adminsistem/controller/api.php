@@ -70,6 +70,16 @@ class api extends system\Controller {
                 echo json_encode($msg);
                 exit;
             }
+
+            $getListTppMain = $this->webservice->getListTppMain($this->param);
+            if ($getListTppMain['count'] > 0) {
+                $msg = ['status' => 'success', 'source' => 'currently', 'data' => $getListTppMain['value']];
+                echo json_encode($msg);
+                exit;
+            }
+
+            $msg = ['status' => 'error', 'msg' => 'Tidak ditemukan data penerima TPP', 'param' => $this->param];
+            echo json_encode($msg);
         } else {
             $msg = ['status' => 'error', 'msg' => 'Parameter yang dikirim tidak sesuai', 'parameter' => $this->param];
             echo json_encode($msg);
@@ -93,13 +103,17 @@ class api extends system\Controller {
                 echo json_encode($msg);
                 exit;
             }
-            
+
             // ambil dari data utama
-            $getPresensi = $this->webservice->getPresensi($this->param);
+            $getPresensi = $this->webservice->getPresensiMain($this->param);
             if ($getPresensi['count'] > 0) {
                 echo json_encode($getPresensi);
                 exit;
             }
+
+            // tampilkan error ketika tidak ada data presensi sama sekali
+            $msg = ['status' => 'error', 'msg' => 'Tidak ditemukan data presensi', 'param' => $this->param];
+            echo json_encode($msg);
         }
     }
 
@@ -122,6 +136,5 @@ class api extends system\Controller {
             return $result;
         }
     }
-    
 
 }

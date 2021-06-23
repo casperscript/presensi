@@ -46,8 +46,9 @@ class webservice extends system\Model {
         return $data;
     }
     
-    public function getPresensi($param = array()) {
-        
+    public function getPresensiMain($param = array()) {
+        $data['count'] = 0;
+        return $data;
     }
 
     public function getPresensiBc($param = array()) {
@@ -62,13 +63,84 @@ class webservice extends system\Model {
         return $data;
     }
     
+    public function getListSatker($param = '') {
+        parent::setConnection('db_pegawai');
+        $field = $this->getTabel('tref_lokasi_kerja');
+        $idKey = array();
+        $q_cari = '';
+        foreach ($field as $key => $val) {
+            if (isset($param[$key])) {
+                $q_cari .= 'AND (' . $key . ' = ?) ';
+                array_push($idKey, $param[$key]);
+            }
+        }
+        $data = $this->getData('SELECT kdlokasi, singkatan_lokasi FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 ' . $q_cari . ' ORDER BY singkatan_lokasi', $idKey);
+        if ($data['count'] > 0) {
+            foreach ($data['value'] as $val) {
+                $result[$val['kdlokasi']] = $val['singkatan_lokasi'];
+            }
+        } else {
+            $result[] = '';
+        }
+        return $result;
+    }
+    
     public function getListTppBc($param = array()) {
         parent::setConnection('db_backup');
         $idKey = [$param['bulan'], $param['tahun']];
+        $q_where = '';
+        if (!empty($param['kdlokasi'])) {
+            $q_where .= ' AND a.`kdlokasi` = ?';
+            array_push($idKey, $param['kdlokasi']);
+        }
         $data = $this->getData('SELECT a.`kdlokasi`, a.`nmlokasi`, a.`singkatan_lokasi`, a.`bulan`, a.`tahun`, b.`nipbaru`, b.`pin_absen`, b.`nama_personil`, b.`nominal_tp`'
                 . ' FROM tb_induk a '
-                . ' JOIN tb_personil b ON a.id = b.induk_id'
-                . ' WHERE a.bulan = ? AND a.tahun = ?', $idKey);
+                . ' JOIN tb_personil b ON a.id = b.induk_id' 
+                . ' WHERE a.bulan = ? AND a.tahun = ?' . $q_where, $idKey);
+        return $data;
+    }
+    
+    public function getListTppMain($param = array()) {
+        parent::setConnection('db_pegawai');
+        $idKey = array();
+        $q_carigaji = '';
+        if (!empty($param['bulan']) && !empty($param['tahun'])) {
+            $bulan = ($param['bulan'] == 12) ? 1 : $param['bulan'] + 1;
+            $tahun = ($param['bulan'] == 12) ? $param['tahun'] + 1 : $param['tahun'];
+            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            array_push($idKey, $bulan, $tahun);
+        }
+        
+        $q_cari = '';
+        if (!empty($param['kdlokasi'])) {
+            $q_cari .= 'AND ((pegawai.kdlokasi = ?) OR (pegawai.kdsublokasi = ?)) ';
+            array_push($idKey, $param['kdlokasi'], $param['kdlokasi']);
+        }
+        
+        $data = $this->getData('SELECT 
+		pegawai.`nipbaru`               AS nipbaru,
+		pegawai.`pin_absen`             AS pin_absen,
+		CONCAT(`personal`.`gelar_depan`,IF((`personal`.`gelar_depan` <> "")," ",""),`personal`.`namapeg`,IF((`personal`.`gelar_blkg` <> ""),", ",""),`personal`.`gelar_blkg`) AS `nama_personil`,
+		IF((`pegawai`.`kdsublokasi` = ""),`pegawai`.`kdlokasi`,`pegawai`.`kdsublokasi`) AS `kdlokasi`,
+		pegawai.`kd_jabatan`            AS kd_jabatan,
+		personal.`nama_R_jabatan`       AS nama_R_jabatan,
+		pegawai.`golruang`              AS golruang,
+                pegawai.`tunjangan_jabatan`     AS tunjangan_jabatan,
+		jabatan.`kode_kelas`            AS kode_kelas,
+		IF (pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
+		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
+		gaji.`total`                    AS totgaji,
+		pegawai.`kode_sert_guru`        AS kode_sert_guru
+            FROM `texisting_kepegawaian` `pegawai` 
+		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
+		LEFT JOIN `tref_jabatan_campur` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
+		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
+		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
+            WHERE 1 ' . $q_cari . '
+                AND pegawai.`kd_stspeg` IN ("04", "29")
+                AND pegawai.`tunjangan_jabatan` = 0
+                AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
+            ORDER BY ISNULL(kelas.`kelas`), IF(COALESCE(pegawai.`kelas_on_pegawai`), pegawai.`kelas_on_pegawai`, kelas.`kelas`) DESC, nama_personil ASC', $idKey);
         return $data;
     }
     
