@@ -133,7 +133,8 @@ class HusnanWModerasiModel extends system\Model {
     public function getPinAbsen($nip) {
         parent::setConnection('db_pegawai');
         $sql = "SELECT pin_absen FROM texisting_kepegawaian tpeg WHERE nipbaru = ?";
-        return $this->getData($sql, [$nip])["value"][0]["pin_absen"];
+        $data = $this->getData($sql, [$nip]);
+        return ($data['count'] > 0) ? $this->getData($sql, [$nip])["value"][0]["pin_absen"] : '';
     }
 
     public function getDaftarMod($pinAbsen, $mid = null, $isFinal = false, $dateAwal = null, $dateAkhir = null) {

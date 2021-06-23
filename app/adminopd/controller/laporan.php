@@ -6,6 +6,7 @@ use app\adminopd\model\servicemain;
 use app\adminopd\model\laporan_service;
 use app\adminopd\model\pegawai_service;
 use app\adminopd\model\backup_service;
+use app\adminsistem\model\webadapter;
 use system;
 use comp;
 
@@ -20,6 +21,7 @@ class laporan extends system\Controller {
             $this->laporan_service = new laporan_service();
             $this->pegawai_service = new pegawai_service();
             $this->backup_service = new backup_service();
+            $this->webadapter = new webadapter();
 
             $this->setSession('SESSION_LOGIN', $session['data']);
             $this->login = $this->getSession('SESSION_LOGIN');
@@ -402,7 +404,7 @@ class laporan extends system\Controller {
             $this->subView('tabelpersonil', $data);
         }
     }
-    
+
     protected function tabelrekapc1() {
         $input = $this->post(true);
         if ($input) {
@@ -459,7 +461,7 @@ class laporan extends system\Controller {
             $this->subView('tabelrekapc1_v1', $data);
         }
     }
-    
+
     private function tabelrekapc1_v2($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
@@ -567,10 +569,11 @@ class laporan extends system\Controller {
     }
 
     protected function tabeltpp() {
+        ini_set('memory_limit', '-1');
         $input = $this->post(true);
         if ($input) {
-//            $versi = $this->laporan_service->getDataVersi('history_of_report_rules_test', $input);
-            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_rules_test', $input);
+//            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $this->tabeltpp_v1($input, true);
@@ -679,7 +682,7 @@ class laporan extends system\Controller {
             $this->subView('tabeltpp_v2', $data);
         }
     }
-    
+
     protected function tabeltpp_v3($input, $verified) {
         if ($verified) {
             $input['kdlokasi'] = $this->login['kdlokasi'];
@@ -715,6 +718,22 @@ class laporan extends system\Controller {
                 $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
             }
 
+            //ambil data kinerja
+            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $method = 'poin';
+            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+            $request = array('opd' => $this->login['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+            $poin = [];
+            if (!empty($kinerja)) {
+                $arrNip = array_column($kinerja['data'], 'nip');
+                $arrPoin = array_column($kinerja['data'], 'poin');
+                $poin = array_combine($arrNip, $arrPoin);
+            }
+
+            $data['kinerja'] = $poin;
+//            $a = array_column($kinerja['data'], 'nip');
+//            comp\FUNC::showPre($data);exit;
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
@@ -1274,7 +1293,7 @@ class laporan extends system\Controller {
             $this->subView('tabeltppbcall_v2', $data);
         }
     }
-    
+
     protected function tabeltppbc_v3($input) {
         if ($input) {
             foreach ($input as $key => $i) :
@@ -1352,28 +1371,14 @@ class laporan extends system\Controller {
     }
 
     public function test() {
-        $nipk = '3375011310900004';
-        $url = 'http://192.168.254.213/api/diskominfo_pekalongan/ws_biodata_wni/';
-        $method_nik = 'get_biodata_by_nik';
-        
-        $accesskey = '51b94130';
-        $request = array('NIK' => $nipk);
-        $data = $this->laporan_service->callAPI($url, $method_nik, $accesskey, $request, false, 'POST');
-        //$data2 = self::callAPI(self::WS_NIK_URL, self::METHOD_NIK, $accesskey, $request, false, 'POST');
-        
+        $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+        $method = 'poin';
+
+        $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+        $request = array('opd' => 'G09001', 'tahun' => '2021', 'bulan' => '6');
+        $data = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+
         comp\FUNC::showPre($data);
-        
-        
-//        if (isset($data[$method_nik]) && count($data[$method_nik]) > 0) {
-//            $results = $data[$method_nik][0];
-//            $results = IO::mappingKel($results, $results['NO_KEC'], $results['NO_KEL']);
-//
-//            if ($toJson) {
-//                return Json::encode($results);
-//            }
-//
-//            return $results;
-//        }
     }
+
 }
-    

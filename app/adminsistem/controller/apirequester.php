@@ -91,5 +91,30 @@ class apirequester extends system\Controller {
         $data['tahun'] = isset($input['tahun']) ? $input['tahun'] : date('Y');
         $this->subView('presensi', $data);
     }
+    
+    public function getPoinByOPD() {
+        $input = $this->post(false);
+        if ($input) {
+            $parameter = array('opd' => $input['opd'], 'bulan' => $input['bulan'], 'tahun' => $input['tahun']);
+            $accesskey = 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0';
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/poin");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array("kinerja-key:" . $accesskey));
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            $output = curl_exec($ch);
+            curl_close($ch);
+            $data['output'] = $output;
+        }
+        
+        $data['bulan'] = isset($input['bulan']) ? $input['bulan'] : date('m');
+        $data['tahun'] = isset($input['tahun']) ? $input['tahun'] : date('Y');
+        $data['opd'] = isset($input['opd']) ? $input['opd'] : '';
+        $data['listSatker'] = ['' => ':: Semua Satker ::'] + $this->webservice->getListSatker();
+        $this->subView('poinopd', $data);
+    }
 
 }

@@ -1,16 +1,10 @@
 <?php
 ob_start();
 
-use comp\FUNC;
-
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 
 $path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
 $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
-/*
-  $path_stempel = $this->link()."upload/stempel/";
-  $path_ttd = $this->link()."upload/ttd/";
- */
 $period = $bulan . $tahun;
 
 if ($period == '122018') {
@@ -172,7 +166,6 @@ if ($download == 0) {
         <?php
         $no = 1;
         $pin_absen = '';
-        $pot_kinerja = 10;
         $tot_tpp = 0;
         $tot_tpp40 = 0;
         $tot_tpp36 = 0;
@@ -198,6 +191,8 @@ if ($download == 0) {
 
             //mengenolkan tunj
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
+            //prosentase potongan kinerja
+            $pot_kinerja = isset($kinerja[$peg['nipbaru']]) ? 100 - $kinerja[$peg['nipbaru']] : 'NAN';
 
             $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
             $nominal_tp36 = $peg['nominal_tp'] * 36 / 100;
@@ -265,25 +260,16 @@ if ($download == 0) {
             $tot_terima += $terima;
             $tot_potbpjs += $pot_bpjs; //acil
             $tot_terimapotbpjs += $terima_potbpjs; //acil
-            //first page
-            /* if ($download == 1 && $no == 6 && count($pegawai['value']) == ($no + 1) )
-              echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br></td></tr>';
-              elseif ($download == 1 && (($no == 13 || ($no + 2) % 8 == 0) && count($pegawai['value']) == ($no + 1)))
-              echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br><br><br><br><br><br><br><br><br><br></td></tr>';
-             */
+
             $no++;
         }
         ?>
         <tr>
             <th colspan="3"></th>
-            <!--<th></th>-->
-            <!--<th></th>-->
             <th class="right-align"><?= number_format($tot_tpp40, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_tpp36, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_tpp24, 0, ",", ".") ?></th>
             <th colspan="4"></th>
-            <!--<th></th>-->
-            <!--<th></th>-->
             <th class="right-align"><?= ($tot_pot > 0 ? number_format($tot_pot, 0, ",", ".") : '-') ?></th>
             <th class="right-align"><?= number_format($tot_tppkotor, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_pajak, 0, ",", ".") ?></th>
@@ -309,7 +295,7 @@ if ($bendahara != '') {
             <tr>
                 <td width="50%"></td>
                 <td width="50%" style="padding-left: 48mm">
-                    Pekalongan, <?= FUNC::tanggal(date("Y-m-d"), 'long_date') ?>
+                    Pekalongan, <?= comp\FUNC::tanggal(date("Y-m-d"), 'long_date') ?>
                 </td>
             </tr>
             <tr>
@@ -356,7 +342,7 @@ $pdf->SetDisplayMode('fullpage');
 $stylesheet = file_get_contents('http://192.168.254.62/template/theme_admin/assets/css/laporanpdf.css', true);
 
 //BEGIN - tambah watermark di cetak pdf jk blum laporan final
-if (!isset($laporan['sah_final']) && $period != '12018' && $period != '22018') {
+if (!isset($laporan['sah_final'])) {
     $pdf->SetWatermarkText('DRAFT');
     $pdf->showWatermarkText = true;
 }
@@ -364,7 +350,7 @@ if (!isset($laporan['sah_final']) && $period != '12018' && $period != '22018') {
 
 $pdf->WriteHTML($stylesheet, 1);
 $pdf->WriteHTML(utf8_encode($html));
-$filename = 'Laporan' . $format . '-' . $satker[''] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
+$filename = 'Laporan' . $format . '-' . $satker['singkatan_lokasi'] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
 
 $pdf->Output($filename, 'D');
 ?>
