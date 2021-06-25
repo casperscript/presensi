@@ -151,7 +151,7 @@ if ($download == 0) {
         <tr>	
             <th class="grey lighten-2 center-align" rowspan="2">Beban Kerja (40%)</th>
             <th class="grey lighten-2 center-align" colspan="2">Prestasi Kerja (60%)</th>
-            <th class="grey lighten-2 center-align" colspan="3">e-Prestasi Kerja</th>
+            <th class="grey lighten-2 center-align" colspan="3">e-Presensi</th>
             <th class="grey lighten-2 center-align" rowspan="2">e-Ki nerja</th>
         </tr>
         <tr>
