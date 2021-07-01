@@ -338,6 +338,8 @@ class backuplaporan extends system\Controller {
     }
 
     protected function dobackup_v2($input) {
+        comp\FUNC::showPre($input);exit;
+//        $input['satker'] = 
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
         $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
         $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');

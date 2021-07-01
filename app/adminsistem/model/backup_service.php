@@ -409,7 +409,8 @@ class backup_service extends system\Model {
     }
 
     public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
-        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input);
+//        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
+        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input, true);
         $pajak = $this->laporan_service->getArraypajak();
 
         parent::setConnection('db_backup');
@@ -420,7 +421,7 @@ class backup_service extends system\Model {
                 $p[$i] = (isset($peg[$i])) ? $peg[$i] : '';
             endforeach;
 
-            if ($peg['nominal_tp'] == 0 || $peg['tunjangan_jabatan'] == 1) :
+            if (empty($p['nominal_tp']) || $p['tunjangan_jabatan'] == 1) :
                 $p['tampil_tpp'] = 0;
             else :
                 $p['tampil_tpp'] = 1;
@@ -560,18 +561,19 @@ class backup_service extends system\Model {
         }
 
         $final = ($sum_pot[6]['all'] > 100 ? 100 : $sum_pot[6]['all']);
+        $nominal_tpp = isset($peg['nominal_tp']) ? $peg['nominal_tp'] : 0;
         $presensi = [
             'id' => '',
             'personil_id' => $personil_id,
             'pot_penuh' => json_encode($pot_penuh),
             'sum_pot' => json_encode($sum_pot),
             'pot_final' => $final,
-            'tpp_kotor' => $peg['nominal_tp']
+            'tpp_kotor' => $nominal_tpp
         ];
 
 
-        $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
-        $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
+        $nominal_tp40 = $nominal_tpp * 40 / 100;
+        $nominal_tp60 = $nominal_tpp * 60 / 100;
 
         $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
 //        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
@@ -580,9 +582,9 @@ class backup_service extends system\Model {
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
-        $checkBpjsGaji = round((($peg['nominal_tp'] + $peg['totgaji']) > $kenabpjs['value']) ?
+        $checkBpjsGaji = round((($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
                 ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
-                $peg['nominal_tp'] * 0.01);
+                $nominal_tpp * 0.01);
         $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
         $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
         $presensi['pot_bpjskes'] = $pot_bpjs;

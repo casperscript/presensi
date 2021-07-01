@@ -64,8 +64,15 @@ class laporan_service extends system\Model {
         parent::setConnection('db_pegawai');
         
         $idKey = [];
-        $q_cari = 'WHERE 1 ';
+        $q_carigaji = '';
+        if (!empty($data['bulan']) && !empty($data['tahun'])) {
+            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
+            $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
+            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            array_push($idKey, $bulan, $tahun);
+        }
         
+        $q_cari = 'WHERE 1 ';
         if (!empty($data['kdlokasi'])) :
             $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
             array_push($idKey, $data['kdlokasi']);
@@ -92,17 +99,20 @@ class laporan_service extends system\Model {
             personal.npwp              AS npwp,
             personal.nama_R_jabatan    AS nama_R_jabatan,
             pegawai.golruang           AS golruang,
-            personal.path_foto_pegawai AS foto_pegawai
+            personal.path_foto_pegawai AS foto_pegawai,
+            gaji.total               AS totgaji
         FROM texisting_kepegawaian pegawai
             JOIN texisting_personal personal
                 ON pegawai.nipbaru = personal.nipbaru
+            LEFT JOIN data_gaji gaji 
+                ON pegawai.nipbaru = gaji.nipbaru ' . $q_carigaji . '
             LEFT JOIN tref_jabatan_campur jabatan
                 ON jabatan.kd_jabatan = pegawai.kd_jabatan ' . $q_cari;
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
     }
     
-    public function getDataPersonilTpp_v2($data) {
+    public function getDataPersonilTpp_v2($data, $backup = false) {
         parent::setConnection('db_pegawai');
         
         $idKey = array();
@@ -118,6 +128,11 @@ class laporan_service extends system\Model {
         if (!empty($data['kdlokasi'])) {
             $q_cari .= 'AND ((pegawai.kdlokasi = ?) OR (pegawai.kdsublokasi = ?)) ';
             array_push($idKey, $data['kdlokasi'], $data['kdlokasi']);
+        }
+        
+        $q_offbackup = '';
+        if ($backup == false) {
+            $q_offbackup = 'AND pegawai.`kd_stspeg` IN ("04", "29") AND pegawai.`tunjangan_jabatan` = 0 ';
         }
         
         $query = 'SELECT 
@@ -142,9 +157,7 @@ class laporan_service extends system\Model {
 		LEFT JOIN `tref_jabatan_campur` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
 		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
 		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
-            WHERE 1 ' . $q_cari . '
-                AND pegawai.`kd_stspeg` IN ("04", "29")
-                AND pegawai.`tunjangan_jabatan` = 0
+            WHERE 1 ' . $q_cari . $q_offbackup . '
                 AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
             ORDER BY ISNULL(kelas.`kelas`), IF(COALESCE(pegawai.`kelas_on_pegawai`), pegawai.`kelas_on_pegawai`, kelas.`kelas`) DESC, nama_personil ASC';
         $dataArr = $this->getData($query, $idKey);
@@ -306,6 +319,7 @@ class laporan_service extends system\Model {
 
     public function getLibur($data) {
         parent::setConnection('db_presensi');
+        
         $idKey = array($data['bulan'], $data['tahun']);
         $libur = [];
         $dataLibur = $this->getData('SELECT * FROM tb_libur '
