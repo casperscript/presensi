@@ -80,7 +80,7 @@ OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan 
 </div>
 <h5 class="center-align" style="color: #01579b"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Apel Pagi Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
@@ -127,7 +127,7 @@ OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $
 </div>
 <h5 class="center-align" style="color: #33691e"><b>
 Laporan Rekap Finger Print Pulang Kerja Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>
