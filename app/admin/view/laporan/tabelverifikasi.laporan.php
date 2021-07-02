@@ -33,7 +33,7 @@ $path_ttd = $this->link()."upload/ttd/";
 </div>
 <h5 class="center-align" style="color: #e65100"><b>
 Laporan Rekap Kehadiran/Ketidakhadiran Masuk Kerja Karyawan <br>
-OPD/Unit Kerja: <?= $satker ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
+OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun?>
 </b></h5>
 <table class="bordered hoverable custom-border scrollable">
     <thead>

@@ -319,11 +319,11 @@ class laporan_service extends system\Model {
 
     public function getLibur($data) {
         parent::setConnection('db_presensi');
-        
-        $idKey = array($data['bulan'], $data['tahun']);
+        $kdGrubSatker = isset($data['satker']) ? $data['satker']['kd_kelompok_lokasi_kerja'] : '';
+        $idKey = array($data['bulan'], $data['tahun'], $kdGrubSatker, 'red');
         $libur = [];
         $dataLibur = $this->getData('SELECT * FROM tb_libur '
-                . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?)', $idKey);
+                . 'WHERE (MONTH(tgl_libur) = ?) AND (YEAR(tgl_libur) = ?) AND (FIND_IN_SET(?, kdlokasi) OR kdlokasi = ?)', $idKey);
         if ($dataLibur['count'] > 0)
             $libur = array_map(function ($i) {
                 $tgl = (int) date('d', strtotime($i['tgl_libur']));
@@ -1356,6 +1356,19 @@ class laporan_service extends system\Model {
         parent::setConnection('db_presensi');
         $get = $this->getData("SELECT * FROM tb_laporan WHERE bulan = ? AND tahun = ?", [$data['bulan'], $data['tahun']]);
         return $get;
+    }
+    
+    public function getDataSatker($id) {
+        parent::setConnection('db_pegawai');
+        $query = 'SELECT * FROM tref_lokasi_kerja WHERE (kdlokasi = ?)';
+        $result = $this->getData($query, array($id));
+
+        parent::setConnection('db_presensi');
+        if ($result['count'] > 0) {
+            return $result['value'][0];
+        } else {
+            return $this->getTabel('tref_lokasi_kerja');
+        }
     }
 
     public function getDataSetting($id) {

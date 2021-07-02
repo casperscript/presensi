@@ -1104,6 +1104,7 @@ class backup_service extends system\Model {
     }
 
     public function getRekapAll($data, $laporan, $hitungpot = false) {
+//        comp\FUNC::showPre($data);exit;
         $moderasi = $this->laporan_service->getArraymodAll($data, $laporan);
         $libur = $this->laporan_service->getLibur($data);
         $data_pot = $this->laporan_service->getArraypot();

@@ -418,10 +418,13 @@ class laporan extends system\Controller {
     protected function tabelverifikasi() {
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) {
                 $data[$key] = $i;
+            }
 
-            $data['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
+//            $data['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
+            $data['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
+//            comp\FUNC::showPre($data);exit;
             $data['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
             $data['personil'] = '';
             if ($data['pegawai']['count'] > 0) {

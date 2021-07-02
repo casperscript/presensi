@@ -69,7 +69,6 @@ class laporan extends system\Controller {
             $data['format'] = 'A'; $data['jenis'] = '';
             $data['personil'] = $this->pinAbsen;
             $data['kdlokasi'] = $this->login['kdlokasi'];
-//            $data['satker'] = $this->satker;
             $data['satker'] = $this->laporan_service->getDataSatker($this->login['kdlokasi']);
             $data['pegawai'] = $this->laporan_service->getDataPersonil($this->pinAbsen);
 
