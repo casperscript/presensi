@@ -1380,5 +1380,5 @@ class laporan extends system\Controller {
 
         comp\FUNC::showPre($data);
     }
-
+    
 }

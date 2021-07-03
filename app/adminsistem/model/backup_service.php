@@ -427,6 +427,7 @@ class backup_service extends system\Model {
                 $p['tampil_tpp'] = 1;
             endif;
 
+//            comp\FUNC::showPre($input);exit;
             //remove whitespace-- ambil % pajak
             $clean = str_replace(" ", "", $peg['golruang']);
             $gol = explode("/", $clean)[0];
@@ -438,7 +439,7 @@ class backup_service extends system\Model {
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
-                $tbpresensi = $this->save_presensi_v2($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs']);
+                $tbpresensi = $this->save_presensi_v2($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs'], $input);
                 if (!$tbpresensi['error']) :
                     return $tbpresensi;
                 endif;
@@ -544,7 +545,7 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    public function save_presensi_v2($rekap, $peg, $personil_id, $kenabpjs = []) {
+    public function save_presensi_v2($rekap, $peg, $personil_id, $kenabpjs = [], $input = []) {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -554,14 +555,25 @@ class backup_service extends system\Model {
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
             $pot_penuh[$i] = $get['pot_penuh'];
+            
+            ################# Start Mengenolkan TPP Sekolah ####################
+            $bln_tanpapot = [4];
+            $thn_tanpapot = [2021];
+            $grub_tanpapot = ['G13', 'G14', 'G15', 'G16'];
+            if (in_array($input['bulan'], $bln_tanpapot) && in_array($input['tahun'], $thn_tanpapot) && in_array($input['satker']['kd_kelompok_lokasi_kerja'], $grub_tanpapot) && $i == 6) {
+                $get['sum_pot'] = ['mk' => 0, 'ap' => 0, 'pk' => 0, 'all' => 0];
+            }
+            ################# End Mengenolkan TPP Sekolah ####################
+            
             $sum_pot[$i] = $get['sum_pot'];
             foreach ($get as $tgl => $isi) {
                 $saveto[$tgl][$i] = $isi;
             }
         }
 
-        $final = ($sum_pot[6]['all'] > 100 ? 100 : $sum_pot[6]['all']);
         $nominal_tpp = isset($peg['nominal_tp']) ? $peg['nominal_tp'] : 0;
+        $final = ($sum_pot[6]['all'] > 100 ? 100 : $sum_pot[6]['all']);
+
         $presensi = [
             'id' => '',
             'personil_id' => $personil_id,
@@ -571,13 +583,11 @@ class backup_service extends system\Model {
             'tpp_kotor' => $nominal_tpp
         ];
 
-
         $nominal_tp40 = $nominal_tpp * 40 / 100;
         $nominal_tp60 = $nominal_tpp * 60 / 100;
 
         $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
-//        $pot = round(((is_numeric($final) ? $final : 1000) / 100 * $nominal_tp60), -1);
-
+        
         $tpp_kotor = $nominal_tp40 + $nominal_tp60 - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
@@ -594,6 +604,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
+//        comp\FUNC::showPre($presensi);exit;
 
 
         $tbpresensi = $this->save('tb_presensi', $presensi);

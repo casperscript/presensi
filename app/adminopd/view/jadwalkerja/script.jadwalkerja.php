@@ -81,6 +81,7 @@
             $.post(url_simpan, form, function (data) {
                 if (data.status === "error") {
                     swal(data.title, data.message, data.status);
+                    app.modalLoading("done");
                 } else {
                     $.when(app.loadDetail(pin_absen)).then(function () {
                         app.modalLoading("done");
@@ -139,6 +140,7 @@
             } else if (msg === "done") {
                 $(".progress #loading").attr("class", "determinate");
                 $(".progress #loading").attr("style", "width: 100%");
+                $("#frmInput .btn").prop("disabled", false);
             }
         },
 

@@ -82,7 +82,7 @@ class jadwalkerja extends system\Controller {
 
             // Check start and end date
             $checkCrashJadwal = $this->presensi_service->checkCrashJadwal($input);
-
+            
             if (strtotime($input['sdate']) > strtotime($input['edate'])) {
                 $error_msg = array('title' => 'Gagal', 'message' => 'Tanggal akhir harus lebih besar dari tanggal awal', 'status' => 'error');
             } else if ($checkCrashJadwal['jumlah'] > 0) {
