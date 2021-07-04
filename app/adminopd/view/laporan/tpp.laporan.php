@@ -120,10 +120,10 @@
                 app.loadTabel();
             });
 
-            $('#btnCetak').on('click', function() {
-                $('#asli').val('');
-                checkBendahara();
-            });
+//            $('#btnCetak').on('click', function() {
+//                $('#asli').val('');
+//                checkBendahara();
+//            });
 
             $('#btnCetakAsli').on('click', function() {
                 $('#asli').val(1);

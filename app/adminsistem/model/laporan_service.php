@@ -74,8 +74,8 @@ class laporan_service extends system\Model {
         
         $q_cari = 'WHERE 1 ';
         if (!empty($data['kdlokasi'])) :
-            $q_cari .= 'AND (pegawai.kdlokasi = ?) ';
-            array_push($idKey, $data['kdlokasi']);
+            $q_cari .= 'AND ((pegawai.kdlokasi = ?) OR (pegawai.kdsublokasi = ?)) ';
+            array_push($idKey, $data['kdlokasi'], $data['kdlokasi']);
         endif;
         
         if (!empty($data['cari'])) :

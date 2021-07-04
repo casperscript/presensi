@@ -427,7 +427,6 @@ class backup_service extends system\Model {
                 $p['tampil_tpp'] = 1;
             endif;
 
-//            comp\FUNC::showPre($input);exit;
             //remove whitespace-- ambil % pajak
             $clean = str_replace(" ", "", $peg['golruang']);
             $gol = explode("/", $clean)[0];
@@ -436,6 +435,7 @@ class backup_service extends system\Model {
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
             $tbpersonil = $this->save('tb_personil', $p);
+//            comp\FUNC::showPre($pegawai); exit;
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
@@ -555,7 +555,7 @@ class backup_service extends system\Model {
         for ($i = 1; $i <= 6; $i++) {
             $get = $rekap[$i][$pin_absen];
             $pot_penuh[$i] = $get['pot_penuh'];
-            
+
             ################# Start Mengenolkan TPP Sekolah ####################
             $bln_tanpapot = [4];
             $thn_tanpapot = [2021];
@@ -564,7 +564,7 @@ class backup_service extends system\Model {
                 $get['sum_pot'] = ['mk' => 0, 'ap' => 0, 'pk' => 0, 'all' => 0];
             }
             ################# End Mengenolkan TPP Sekolah ####################
-            
+
             $sum_pot[$i] = $get['sum_pot'];
             foreach ($get as $tgl => $isi) {
                 $saveto[$tgl][$i] = $isi;
@@ -587,7 +587,7 @@ class backup_service extends system\Model {
         $nominal_tp60 = $nominal_tpp * 60 / 100;
 
         $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
-        
+
         $tpp_kotor = $nominal_tp40 + $nominal_tp60 - $pot;
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
