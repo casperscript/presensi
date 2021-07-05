@@ -145,7 +145,7 @@ class moderasi extends system\Controller {
             $chkBatasAtasMod = $input['tanggal_awal'] > $tglBatasAtasMod ? false : true;
 
             // Mewajibkan jenis moderasi tertentu untuk melampirkan dokumen
-            $arrModWajibLampiran = ['DD','CD'];
+            $arrModWajibLampiran = ['CD'];
             if (in_array($input['kode_presensi'], $arrModWajibLampiran) && ($_FILES['lampiran']['error'] != 0)) :
                 $impModWajibLampiran = implode(', ', $arrModWajibLampiran);
                 $error_msg = [
@@ -164,9 +164,11 @@ class moderasi extends system\Controller {
 //            $chkBatasInputMod = (date('Y-m-d') > $tglBatasInputMod) ? true : false;
             // MD01 Batas maksimal pengajuan moderasi lupa
             $modLupa = ['L1', 'L2', 'L3', 'L4', 'L5'];
-            $chkKdJenisMod = count(array_intersect(['JNSMOD01'], $input['kd_jenis']));
+            $modJenis = ['JNSMOD01'];
+//            $modJenis = ['JNSMOD01','JNSMOD02','JNSMOD03'];
+            $chkKdJenisMod = count(array_intersect($modJenis, $input['kd_jenis']));
             if (in_array($input['kode_presensi'], $modLupa) && $chkKdJenisMod > 0) :
-                $paramMD01['kd_jenis'] = ['JNSMOD01'];
+                $paramMD01['kd_jenis'] = $modJenis;
                 $paramMD01['tahun'] = date('Y', strtotime($input['tanggal_awal']));
                 $paramMD01['bulan'] = date('m', strtotime($input['tanggal_awal']));
                 $paramMD01['pin_absen'] = $dataPegawai['pin_absen'];
@@ -174,8 +176,6 @@ class moderasi extends system\Controller {
                 $getMaksModLupa = $this->servicemain->getDataSetting('maks_mod_lupa');
                 $getCountModLupa = $this->dbmoderasi->getCountMod($paramMD01, $modLupa, 'GROUP BY `tanggal_awal`');
                 $chkMaksModLupa = ($getCountModLupa['count'] >= $getMaksModLupa['value']) ? true : false;
-//                comp\FUNC::showPre($getCountModLupa);
-//                exit;
             endif;
 
             $chkExistMod = $this->dbmoderasi->chkExistMod($input);
