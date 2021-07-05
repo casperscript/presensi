@@ -183,7 +183,7 @@ header('application/javascript');
                 var active = $("#bulan").val();
                 $("#bulan").empty();
                 var tahun = new Date().getFullYear();
-                var bulan = new Date().getMonth() + 1;
+                var bulan = $("#selBulan").val();
 
                 $.get(url_getBulanMod + "/" + valTahun, function (result) {
                     $.each(result, function (i, item) {
@@ -192,9 +192,9 @@ header('application/javascript');
                             text: item
                         }));
                     });
-                    if (tahun === valTahun) {
+                    //if (tahun === valTahun) {
                         $("#bulan").val(bulan);
-                    }
+                    //}
                     $("select").material_select();
                 }, "json");
             },

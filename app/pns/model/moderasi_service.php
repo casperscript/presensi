@@ -130,8 +130,15 @@ class moderasi_service extends servicemain {
             $where .= 'AND `kode_presensi` IN (' . $inArray . ') ';
         endif;
 
-        $data = $this->getData('SELECT * FROM tb_moderasi ' . $where . $opt, $idKey);
-        return $data;
+        $data = $this->getData('SELECT kd_jenis, COUNT(id) AS jumlah FROM tb_moderasi ' . $where . $opt, $idKey);
+        $arrDefault = ['JNSMOD01' => 0, 'JNSMOD02' => 0, 'JNSMOD03' => 0];
+        if ($data['count'] > 0) {
+            $keys = array_column($data['value'], 'kd_jenis');
+            $values = array_column($data['value'], 'jumlah');
+            return array_combine($keys, $values) + $arrDefault;
+        } else {
+            return $arrDefault;
+        }
     }
 
     public function chkLockMod($kdlokasi, $year, $month) {

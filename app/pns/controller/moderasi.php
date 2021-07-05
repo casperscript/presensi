@@ -162,20 +162,26 @@ class moderasi extends system\Controller {
 //            $tglBatasInputMod = (date('Ym', strtotime($input['tanggal_awal'])) < date('Ym')) ?
 //                    $getBatasInputMod['value'] : date('Y-m-d', strtotime($getBatasInputMod['value'] . '+1 month'));
 //            $chkBatasInputMod = (date('Y-m-d') > $tglBatasInputMod) ? true : false;
-            // MD01 Batas maksimal pengajuan moderasi lupa
+
+            // Batas maksimal pengajuan moderasi lupa
             $modLupa = ['L1', 'L2', 'L3', 'L4', 'L5'];
-            $modJenis = ['JNSMOD01'];
-//            $modJenis = ['JNSMOD01','JNSMOD02','JNSMOD03'];
+            $modJenis = ['JNSMOD01', 'JNSMOD02', 'JNSMOD03'];
+            $chkMaksModLupa = false;
             $chkKdJenisMod = count(array_intersect($modJenis, $input['kd_jenis']));
             if (in_array($input['kode_presensi'], $modLupa) && $chkKdJenisMod > 0) :
                 $paramMD01['kd_jenis'] = $modJenis;
                 $paramMD01['tahun'] = date('Y', strtotime($input['tanggal_awal']));
                 $paramMD01['bulan'] = date('m', strtotime($input['tanggal_awal']));
                 $paramMD01['pin_absen'] = $dataPegawai['pin_absen'];
-                $paramMD01['not'] = $input['tanggal_awal'];
+//                $paramMD01['not'] = $input['tanggal_awal'];
                 $getMaksModLupa = $this->servicemain->getDataSetting('maks_mod_lupa');
-                $getCountModLupa = $this->dbmoderasi->getCountMod($paramMD01, $modLupa, 'GROUP BY `tanggal_awal`');
-                $chkMaksModLupa = ($getCountModLupa['count'] >= $getMaksModLupa['value']) ? true : false;
+                $getCountModLupa = $this->dbmoderasi->getCountMod($paramMD01, $modLupa, 'GROUP BY `kd_jenis`');
+                
+                foreach ($input['kd_jenis'] as $val) {
+                    if ($getCountModLupa[$val] >= $getMaksModLupa['value'] && $chkMaksModLupa == false) {
+                        $chkMaksModLupa = true;
+                    }
+                }
             endif;
 
             $chkExistMod = $this->dbmoderasi->chkExistMod($input);
@@ -201,7 +207,9 @@ class moderasi extends system\Controller {
                 $error_msg = [
                     'title' => 'Moderasi Lupa Terbatas',
                     'status' => 'warning',
-                    'message' => 'Maksimal pengajuan moderasi lupa adalah ' . $getMaksModLupa['value'] . ' hari dalam 1 bulan'
+//                    'message' => 'Maksimal pengajuan moderasi lupa adalah ' . $getMaksModLupa['value'] . ' hari dalam 1 bulan'
+                    'message' => 'Maksimal pengajuan moderasi lupa adalah ' . $getMaksModLupa['value'] . ' kali dalam 1 bulan. '
+                    . 'Anda sudah menggunakan moderasi lupa untuk Masuk ' . $getCountModLupa['JNSMOD01'] . ', Apel ' . $getCountModLupa['JNSMOD02'] . ', dan Pulang ' . $getCountModLupa['JNSMOD03']
                 ];
             } else if ($chkBatasAtasMod == false) {
                 $error_msg = [

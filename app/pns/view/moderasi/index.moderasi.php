@@ -32,7 +32,8 @@
                                             </div>
                                             <div class="input-field col l2 m3 s5">
                                                 <label for="bulan" class="active">Bulan</label>
-                                                <?= comp\MATERIALIZE::inputSelect('bulan', comp\FUNC::$namabulan1, date('m')) ?>
+                                                <?= comp\MATERIALIZE::inputSelect('bulan', comp\FUNC::$namabulan1, date('n')) ?>
+                                                <?= comp\MATERIALIZE::inputKey('selBulan', date('n')) ?>
                                             </div>
                                             <div class="input-field col l3 m3 s4">
                                                 <label for="status" class="active">Status moderasi</label>
@@ -135,6 +136,13 @@
                     app.loadTabel();
 
                     /* Desktop */
+                    $(document).on("change", "#bulan, #status", function () {
+                        var bulan = $(this).val();
+                        $("#selBulan").val(bulan);
+                        
+                        // Load tabel otomatis ketika ganti bulan
+                        app.loadTabel();
+                    });
                     $(document).on("change", "#tahun", function () {
                         var tahun = $(this).val();
                         app.getBulanMod(tahun);
