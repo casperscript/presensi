@@ -357,7 +357,7 @@ if (!isset($laporan['sah_final']) && $period != '12018' && $period != '22018') {
 
 $pdf->WriteHTML($stylesheet, 1);
 $pdf->WriteHTML(utf8_encode($html));
-$filename = 'Laporan' . $format . '-' . $satker[''] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
+$filename = 'Laporan' . $format . '-' . $satker['singkatan_lokasi'] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
 
 $pdf->Output($filename, 'D');
 ?>
