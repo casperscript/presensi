@@ -44,13 +44,20 @@ class jadwalkerja extends system\Controller {
     protected function detail() {
         $input = $this->post(true);
         if ($input) {
-			$input['batas'] = '1000';
+            $input['batas'] = '1000';
             $data['dataPersonil'] = $this->pegawai_service->getDataKrit('view_presensi_personal', $input);
             $data['tabelJadwal'] = $this->presensi_service->getTabelKrit('tb_jadwal', $input, 'sdate');
             $data['dataInfoSatker'] = $this->pegawai_service->getPilKrit('tref_lokasi_kerja', $data['dataPersonil'], array('key' => 'kdlokasi', 'value' => 'nmlokasi'));
             $data['dataShift'] = $this->presensi_service->getPilKrit('tb_shift', ['pin_absen' => $data['dataPersonil']['pin_absen']], array('key' => 'id_shift', 'value' => 'nama_shift'));
             $data['author'] = $this->presensi_service->getListAuthor($data['tabelJadwal']['dataTabel']);
             $this->subView('detail', $data);
+        }
+    }
+    
+    protected function tabelJadwal() {
+        $input = $this->post(true);
+        if ($input) {
+            comp\FUNC::showPre($input);
         }
     }
 
@@ -82,7 +89,8 @@ class jadwalkerja extends system\Controller {
 
             // Check start and end date
             $checkCrashJadwal = $this->presensi_service->checkCrashJadwal($input);
-            
+//                comp\FUNC::showPre($checkCrashJadwal);exit;
+
             if (strtotime($input['sdate']) > strtotime($input['edate'])) {
                 $error_msg = array('title' => 'Gagal', 'message' => 'Tanggal akhir harus lebih besar dari tanggal awal', 'status' => 'error');
             } else if ($checkCrashJadwal['jumlah'] > 0) {
@@ -120,7 +128,7 @@ class jadwalkerja extends system\Controller {
             echo json_encode($error_msg);
         }
     }
-    
+
     public function hapus() {
         $input = $this->post(true);
         if ($input) {

@@ -122,8 +122,7 @@ class presensi_service extends system\Model {
                 . 'WHERE (pin_absen = ?) AND ((? BETWEEN sdate AND edate) OR (? BETWEEN sdate AND edate))', $idKey);
         $result['jumlah'] = $data['value'][0]['jumlah'];
         $result['query'] = $data['query'];
-//        return $result;
-        return $data;
+        return $result;
     }
 
     /*     * ***************** Get Pilihan ********************** */
