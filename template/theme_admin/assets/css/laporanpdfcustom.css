@@ -1,137 +1,137 @@
 .custom-border th, 
 .custom-border td {
-	border: 1px solid #000;
-	font-size: 10pt;
+    border: 1px solid #000;
+    font-size: 10pt;
 }
 
 table.custom-border {
-	width: 100%;
+    width: 100%;
 }
 
 table.custom-border th {
-	background-color: #e0e0e0;
+    background-color: #e0e0e0;
 }
 
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 table.ttd-tabel {
-	width: 100%;
-	display: inline-block;
-	margin: 0 10%;
+    width: 100%;
+    display: inline-block;
+    margin: 0 10%;
 }
 
 table.ttd-tabel td {
-	padding: 15px 5px 15px 10%;
-	width: 50%;
-	vertical-align: top;
+    padding: 15px 5px 15px 10%;
+    width: 50%;
+    vertical-align: top;
 }
 
 table.custom-border th,
 table.custom-border td {
-	padding: 2px;
+    padding: 2px;
 }
 
 .custom-border td {
-	vertical-align: top;
+    vertical-align: top;
 }
 
 h5,
 .center-align {
-	font-size: 12pt;
-	text-align: center;
+    font-size: 12pt;
+    text-align: center;
 }
 
 .right-align {
-	text-align: right;
+    text-align: right;
 }
 
 @page {
-	margin-top: 10mm;
-	margin-left: 10mm;
-	margin-right: 10mm;
-	margin-bottom: 22mm;
+    margin-top: 10mm;
+    margin-left: 10mm;
+    margin-right: 10mm;
+    margin-bottom: 22mm;
 }
 
 .row.lap {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .format-lap {
-	padding: 5px;
-	border: 1px solid #000;
-	width: 200px;
-	text-align: center;
-	float: right;
-	font-weight: bold;
-	line-height: normal;
+    padding: 5px;
+    border: 1px solid #000;
+    width: 200px;
+    text-align: center;
+    float: right;
+    font-weight: bold;
+    line-height: normal;
 }
 
 .ttd-tabel img {
-	height: 90px;
+    height: 90px;
 }
 
 
 /*------*/
 .ttd-area {
-	width: 100%;
-	float: left;
-	vertical-align: bottom;
+    width: 100%;
+    float: left;
+    vertical-align: bottom;
 }
 .ttd {
-	max-height: 25mm;
-	margin-left: -70mm;
-	margin-top: 10mm;
+    max-height: 25mm;
+    margin-left: -70mm;
+    margin-top: 10mm;
 }
 .ini-ttd {
-	float: right; 
-	width: 30%;
-	height: 35mm;
+    float: right; 
+    width: 30%;
+    height: 35mm;
 }
 .ini-stempel {
-	float: left; 
-	width: 70%;
+    float: left; 
+    width: 70%;
 }
 /*
 .stempel {
-	height: 52mm;
-	width: 52mm;
-	margin-left: -8mm;
-	margin-top: -5mm;
+        height: 52mm;
+        width: 52mm;
+        margin-left: -8mm;
+        margin-top: -5mm;
 }
 */
 .stempel {
-	width: 43mm;
-	height: 43mm;
-	margin-top: 0;
-	margin-left: -2mm;
-	margin-bottom: 5mm;
+    width: 43mm;
+    height: 43mm;
+    margin-top: 0;
+    margin-left: -2mm;
+    margin-bottom: 5mm;
 }
 
 .kiri-atas, 
 .kiri-bawah {
-	float: left;
-	width: 45%;
-	margin-left: 20mm;
+    float: left;
+    width: 45%;
+    margin-left: 20mm;
 }
 
 .kanan-atas,
 .kanan-bawah {
-	float: right;
-	width: 45%;
+    float: right;
+    width: 45%;
 }
 
 .teks-bawah {
-	clear: left;
-	margin-top: -13mm;
-	margin-left: 10mm;
-	float: left;
+    clear: left;
+    margin-top: -13mm;
+    margin-left: 10mm;
+    float: left;
 }
 
 .teks-atas {
-	margin: 5mm 0 -10mm 10mm;
+    margin: 5mm 0 -10mm 10mm;
 }
 
 table.custom-portrait th,
@@ -140,55 +140,55 @@ table.custom-portrait td {
 }
 
 .ttd-area-portrait {
-	width: 100%;
+    width: 100%;
 }
 
 .kiri-atas-portrait, 
 .kiri-bawah-portrait,
-.kanan-atas-portrait,,
-.kanan-bawah-portrait, {
-	width: 50%;
-	margin-left: 0;
+.kanan-atas-portrait,
+.kanan-bawah-portrait {
+    width: 50%;
+    margin-left: 0;
 }
 
 .stempel-portrait {
-	margin-left: -5mm;
+    margin-left: -5mm;
 }
 
 .ini-ttd-portrait {
-	width: 10%;
+    width: 10%;
 }
 .ini-stempel-portrait {
-	width: 80%;
+    width: 80%;
 }
 
 .small-padding {
-	width: 100%;
+    width: 100%;
 }
 
 .small-padding td {
-	padding: 2px;
-	line-height: 18px;
+    padding: 2px;
+    line-height: 18px;
 }
 
 .kominfo {
-	width: 40mm;
-	height: 40mm;
-	margin-top: 0;
-	margin-left: -2mm;
-	margin-bottom: 5mm;
+    width: 40mm;
+    height: 40mm;
+    margin-top: 0;
+    margin-left: -2mm;
+    margin-bottom: 5mm;
 }
 
 .ket-small {
-	font-size: 9px;
-	font-weight: normal;
+    font-size: 9px;
+    font-weight: normal;
 }
 
 .white-row {
-	border-right: 1px solid #fff;
+    border-right: 1px solid #fff;
 }
 
 .white-row td {
-	border: 1px solid #fff; 
-	color: #fff;
+    border: 1px solid #fff; 
+    color: #fff;
 }

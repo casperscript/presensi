@@ -297,7 +297,6 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
-//            comp\FUNC::showPre($data['laporan']);
             $this->subView($view, $data);
         }
     }
@@ -1054,7 +1053,7 @@ class laporan extends system\Controller {
                 exit;
             }
 
-            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['satker'] = $data['induk'];
             $data['pegawai'] = $this->backup_service->getDataPersonil_v2($data);
 
             $arrPin = array_column($data['pegawai']['value'], 'pin_absen');
@@ -1380,5 +1379,5 @@ class laporan extends system\Controller {
 
         comp\FUNC::showPre($data);
     }
-    
+
 }

@@ -1,6 +1,5 @@
 <?php
 ob_start();
-
 $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
 $path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
@@ -52,7 +51,7 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
         <tr>
             <?php
             for ($i = 1; $i <= $hitungtgl; $i++) :
-                echo "<th class='orange lighten-4 center-align' width='25'>$i</th>";
+                echo '<th class="orange lighten-4 center-align" width="25">' . $i . '</th>';
             endfor;
             ?>
         </tr>
@@ -111,8 +110,8 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
                 <td width="50%">
                     <?php
                     if ($tingkat == 3) {
-                        echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>'
-                        . $laporan['nama_kepala_opd'] . '<br>'
+                        echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>' .
+                        $laporan['nama_kepala_opd'] . '<br>'
                         . 'NIP ' . $laporan['nip_kepala_opd'] . '<br>'
                         . '(' . comp\FUNC::tanggal($laporan['dt_kepala_opd'], 'short_date') . ')';
                     } else if ($tingkat > 3) {
@@ -201,22 +200,22 @@ foreach ($all as $i => $level) {
         $level = 'final';
     }
 
-    $$level = '<div class="teks-atas"><b>' . $ket . '</b></div><div class="ttd-area">';
+    $level = '<div class = "teks-atas"><b>' . $ket . '</b></div><div class = "ttd-area">';
 
     if ($ttd_headers[0] == 'HTTP/1.1 200 OK') {
 
-        $$level .= '<div class="ini-ttd"><img class="ttd" src="' . $ttd . '"></div>';
+        $level .= '<div class = "ini-ttd"><img class = "ttd" src = "' . $ttd . '"></div>';
 
         if (($level == 'kepala_opd' || $level == 'final' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK') {
-            $$level .= '<div class="ini-stempel"><img class="stempel" src="' . $stempel . '"></div>';
+            $level .= '<div class = "ini-stempel"><img class = "stempel" src = "' . $stempel . '"></div>';
         } else {
             $$level .= '<br><br>';
         }
     } else {
-        $$level .= '<br><br><br><br><br><br><br><br><br>';
+        $level .= '<br><br><br><br><br><br><br><br><br>';
     }
-    $$level .= '</div>';
-    $$level .= '<p class="teks-bawah">'
+    $level .= '</div>';
+    $level .= '<p class = "teks-bawah">'
             . $laporan['nama_' . $level] . '<br>'
             . 'NIP ' . $laporan['nip_' . $level] . '<br>'
             . '(' . comp\FUNC::tanggal($laporan['dt_' . $level], 'short_date') . ')</p>';
@@ -230,52 +229,54 @@ foreach ($all as $i => $level) {
 <div class="kanan-bawah"><?= $tingkat == 6 ? $final : ($tingkat > 3 ? $kepala_opd : '') ?></div>
 
 <?php
-require_once ('comp/mpdf60/mpdf.php');
+require_once ('comp/mpdf610/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
 
 /* --CETAK HALAMAN KETERANGAN KODE PRESENSI-- */
 $bagi = round((count($kode) - 1) / 2);
-$tambahan = '<div style="width: 48%; float:left">'
-        . ' <table class="bordered custom-border">'
-        . '     <thead>'
-        . '         <tr>'
-        . '             <th width="20%">Kode Presensi</th>'
-        . '             <th>Keterangan</th>'
-        . '             <th width="20%">Potongan (%)</th>'
-        . '        </tr>'
-        . '     </thead>';
+$tambahan = '<div style = "width: 48%; float:left">
+                        <table class = "bordered custom-border">
+                        <thead>
+                        <tr>
+                        <th width = "20%">Kode Presensi</th>
+                        <th>Keterangan</th>
+                        <th width = "20%">Potongan (%)</th>
+                        </tr>
+                        </thead>
+                        ';
 for ($i = 0; $i <= $bagi; $i++) {
-    $tambahan .= '<tr>'
-            . ' <td align="center">' . $kode[$i]['kode_presensi'] . '</td>'
-            . ' <td>' . $kode[$i]['ket_kode_presensi'] . '</td>'
-            . ' <td align="center">' . ($kode[$i]['pot_kode_presensi'] * 100) . '</td>'
-            . '</tr>';
+    $tambahan .= '<tr>
+                        <td align = "center">' . $kode[$i]['kode_presensi'] . '</td>
+                        <td>' . $kode[$i]['ket_kode_presensi'] . '</td>
+                        <td align = "center">' . ($kode[$i]['pot_kode_presensi'] * 100) . '</td>
+                        </tr>';
 }
 $tambahan .= '</table></div>';
 
-$tambahan .= '<div style="width: 48%; float:right">'
-        . ' <table class="bordered custom-border">'
-        . '     <thead>'
-        . '         <tr>'
-        . '             <th width="20%">Kode Presensi</th>'
-        . '             <th>Keterangan</th>'
-        . '             <th width="20%">Potongan (%)</th>'
-        . '         </tr>'
-        . '     </thead>';
+$tambahan .= '<div style = "width: 48%; float:right">
+                        <table class = "bordered custom-border">
+                        <thead>
+                        <tr>
+                        <th width = "20%">Kode Presensi</th>
+                        <th>Keterangan</th>
+                        <th width = "20%">Potongan (%)</th>
+                        </tr>
+                        </thead>
+                        ';
 for ($i; $i < count($kode); $i++) {
-    $tambahan .= '<tr>'
-            . ' <td align="center">' . $kode[$i]['kode_presensi'] . '</td>'
-            . ' <td>' . $kode[$i]['ket_kode_presensi'] . '</td>'
-            . ' <td align="center">' . ($kode[$i]['pot_kode_presensi'] * 100) . '</td>'
-            . '</tr>';
+    $tambahan .= '<tr>
+                        <td align = "center">' . $kode[$i]['kode_presensi'] . '</td>
+                        <td>' . $kode[$i]['ket_kode_presensi'] . '</td>
+                        <td align = "center">' . ($kode[$i]['pot_kode_presensi'] * 100) . '</td>
+                        </tr>';
 }
 $tambahan .= '</table></div>';
 /* --CETAK HALAMAN KETERANGAN KODE PRESENSI-- */
 
 $pdf = new mPDF('UTF8', 'F4-L', 10);
 $pdf->SetDisplayMode('fullpage');
-$stylesheet = file_get_contents($this->link() . '/template/theme_admin/assets/css/laporanpdf.css', true);
+$stylesheet = file_get_contents('http://192.168.254.62/template/theme_admin/assets/css/laporanpdf.css', true);
 $pdf->WriteHTML($stylesheet, 1);
 $pdf->WriteHTML(utf8_encode($html));
 
@@ -287,7 +288,7 @@ $pdf->WriteHTML(utf8_encode($tambahan));
 if ($tingkat == 6) {
     $tingkat = 'Final';
 }
-$filename = 'Laporan' . $format . '1-' . $satker['singkatan_lokasi'] . '-' . comp\FUNC::$namabulan1[$bulan] . $tahun . '-tingkat' . $tingkat . '.pdf';
+$filename = 'Laporan' . $format . '1-' . $satker['singkatan_lokasi'] . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
 
 $pdf->Output($filename, 'D');
 ?>
