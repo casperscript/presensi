@@ -571,8 +571,7 @@ class laporan extends system\Controller {
         ini_set('memory_limit', '-1');
         $input = $this->post(true);
         if ($input) {
-//            $versi = $this->laporan_service->getDataVersi('history_of_report_rules_test', $input);
-            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $this->tabeltpp_v1($input, true);
