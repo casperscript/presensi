@@ -79,7 +79,7 @@ if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
     </div>
 </div>
 <h5 class="center-align"><b>
-        Laporan Rekap Finger Print Pulang Kerja Karyawan <br>
+        Laporan Rekap Kehadiran/Ketidakharidan Pulang Kerja Karyawan <br>
         OPD/Unit Kerja: <?= $satker['singkatan_lokasi'] ?> Bulan: <?= $namabulan[$bulan - 1] ?> Tahun: <?= $tahun ?>
     </b></h5>
 <table class="bordered hoverable custom-border scrollable">
@@ -91,8 +91,9 @@ if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
         </tr>
         <tr>
             <?php
-            for ($i = 1; $i <= $hitungtgl; $i++)
+            for ($i = 1; $i <= $hitungtgl; $i++) {
                 echo "<th class='light-green lighten-4 center-align' width='25'>$i</th>";
+            }
             ?>
         </tr>
     </thead>
