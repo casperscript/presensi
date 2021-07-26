@@ -18,8 +18,8 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
   $path_stempel = $this->link()."upload/stempel/";
   $path_ttd = $this->link()."upload/ttd/";
  */
-echo 'Underconstruction....';
-//FUNC::showPre($pegawai);
+//echo 'Underconstruction....';
+FUNC::showPre($pegawai);
 exit;
 
 foreach ($pegawai['value'] as $peg) {
