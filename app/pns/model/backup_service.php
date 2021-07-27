@@ -165,6 +165,17 @@ class backup_service extends system\Model {
 
         return $dataArr;
     }
+    
+    public function getDataPersonilBatch_v2($data) {
+        $q_cari = '';
+        if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
+            $q_cari .= 'AND pin_absen IN (' . $data['pin_absen'] . ')';
+        }
+        $result = $this->getData('SELECT * FROM tb_personil '
+                . 'WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari
+                . 'ORDER BY kelas DESC, nama_personil ASC');
+        return $result;
+    }
 
     public function getRekapAllView($induk_id, $pin_absen = '') {
         $cond = "";

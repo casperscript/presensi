@@ -18,9 +18,6 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
   $path_stempel = $this->link()."upload/stempel/";
   $path_ttd = $this->link()."upload/ttd/";
  */
-//echo 'Underconstruction....';
-FUNC::showPre($pegawai);
-exit;
 
 foreach ($pegawai['value'] as $peg) {
     $key = $peg['pin_absen'];
@@ -100,9 +97,9 @@ foreach ($pegawai['value'] as $peg) {
         </thead>
         <tbody>
             <?php
+            $tot = 0;
+            $subtot = 0;
             if (isset($rekapbc[$peg['id']])) {
-                $tot = 0;
-                $subtot = 0;
                 $find = $rekapbc[$peg['id']];
                 $pot_penuh = json_decode($find['pot_penuh'], true)[$tingkat];
                 $sum_pot = json_decode($find['sum_pot'], true)[$tingkat];
@@ -118,40 +115,40 @@ foreach ($pegawai['value'] as $peg) {
                         $apel = ['waktu' => '', 'kode' => '', 'color' => '', 'pot' => ''];
                         $pulang = ['waktu' => '', 'kode' => '', 'color' => '', 'pot' => ''];
                     }
-                    echo '<tr>
-    			<td class="center-align">' . $i . '</td>';
                     ?>
-                    <!---isi-->	
-                <td class="center-align <?= $masuk['color'] ?>"><?= $masuk['kode'] ?></td>
-                <td class="center-align"><?= count($pot_penuh) == 0 ? $masuk['pot'] : '' ?></td>
-                <td class="center-align <?= $apel['color'] ?>"><?= $apel['kode'] ?></td>
-                <td class="center-align"><?= count($pot_penuh) == 0 ? $apel['pot'] : '' ?></td>
-                <td class="center-align <?= $pulang['color'] ?>"><?= $pulang['kode'] ?></td>
-                <td class="center-align"><?= count($pot_penuh) == 0 ? $pulang['pot'] : '' ?></td>
+                    <tr>
+                        <td class="center-align"><?= $i ?></td>
+                        <!---isi-->	
+                        <td class="center-align <?= $masuk['color'] ?>"><?= $masuk['kode'] ?></td>
+                        <td class="center-align"><?= count($pot_penuh) == 0 ? $masuk['pot'] : '' ?></td>
+                        <td class="center-align <?= $apel['color'] ?>"><?= $apel['kode'] ?></td>
+                        <td class="center-align"><?= count($pot_penuh) == 0 ? $apel['pot'] : '' ?></td>
+                        <td class="center-align <?= $pulang['color'] ?>"><?= $pulang['kode'] ?></td>
+                        <td class="center-align"><?= count($pot_penuh) == 0 ? $pulang['pot'] : '' ?></td>
 
-                <td class="center-align"><?= count($pot_penuh) == 0 ? $all : '' ?></td>
+                        <td class="center-align"><?= count($pot_penuh) == 0 ? $all : '' ?></td>
 
-                <?php
-                echo '</tr>';
-            }
+                    </tr>
+                    <?php
+                }
 
-            $rupiah_pot = 0;
-            $tpp = $peg['nominal_tp'];
-            $rupiah_pot = $tpp * $sum_pot['all'] / 100;
-        } elseif (isset($rekap[$key])) {
-            $tot = 0;
-            $subtot = 0;
-            $pot_penuh = $rekap[$key]['pot_penuh'];
-            $sum_pot['all'] = $rekap[$key]['sum_pot']['all'];
-            for ($i = 1; $i <= $hitungtgl; $i++) {
-                $masuk = $rekap[$key][$i]['mk'];
-                $apel = $rekap[$key][$i]['ap'];
-                $pulang = $rekap[$key][$i]['pk'];
+                $rupiah_pot = 0;
+                $tpp60 = $peg['nominal_tp'] * 60 / 100;
+                $rupiah_pot = $tpp60 * $sum_pot['all'] / 100;
+            } elseif (isset($rekap[$key])) {
+                $tot = 0;
+                $subtot = 0;
+                $pot_penuh = $rekap[$key]['pot_penuh'];
+                $sum_pot['all'] = $rekap[$key]['sum_pot']['all'];
+                for ($i = 1; $i <= $hitungtgl; $i++) {
+                    $masuk = $rekap[$key][$i]['mk'];
+                    $apel = $rekap[$key][$i]['ap'];
+                    $pulang = $rekap[$key][$i]['pk'];
 
-                echo '<tr>
+                    echo '<tr>
                 <td class="center-align">' . $i . '</td>';
-                ?>
-                <!---isi--> 
+                    ?>
+                    <!---isi--> 
                 <td class="center-align <?= $masuk['color'] ?>"><?= $masuk['kode'] ?></td>
                 <td class="center-align"><?= count($pot_penuh) == 0 ? $masuk['pot'] : '' ?></td>
                 <td class="center-align <?= $apel['color'] ?>"><?= $apel['kode'] ?></td>
@@ -191,52 +188,56 @@ foreach ($pegawai['value'] as $peg) {
                 <tr>
                     <td width="50%">
                         <?php
-                        if ($tingkat == 3)
-                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>' .
-                            $laporan['nama_kepala_opd'] . '<br>
-                    NIP ' . $laporan['nip_kepala_opd'] . '<br>
-                    (' . FUNC::tanggal($laporan['dt_kepala_opd'], 'short_date') . ')';
-
-                        else if ($tingkat > 3)
-                            echo '<b>Telah diverifikasi ' . $laporan['jabatan_admin_kota'] . ' Admin Kota</b><br>' .
-                            $laporan['nama_admin_kota'] . '<br>
-                    NIP ' . $laporan['nip_admin_kota'] . '<br>
-                    (' . FUNC::tanggal($laporan['dt_admin_kota'], 'short_date') . ')';
+                        if ($tingkat == 3) {
+                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>'
+                            . $laporan['nama_kepala_opd'] . '<br>'
+                            . 'NIP ' . $laporan['nip_kepala_opd'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_kepala_opd'], 'short_date') . ')';
+                        } else if ($tingkat > 3) {
+                            echo '<b>Telah diverifikasi ' . $laporan['jabatan_admin_kota'] . ' Admin Kota</b><br>'
+                            . $laporan['nama_admin_kota'] . '<br>'
+                            . 'NIP ' . $laporan['nip_admin_kota'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_admin_kota'], 'short_date') . ')';
+                        }
                         ?>                
                     </td>
                     <td width="50%">
                         <?php
-                        if ($tingkat > 1)
-                            echo '<b>Telah diverifikasi ' . $laporan['jabatan_admin_opd'] . ' Admin OPD</b><br>' .
-                            $laporan['nama_admin_opd'] . '<br>
-                    NIP ' . $laporan['nip_admin_opd'] . '<br>
-                    (' . FUNC::tanggal($laporan['dt_admin_opd'], 'short_date') . ')';
+                        if ($tingkat > 1) {
+                            echo '<b>Telah diverifikasi ' . $laporan['jabatan_admin_opd'] . ' Admin OPD</b><br>'
+                            . $laporan['nama_admin_opd'] . '<br>'
+                            . 'NIP ' . $laporan['nip_admin_opd'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_admin_opd'], 'short_date') . ')';
+                        }
                         ?>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <?php
-                        if ($tingkat > 4)
-                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_bkppd'] . ' Kepala BKPPD</b><br>' .
-                            $laporan['nama_kepala_bkppd'] . '<br>
-                    NIP ' . $laporan['nip_kepala_bkppd'] . '<br>
-                    (' . FUNC::tanggal($laporan['dt_kepala_bkppd'], 'short_date') . ')';
+                        if ($tingkat > 4) {
+                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_bkppd'] . ' Kepala BKPPD</b><br>'
+                            . $laporan['nama_kepala_bkppd'] . '<br>'
+                            . 'NIP ' . $laporan['nip_kepala_bkppd'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_kepala_bkppd'], 'short_date') . ')';
+                        }
                         ?>
                     </td>
                     <td>
                         <?php
-                        if ($tingkat > 3 && $tingkat < 6)
-                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>' .
-                            $laporan['nama_kepala_opd'] . '<br>
-                    NIP ' . $laporan['nip_kepala_opd'] . '<br>
-                    (' . FUNC::tanggal($laporan['dt_kepala_opd'], 'short_date') . ')';
+                        if ($tingkat > 3 && $tingkat < 6) {
+                            echo '<b>Mengesahkan ' . $laporan['jabatan_kepala_opd'] . ' Kepala OPD</b><br>'
+                            . $laporan['nama_kepala_opd'] . '<br>'
+                            . 'NIP ' . $laporan['nip_kepala_opd'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_kepala_opd'], 'short_date') . ')';
+                        }
 
-                        if ($tingkat == 6)
-                            echo '<b>Mengesahkan ' . $laporan['jabatan_final'] . ' Kepala OPD</b><br>' .
-                            $laporan['nama_final'] . '<br>
-                        NIP ' . $laporan['nip_final'] . '<br>
-                        (' . FUNC::tanggal($laporan['dt_final'], 'short_date') . ')';
+                        if ($tingkat == 6) {
+                            echo '<b>Mengesahkan ' . $laporan['jabatan_final'] . ' Kepala OPD</b><br>'
+                            . $laporan['nama_final'] . '<br>'
+                            . 'NIP ' . $laporan['nip_final'] . '<br>'
+                            . '(' . FUNC::tanggal($laporan['dt_final'], 'short_date') . ')';
+                        }
                         ?>
                     </td>
                 </tr>
@@ -249,27 +250,30 @@ foreach ($pegawai['value'] as $peg) {
     $all = [2 => 'admin_opd', 3 => 'kepala_opd', 4 => 'admin_kota', 5 => 'kepala_bkppd'];
 
     foreach ($all as $i => $level) {
-        if ($i == 2)
+        if ($i == 2) {
             $ket = 'Telah diverifikasi ' . $laporan['jabatan_' . $level] . ' Admin OPD';
-        elseif ($i == 3)
+        } elseif ($i == 3) {
             $ket = 'Mengesahkan ' . $laporan['jabatan_' . $level] . ' Kepala OPD';
-        elseif ($i == 4)
+        } elseif ($i == 4) {
             $ket = 'Telah diverifikasi ' . $laporan['jabatan_' . $level] . ' Admin Kota';
-        elseif ($i == 5)
+        } elseif ($i == 5) {
             $ket = 'Mengesahkan ' . $laporan['jabatan_' . $level] . ' Kepala BKPPD';
+        }
 
         $ttd = $path_ttd . $laporan['nip_' . $level] . '.png';
         $ttd_headers = @get_headers($ttd);
 
-        if ($level == 'kepala_opd')
+        if ($level == 'kepala_opd') {
             $stempel = $path_stempel . $laporan['stempel_opd'];
-        elseif ($level == 'kepala_bkppd')
+        } elseif ($level == 'kepala_bkppd') {
             $stempel = $path_stempel . $laporan['stempel_bkppd'];
+        }
 
         $stempel_headers = @get_headers($stempel);
 
-        if ($tingkat == 6 && $level == 'kepala_opd')
+        if ($tingkat == 6 && $level == 'kepala_opd') {
             $level = 'final';
+        }
 
         $$level = '<div class="teks-atas"><b>' . $ket . '</b></div>
         <div class="ttd-area ttd-area-portrait">';
@@ -280,20 +284,21 @@ foreach ($pegawai['value'] as $peg) {
             <img class="ttd" src="' . $ttd . '">
         </div>';
 
-            if (($level == 'kepala_opd' || $level == 'final' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK')
+            if (($level == 'kepala_opd' || $level == 'final' || $level == 'kepala_bkppd') && $stempel_headers[0] == 'HTTP/1.1 200 OK') {
                 $$level .= '<div class="ini-stempel ini-stempel-portrait">
                 <img class="stempel" src="' . $stempel . '">
             </div>';
-            else
+            } else {
                 $$level .= '<br><br>';
+            }
         } else {
             $$level .= '<br><br><br><br><br><br><br><br><br>';
         }
         $$level .= '</div>';
         $$level .= '<p class="teks-bawah">'
-                . $laporan['nama_' . $level] . '<br>
-        NIP ' . $laporan['nip_' . $level] . '<br>
-        (' . FUNC::tanggal($laporan['dt_' . $level], 'short_date') . ')</p>';
+                . $laporan['nama_' . $level] . '<br>'
+                . 'NIP ' . $laporan['nip_' . $level] . '<br>'
+                . '(' . FUNC::tanggal($laporan['dt_' . $level], 'short_date') . ')</p>';
     }
     ?>
     <!--pagebreak-->
@@ -308,8 +313,8 @@ foreach ($pegawai['value'] as $peg) {
 } //end of foreach
 
 if (!isset($download)) {
-    echo '<br><br>
-    <div style="color: #ddd;">source: db_backup-' . (isset($rekapbc) ? 'rekapbc' : 'rekap') . '</div>';
+    echo '<br><br>'
+    . ' <div style="color: #ddd;">source: db_backup-' . (isset($rekapbc) ? 'rekapbc' : 'rekap') . '</div>';
     exit;
 }
 
@@ -348,8 +353,9 @@ $pdf->AddPage();
 $pdf->WriteHTML(utf8_encode($tambahan));
 /* --CETAK HALAMAN KETERANGAN KODE PRESENSI-- */
 
-if ($tingkat == 6)
+if ($tingkat == 6) {
     $tingkat = 'Final';
+}
 $filename = 'LaporanC1' . '-' . $satker . '-' . $namabulan[$bulan - 1] . $tahun . '-tingkat' . $tingkat . '.pdf';
 
 $pdf->Output($filename, 'D');
