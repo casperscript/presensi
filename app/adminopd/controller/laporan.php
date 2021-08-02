@@ -415,6 +415,9 @@ class laporan extends system\Controller {
                 case 'v2':
                     $this->tabelrekapc1_v2($input, true);
                     break;
+                case 'v3':
+                    $this->tabelrekapc1_v3($input, true);
+                    break;
             }
         }
     }
@@ -501,6 +504,49 @@ class laporan extends system\Controller {
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
             $this->subView('tabelrekapc1_v2', $data);
+        }
+    }
+    
+    private function tabelrekapc1_v3($input, $verified) {
+        if ($verified) {
+            $input['kdlokasi'] = $this->login['kdlokasi'];
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($input);
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            //admbil dari data backupan
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabelrekapc1bc($input);
+                exit;
+            }
+
+            $data['pegawai'] = $this->laporan_service->getDataPersonilBatch($input['pin_absen'], true);
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['nipbaru'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+                $input['nipbaru'] = $data['pegawai']['value'][0]['nipbaru'];
+            }
+            $data['tpp_pegawai'] = $this->laporan_service->getTpp_v2($input);
+
+            $data['format'] = 'A';
+            $data['jenis'] = '';
+            $data['personil'] = $input['pin_absen'];
+
+            //ambil ttd
+            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) :
+                $data['tingkat'] = 3;
+            endif;
+
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
+            $this->subView('tabelrekapc1_v3', $data);
         }
     }
 
