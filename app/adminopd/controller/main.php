@@ -56,6 +56,12 @@ class main extends system\Controller {
         $data['user'] = 'Admin OPD';
         $data['subtitle'] = 'MENU UTAMA';
         $data['kdlokasi'] = $this->getSession('SESSION_LOGIN')['kdlokasi'];
+        
+        $active = $this->getController();
+        $data['menu'] = $this->servicemain->getMenu($active);
+//        $data['controller'] = $controller;
+//        comp\FUNC::showPre($data['menu']);exit;
+//        comp\FUNC::showPre($active);exit;
 
         $data['link_beranda'] = $this->link('adminopd/');
         $data['link_manketidakhadiran'] = $this->link('adminopd/modmanketidakhadiran/');

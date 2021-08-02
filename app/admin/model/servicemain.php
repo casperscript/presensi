@@ -11,7 +11,7 @@ class servicemain extends system\Model {
         parent::__construct();
         parent::setConnection('db_presensi');
     }
-    
+
     public function cekLogin($data) {
         set_time_limit(0);
         $username = $data['username'];
@@ -20,7 +20,7 @@ class servicemain extends system\Model {
         $dataArr = $this->getData($query, array($username, $password));
         return $dataArr['count'];
     }
-    
+
     public function login($input) {
         set_time_limit(0);
         session_regenerate_id();
@@ -28,19 +28,19 @@ class servicemain extends system\Model {
         $session_id = comp\FUNC::encryptor(session_id());
         $query = "SELECT * FROM tb_pengguna WHERE (username = ?)";
         $data = $this->getData($query, array($username));
-        
+
         $result['username'] = $data['value'][0]['username'];
-		$result['grup_pengguna_kd'] = $data['value'][0]['grup_pengguna_kd'];
+        $result['grup_pengguna_kd'] = $data['value'][0]['grup_pengguna_kd'];
         $result['session_id'] = $session_id;
         $result['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-		$result['last_login'] = date('Y-m-d H:i:s');
-        
+        $result['last_login'] = date('Y-m-d H:i:s');
+
         $this->save_update('tb_pengguna', $result);
         $this->createCookie($session_id);
-        
+
         return $result;
     }
-    
+
     public function logout($username) {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_pengguna WHERE (username = ?)', array($username));
@@ -54,9 +54,9 @@ class servicemain extends system\Model {
         }
         return $result;
     }
-    
+
     // UNTUK FUNGSI LOGIN SESI + COOKIE
-    public function cekSession() {        
+    public function cekSession() {
         set_time_limit(0);
         $_SESSION_LOGIN = $this->getSession('SESSION_LOGIN');
 
@@ -107,7 +107,6 @@ class servicemain extends system\Model {
         unset($_COOKIE[$cookie]);
         setcookie($cookie, '', time() - COOKIE_EXP, '/');
     }
-    
 
 }
 

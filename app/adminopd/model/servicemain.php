@@ -23,6 +23,34 @@ class servicemain extends system\Model {
         //exit();
     }
     
+    public function getMenu($active) {
+        $data = $this->getData('SELECT * FROM tb_menu WHERE level = ? ORDER BY parent, urut', ['adminopd']);
+        if ($data['count'] > 0) {
+            foreach ($data['value'] as $val) {
+                if (empty($val['parent'])) {
+                    $val['active'] = ($active == $val['path']) ? true : false;
+                    $menu[$val['id']] = $val;
+                } else {
+                    $p = $val['parent'];
+                    $id = $val['id'];
+                    
+                    //menu aktif
+                    $active_menu = ($active == $val['path']) ? true : false;
+                    $val['active'] = $active_menu;
+                    
+                    $menu[$p]['active'] = isset($menu[$p]['active']) && ($menu[$p]['active'] == true) ? true : $active_menu;
+//                    $menu[$p]['active'] = isset($menu[$p]['active']) ? true : $active_menu;
+//                    $menu[$p]['cek'][] = $val['path'] . ' || ' . $active . ' || ' . $active_menu . ' || ' . $menu[$p]['active'] . ' || ' . $p;
+                    
+                    $menu[$p]['sub'][$id] = $val;
+                }
+            }
+            return $menu;
+        } else {
+            return [];
+        }
+    }
+    
     public function login($input) {
         set_time_limit(0);
         session_regenerate_id();

@@ -46,7 +46,7 @@ class laporan extends system\Controller {
     protected function tabelrekapc1() {
         $input = $this->post(true);
         if ($input) {
-            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $this->tabelrekapc1_v1($input, true);

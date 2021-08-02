@@ -19,6 +19,36 @@
                 </a>
             </div>
         </div>
+
+        <!-- Begin::Menu dinamis ->
+        <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
+            <?php foreach ($menu as $header) : ?>
+                <?php if ($header['tipe'] == 'link') : ?>
+                    <li class="no-padding active <?php // ($header['active'] == 1) ? 'active' : '' ?>">
+                        <a class="collapsible-header waves-effect waves-grey" href="<?= $this->link($this->getProject() . $header['path']); ?>">
+                            <i class="material-icons"><?= $header['icon'] ?></i><?= $header['nama'] ?>
+                        </a>
+                    </li>
+                <?php else : ?>
+                    <li class="no-padding <?= ($header['active'] == true) ? 'active' : '' ?>">
+                        <a class="collapsible-header waves-effect waves-grey">
+                            <i class="material-icons"><?= $header['icon'] ?></i><?= $header['nama'] . $header['active'] ?><i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
+                        </a>
+                        <?php if (count($header['sub']) > 0) : ?>
+                            <div class="collapsible-body">
+                                <?php foreach ($header['sub'] as $sub) : ?>
+                                    <ul>
+                                        <li><a <?= isset($sub['active']) ? 'class="active-page"' : '' ?> href="<?= $this->link($this->getProject() . $sub['path']) ?>"><?= $sub['nama'] ?></a></li>
+                                    </ul>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </ul>
+        <!-- End::Menu dinamis -->
+
         <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
 
             <li class="no-padding">
@@ -90,7 +120,7 @@
                 </li>
             <?php } ?>
 
-                <li class="no-padding">
+            <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey" href="<?= $link_panduan; ?>">
                     <i class="material-icons">description</i>Panduan
                 </a>
@@ -130,3 +160,8 @@
         </div>
     </div>
 </aside>
+<script>
+    $(document).ready(function () {
+        $('.sidenav').sidenav();
+    });
+</script>

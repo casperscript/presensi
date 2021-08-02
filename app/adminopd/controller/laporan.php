@@ -1121,7 +1121,7 @@ class laporan extends system\Controller {
             $this->subView('tabelpersonilbc', $data);
         }
     }
-
+    
     protected function tabelrekapc1bc($input) {
         if ($input) {
             foreach ($input as $key => $i) :
