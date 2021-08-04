@@ -1,5 +1,7 @@
 <?php
+
 use comp\FUNC;
+
 if (isset($notallowed)) {
     echo '<div class="alert-verifikasi">
         <span class="blink">
@@ -27,11 +29,12 @@ $nDaftarVerMod = count($daftarVerMod);
             <th rowspan="2" class="center-align">Tanggal</th>
             <th colspan="4" class="center-align">Verifikasi</th>
             <th rowspan="2" class="center-align">Aksi</th>
-            <th rowspan="2" class="center-align">check all<br><input type="checkbox" class="filled-in" id="chkCheckAllMod" <?= $nDaftarVerMod < 1 ? 'disabled="disabled"' : "" ?> />
+            <th rowspan="2" class="center-align">check all<br>
+                <input type="checkbox" class="filled-in" id="chkCheckAllMod" <?= $nDaftarVerMod < 1 ? 'disabled="disabled"' : "" ?> />
                 <label for="chkCheckAllMod" style="padding:10px"></label></th>
             <th rowspan="2" class="center-align"><i class="material-icons">vpn_key</i></th>
         </tr>
-         <tr class="grey darken-3 white-text">
+        <tr class="grey darken-3 white-text">
             <th class="center-align">Admin OPD</th>
             <th class="center-align">Kepala OPD</th>
             <th class="center-align">Admin Kota</th>
@@ -39,18 +42,19 @@ $nDaftarVerMod = count($daftarVerMod);
         </tr>
     </thead>
     <tbody>
-        <?php 
-            if ($nDaftarVerMod == 0) {
-                echo '<tr><td colspan="10" class="center-align">Tidak ada data yang dapat ditampilkan</td>
-                </tr>';
-            }
-            $lastPin = '';
-            $no = 1;
-            $numbBg = 0;
-            $new = true;
-            $name = '';
-            $bgColor = array('orange lighten-4', 'yellow lighten-3');
-            $bgHeadColor = array('yellow darken-3 white-text', 'orange darken-3 white-text');
+        <?php
+        if ($nDaftarVerMod == 0) {
+            echo '<tr>'
+            . '<td colspan="10" class="center-align">Tidak ada data yang dapat ditampilkan</td>'
+            . '</tr>';
+        }
+        $lastPin = '';
+        $no = 1;
+        $numbBg = 0;
+        $new = true;
+        $name = '';
+        $bgColor = array('orange lighten-4', 'yellow lighten-3');
+        $bgHeadColor = array('yellow darken-3 white-text', 'orange darken-3 white-text');
         ?>
         <?php foreach ($daftarVerMod as $index => $val): ?>
             <?php
@@ -76,11 +80,11 @@ $nDaftarVerMod = count($daftarVerMod);
             }
 
             //$rowClass = "";
-            /*if ($val["flag_kepala_opd"] === "2") {
-                $rowClass = "green lighten-5 green-text";
-            } elseif ($val["flag_kepala_opd"] === "3") {
-                $rowClass = "red lighten-5 grey-text";
-            }*/
+            /* if ($val["flag_kepala_opd"] === "2") {
+              $rowClass = "green lighten-5 green-text";
+              } elseif ($val["flag_kepala_opd"] === "3") {
+              $rowClass = "red lighten-5 grey-text";
+              } */
 
             if ($val["nama_lengkap"] != $name)
                 $new = true;
@@ -89,11 +93,10 @@ $nDaftarVerMod = count($daftarVerMod);
                 $name = $val["nama_lengkap"];
                 $new = false;
 
-                echo '<tr class="'.$bgHeadColor[$numbBg].'"><td colspan="10">'.$no.'. &nbsp'.$val["nama_lengkap"].'</td></tr>';
+                echo '<tr class="' . $bgHeadColor[$numbBg] . '"><td colspan="10">' . $no . '. &nbsp' . $val["nama_lengkap"] . '</td></tr>';
                 $numbBg = ($numbBg == 0) ? $numbBg + 1 : $numbBg - 1;
                 $no++;
             }
-
             ?>
             <tr class="<?= $bgColor[$numbBg] ?>">
                 <td class="center"><?= $val["nama_jenis"] ?></td>
@@ -114,37 +117,37 @@ $nDaftarVerMod = count($daftarVerMod);
                     <i class="material-icons"><?= $keylock ?></i>
                 </td>
             </tr>        
-        <?php endforeach; ?>
+<?php endforeach; ?>
     </tbody>
 </table>
 
 <div id="divModalInfoModerasi" class="modal">
     <div class="modal-content">
-      <h4>Informasi Detil Pengajuan Moderasi</h4>
-      <div id="divModalBody"></div>
+        <h4>Informasi Detil Pengajuan Moderasi</h4>
+        <div id="divModalBody"></div>
     </div>
     <div class="modal-footer">
-      <a href="#!" class="modal-action modal-close waves-effect waves-green btn"><span style="position: relative; top: -2px;">Terima Kasih</span> <i class="material-icons">thumb_up</i></a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn"><span style="position: relative; top: -2px;">Terima Kasih</span> <i class="material-icons">thumb_up</i></a>
     </div>
 </div>
 
 <div id="divModalMassLegit" class="modal">
     <div class="modal-content">
-      <h4 class="center">Halaman Pengesahan dan Pemberian Catatan Moderasi Secara Massal</h4>
-      <div id="divModalBodyMassLegit"></div>
+        <h4 class="center">Halaman Pengesahan dan Pemberian Catatan Moderasi Secara Massal</h4>
+        <div id="divModalBodyMassLegit"></div>
     </div>
     <div class="modal-footer">
-    <input type="hidden" id="kdlokasi" value="<?= $kodeLokasi ?>"> <!--added by daniek-->
-    <a href="#!" id="btnTerapkanMassLegit" class="modal-action waves-effect waves-light btn red" style="margin: 0 5px;"><i class="material-icons">check</i><span style="position: relative; top: -2px;"> Terapkan!</span></a>
-    <a href="#!" class="modal-action modal-close waves-effect waves-light btn grey" style="margin: 0 5px;"><i class="material-icons">clear</i><span style="position: relative; top: -2px;"> Batal</span></a>
+        <input type="hidden" id="kdlokasi" value="<?= $kodeLokasi ?>"> <!--added by daniek-->
+        <a href="#!" id="btnTerapkanMassLegit" class="modal-action waves-effect waves-light btn red" style="margin: 0 5px;"><i class="material-icons">check</i><span style="position: relative; top: -2px;"> Terapkan!</span></a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-light btn grey" style="margin: 0 5px;"><i class="material-icons">clear</i><span style="position: relative; top: -2px;"> Batal</span></a>
     </div>
 </div>
 
-<form id="frmDokumenPendukung" class="dropzone" method="post" action="<?= $this->link($this->getProject(). 'upload/mod') ?>" style="display:none;"></form> 
-<script src="<?= $this->link($this->getProject(). 'js/dropzone.js'); ?>"></script>
+<form id="frmDokumenPendukung" class="dropzone" method="post" action="<?= $this->link($this->getProject() . 'upload/mod') ?>" style="display:none;"></form> 
+<script src="<?= $this->link($this->getProject() . 'js/dropzone.js'); ?>"></script>
 <script src="<?= $this->link('js/husnanw_moderasi.js'); ?>"></script>
 <script>
     (function ($) {
-    husnanw_moderasi_main("<?= $this->link($this->getProject() . $this->getController()); ?>");                
+        husnanw_moderasi_main("<?= $this->link($this->getProject() . $this->getController()); ?>");
     })(jQuery);
 </script>

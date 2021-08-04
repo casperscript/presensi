@@ -7,6 +7,7 @@ use app\admin\model\HusnanWModerasiModel;
 use app\admin\model\pegawai_service;
 use system;
 use comp\FUNC;
+use comp;
 
 class moderasi extends system\Controller {
     protected $kodeGrup = null;
@@ -101,10 +102,13 @@ class moderasi extends system\Controller {
         if ($input) {
             $input['title'] = 'Daftar Proses Verifikasi Moderasi';
 
-            if (!$this->servicemaster->checkLaporanVerif($input)) 
+            if (!$this->servicemaster->checkLaporanVerif($input)) {
                 $this->subView('daftar-ver-mod', ['notallowed' => true]);
+            }
 
-            $input['daftarVerMod'] = $this->servicemaster->getDaftarVerMod($input);
+            $input['daftarVerMod'] = $this->servicemaster->getDaftarVerMod_v3($input);
+//            comp\FUNC::showPre($input);exit;
+            
             $input["totalBelumVerifikasi"] = $this->servicemaster->getTotalBelumVerifikasi($input);
             $this->subView('daftar-ver-mod', $input);
         }

@@ -580,6 +580,7 @@ class backup_service extends system\Model {
             'pot_penuh' => json_encode($pot_penuh),
             'sum_pot' => json_encode($sum_pot),
             'pot_final' => $final,
+            'pot_kinerja' => 0,
             'tpp_kotor' => $nominal_tpp
         ];
 

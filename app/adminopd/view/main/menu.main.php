@@ -24,7 +24,7 @@
         <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
             <?php foreach ($menu as $header) : ?>
                 <?php if ($header['tipe'] == 'link') : ?>
-                    <li class="no-padding active <?php // ($header['active'] == 1) ? 'active' : '' ?>">
+                    <li class="no-padding active <?php // ($header['active'] == 1) ? 'active' : ''  ?>">
                         <a class="collapsible-header waves-effect waves-grey" href="<?= $this->link($this->getProject() . $header['path']); ?>">
                             <i class="material-icons"><?= $header['icon'] ?></i><?= $header['nama'] ?>
                         </a>
@@ -49,6 +49,7 @@
         </ul>
         <!-- End::Menu dinamis -->
 
+        <!-- Begin::Menu statis -->
         <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
 
             <li class="no-padding">
@@ -126,7 +127,6 @@
                 </a>
             </li>
 
-            <!-- Pengaturan -->
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
                     <i class="material-icons">settings</i>Pengaturan<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
@@ -148,6 +148,8 @@
             </li>
 
         </ul>
+        <!-- End::Menu statis -->
+
         <div class="footer">
             <div class="row no-s">
                 <div class="col s4">
@@ -161,7 +163,7 @@
     </div>
 </aside>
 <script>
-    $(document).ready(function () {
-        $('.sidenav').sidenav();
-    });
+//    $(document).ready(function () {
+//        $('.sidenav').sidenav();
+//    });
 </script>

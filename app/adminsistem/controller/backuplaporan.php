@@ -303,13 +303,16 @@ class backuplaporan extends system\Controller {
     protected function dobackup() {
         $input = $this->post(true);
         if ($input) {
-            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $result = $this->dobackup_v1($input);
                     break;
                 case 'v2':
                     $result = $this->dobackup_v2($input);
+                    break;
+                case 'v3':
+                    $result = $this->dobackup_v3($input);
                     break;
                 default:
                     $result = ['error' => 1, 'message' => 'Versi tidak ditemukan'];
@@ -359,8 +362,44 @@ class backuplaporan extends system\Controller {
                 $input['tingkat'] = $i;
                 $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
             }
-//            comp\FUNC::showPre($input['pegawai']);exit;
-//            comp\FUNC::showPre($rekap[6]);exit;
+            $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
+            
+            //simpan tpp
+            $tbtpp = $this->backup_service->save_tpp($input, $tbinduk);
+            
+            //hapus jika terjadi gagal backup
+            if (!$tblaporan['error'] || !$tbpersonil['error'] || !$tbtpp['error']) {
+                $this->backup_service->hapusBackup($input);
+                $result['error'] = $tbpersonil;
+                return $result;
+            }
+        }
+        $error_msg = ($tbinduk['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
+        return $error_msg;
+    }
+    
+    protected function dobackup_v3($input) {
+        $input['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
+        $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
+        $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
+        $input['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+
+        $satker = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
+
+        //simpan induk
+        $tbinduk = $this->backup_service->save_induk($satker + $input);
+
+        if ($tbinduk['error']) { //jk berhasil simpan
+            // simpan laporan
+            $tblaporan = $this->backup_service->save_laporan($input, $tbinduk);
+
+            //simpan personil
+            $rekap = [];
+            $laporan = $this->laporan_service->getLaporan($input);
+            for ($i = 1; $i <= 6; $i++) {
+                $input['tingkat'] = $i;
+                $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
+            }
             $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
             
             //simpan tpp

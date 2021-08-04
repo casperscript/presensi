@@ -280,6 +280,86 @@ class HusnanWModerasiModel extends system\Model {
         return $daftarModPegawai;
     }
 
+    public function getDaftarVerMod_v3($input) {
+        parent::setConnection('db_presensi');
+
+        if (!isset($input['kdlokasi'])) {
+            return [];
+        }
+
+        $where = "";
+        if (isset($input['kdlokasi']) && ($input['kdlokasi'] === null || !is_numeric($input['kdlokasi']))) {
+            $params = [];
+
+            if (!is_numeric($input['kdlokasi']) && $input['kdlokasi'] !== null) {
+                $where .= " AND kdlokasi = ?";
+                $params = [$input['kdlokasi']];
+            }
+
+            if (isset($input['bulan'])) {
+                $where .= ' AND MONTH(tanggal_awal) = ? ';
+                array_push($params, $input['bulan']);
+            }
+
+            if (isset($input['tahun'])) {
+                $where .= '  AND YEAR(tanggal_awal) = ? ';
+                array_push($params, $input['tahun']);
+            }
+
+            if (isset($input['status'])) {
+                switch ($input['status']) {
+                    case 'semua':
+                        $c_status = '';
+                        break;
+                    case 'sah':
+                        $c_status = 'AND flag_operator_kota = "2"';
+                        break;
+                    case 'null':
+                        $c_status = 'AND flag_operator_kota IS NULL';
+                        break;
+                }
+                $where .= $c_status . ' ';
+            }
+
+            $sql = 'SELECT tmod.*, tjm.nama_jenis, tkp.ket_kode_presensi, tkp.pot_kode_presensi '
+                    . ' FROM tb_moderasi tmod '
+                    . ' INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi '
+                    . ' INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis '
+                    . ' WHERE flag_operator_opd IS NOT NULL AND flag_kepala_opd IS NOT NULL ' . $where
+                    . ' ORDER BY pin_absen, flag_operator_kota, tanggal_awal';
+        }
+
+//        $daftarModerasi = $this->getData($sql, $params);
+        $daftarModerasi = $this->getData($sql, $params)["value"];
+//        return $daftarModerasi;
+        $strPin = FUNC::husnanWStrImplode($daftarModerasi, "pin_absen");
+
+        parent::setConnection('db_pegawai');
+        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, ' ', namapeg, ' ', gelar_blkg) AS nama_lengkap, pin_absen, singkatan_lokasi FROM texisting_personal tperson INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru INNER JOIN tref_lokasi_kerja tlokasi ON tpeg.kdlokasi = tlokasi.kdlokasi WHERE pin_absen IN (" . $strPin . ")";
+
+        if (isset($input['cari']) && $input['cari'] != '') {
+            $sql .= ' AND (tperson.nipbaru LIKE "%' . $input['cari'] . '%" OR tperson.namapeg LIKE "%' . $input['cari'] . '%")';
+        }
+        $daftarPegawai = $this->getData($sql, [])["value"];
+
+        $daftarModPegawai = [];
+
+        foreach ($daftarModerasi as $mod) {
+            foreach ($daftarPegawai as $peg) {
+                if ($mod["pin_absen"] === $peg["pin_absen"]) {
+                    $daftarModPegawai[] = array_merge($mod, $peg);
+                    break;
+                }
+            }
+        }
+        /*
+          echo '<pre>';
+          var_dump($daftarModPegawai);
+          echo '</pre>';
+         */
+        return $daftarModPegawai;
+    }
+
     public function getTotalBelumVerifikasiOri($kodeLokasi) {
         parent::setConnection('db_presensi');
         $sql = "SELECT COUNT(id) AS total FROM tb_moderasi WHERE flag_operator_opd IS NOT NULL AND flag_kepala_opd IS NOT NULL AND flag_operator_kota IS NULL AND kdlokasi = ?";
