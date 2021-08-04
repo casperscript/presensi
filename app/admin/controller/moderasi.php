@@ -107,7 +107,6 @@ class moderasi extends system\Controller {
             }
 
             $input['daftarVerMod'] = $this->servicemaster->getDaftarVerMod_v3($input);
-//            comp\FUNC::showPre($input);exit;
             
             $input["totalBelumVerifikasi"] = $this->servicemaster->getTotalBelumVerifikasi($input);
             $this->subView('daftar-ver-mod', $input);

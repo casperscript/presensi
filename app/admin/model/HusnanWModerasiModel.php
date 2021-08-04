@@ -70,8 +70,9 @@ class HusnanWModerasiModel extends system\Model {
         }
 
         //added by daniek
-        if (isset($data['kdlokasi']) && $data['kdlokasi'] != '')
+        if (isset($data['kdlokasi']) && $data['kdlokasi'] != '') {
             $where .= ' AND kdlokasi = "' . $data['kdlokasi'] . '"';
+        }
 
         $params = [
             "flag_operator_kota" => $data["flag"],
@@ -110,8 +111,9 @@ class HusnanWModerasiModel extends system\Model {
     public function getDetailMod($mid = null) {
         parent::setConnection('db_presensi');
 
-        if ($mid === null)
+        if ($mid === null) {
             return false;
+        }
 
         $sql = "SELECT tmod.*, tjm.nama_jenis, tkp.ket_kode_presensi, tkp.pot_kode_presensi, tgrup.nama_grup_pengguna AS grup_pemohon FROM tb_moderasi tmod INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis INNER JOIN tb_grup_pengguna tgrup ON tmod.usergroup = tgrup.kd_grup_pengguna WHERE tmod.id = ? AND flag_operator_opd IS NOT NULL AND flag_kepala_opd IS NOT NULL ";
         $params = [$mid];
@@ -134,8 +136,9 @@ class HusnanWModerasiModel extends system\Model {
             }
         }
 
-        if (count($daftarModPegawai) == 0)
+        if (count($daftarModPegawai) == 0) {
             return false;
+        }
 
         return $daftarModPegawai[0];
     }
@@ -192,12 +195,7 @@ class HusnanWModerasiModel extends system\Model {
                 }
             }
         }
-        /*
-          echo '<pre>';
-          var_dump($daftarModPegawai);
-          echo '</pre>';
-         */
-
+        
         return [
             "daftarModPegawai" => $daftarModPegawai,
             "no" => $posisi + 1,
@@ -272,11 +270,7 @@ class HusnanWModerasiModel extends system\Model {
                 }
             }
         }
-        /*
-          echo '<pre>';
-          var_dump($daftarModPegawai);
-          echo '</pre>';
-         */
+        
         return $daftarModPegawai;
     }
 
@@ -329,9 +323,7 @@ class HusnanWModerasiModel extends system\Model {
                     . ' ORDER BY pin_absen, flag_operator_kota, tanggal_awal';
         }
 
-//        $daftarModerasi = $this->getData($sql, $params);
         $daftarModerasi = $this->getData($sql, $params)["value"];
-//        return $daftarModerasi;
         $strPin = FUNC::husnanWStrImplode($daftarModerasi, "pin_absen");
 
         parent::setConnection('db_pegawai');
@@ -352,11 +344,7 @@ class HusnanWModerasiModel extends system\Model {
                 }
             }
         }
-        /*
-          echo '<pre>';
-          var_dump($daftarModPegawai);
-          echo '</pre>';
-         */
+        
         return $daftarModPegawai;
     }
 
@@ -364,7 +352,7 @@ class HusnanWModerasiModel extends system\Model {
         parent::setConnection('db_presensi');
         $sql = "SELECT COUNT(id) AS total FROM tb_moderasi WHERE flag_operator_opd IS NOT NULL AND flag_kepala_opd IS NOT NULL AND flag_operator_kota IS NULL AND kdlokasi = ?";
         $total = $this->getData($sql, [$kodeLokasi])["value"];
-//FUNC::husnanWVarDump($total);
+
         if (isset($total[0])) {
             return $total[0]["total"];
         }
