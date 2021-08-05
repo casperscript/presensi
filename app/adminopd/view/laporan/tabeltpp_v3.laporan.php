@@ -192,7 +192,14 @@ if ($download == 0) {
             //mengenolkan tunj
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
             //prosentase potongan kinerja
-            $pot_kinerja = isset($kinerja[$peg['nipbaru']]) ? 100 - $kinerja[$peg['nipbaru']] : 'NAN';
+            if (isset($kinerja[$peg['nipbaru']])) {
+                $pot_kinerja = 100 - $kinerja[$peg['nipbaru']];
+                $ket_kinerja = $pot_kinerja;
+            } else {
+                $pot_kinerja = 100;
+                $ket_kinerja = 'NAN';
+            }
+//            $pot_kinerja = isset($kinerja[$peg['nipbaru']]) ? 100 - $kinerja[$peg['nipbaru']] : 'NAN';
 
             $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
             $nominal_tp36 = $peg['nominal_tp'] * 36 / 100;
@@ -233,11 +240,12 @@ if ($download == 0) {
                     $sum['all'] = 100;
                     ?>
                     <td class="center-align" colspan="3"><?= $rekap[$pin]['sum_pot']['all'] ?></td>
+                    <td class='center-align'><?= $ket_kinerja ?></td>
                 <?php else: ?>
                     <td class='center-align'><?= $sum['mk'] ?></td>
                     <td class='center-align'><?= $sum['ap'] ?></td>
                     <td class='center-align'><?= $sum['pk'] ?></td>
-                    <td class='center-align'><?= $pot_kinerja ?></td>
+                    <td class='center-align'><?= $ket_kinerja ?></td>
                 <?php endif; ?>
 
                 <td class="right-align"><?= ($pot > 0 ? number_format($pot, 0, ",", ".") : '-') ?></td> <!-- total potongan kehadiran -->

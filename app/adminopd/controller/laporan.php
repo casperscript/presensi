@@ -753,6 +753,7 @@ class laporan extends system\Controller {
 
                 $data['personil'] = implode(',', $personil);
             }
+            comp\FUNC::showPre($data);exit;
 
             //ambil tambahan data pilih bendahara
             $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
@@ -763,10 +764,12 @@ class laporan extends system\Controller {
             }
 
             //ambil data kinerja
-            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api_pns/';
+//            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
             $method = 'poin';
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
-            $request = array('opd' => $this->login['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+            $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+//            $request = array('opd' => $this->login['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
             $poin = [];
             if (!empty($kinerja)) {
@@ -776,8 +779,9 @@ class laporan extends system\Controller {
             }
 
             $data['kinerja'] = $poin;
+//            comp\FUNC::showPre($data['kinerja']);exit;
+
 //            $a = array_column($kinerja['data'], 'nip');
-//            comp\FUNC::showPre($data);exit;
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);

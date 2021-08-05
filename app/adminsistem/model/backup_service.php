@@ -6,6 +6,7 @@ use comp;
 use system;
 use app\adminsistem\model\laporan_service;
 use app\adminsistem\model\pegawai_service;
+use app\adminsistem\model\webadapter;
 
 class backup_service extends system\Model {
 
@@ -14,6 +15,22 @@ class backup_service extends system\Model {
         parent::setConnection('db_backup');
         $this->laporan_service = new laporan_service();
         $this->pegawai_service = new pegawai_service();
+        $this->webadapter = new webadapter();
+    }
+    
+    public function getData64() {
+        parent::setConnection('db_backup_64');
+        $data = $this->getData('SELECT * FROM tb_presensi LIMIT 0, 10', []);
+        return $data;
+    }
+    
+    public function insertData62($data) {
+        parent::setConnection('db_backup');
+        $result = [];
+        foreach ($data as $a) {
+            $result[] = $this->save('tb_presensi', $a);
+        }
+        return $result;
     }
 
     public function getDataInduk($data) {
@@ -412,6 +429,7 @@ class backup_service extends system\Model {
 //        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
         $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input, true);
         $pajak = $this->laporan_service->getArraypajak();
+//        comp\FUNC::showPre($input);exit;
 
         parent::setConnection('db_backup');
         foreach ($pegawai['value'] as $peg) {
@@ -435,6 +453,24 @@ class backup_service extends system\Model {
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
             $tbpersonil = $this->save('tb_personil', $p);
+            
+            ################## Begin Get API Kinerja ####################
+            //ambil data kinerja
+            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $method = 'poin';
+            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+            $request = array('opd' => $input['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+            $poin = [];
+            if (!empty($kinerja)) {
+                $arrNip = array_column($kinerja['data'], 'nip');
+                $arrPoin = array_column($kinerja['data'], 'poin');
+                $poin = array_combine($arrNip, $arrPoin);
+            }
+
+            $input['kinerja'] = $poin;
+            ################# End Get API Kinerja ####################
+            
 //            comp\FUNC::showPre($pegawai); exit;
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
@@ -580,7 +616,7 @@ class backup_service extends system\Model {
             'pot_penuh' => json_encode($pot_penuh),
             'sum_pot' => json_encode($sum_pot),
             'pot_final' => $final,
-            'pot_kinerja' => 0,
+            'pot_kinerja' => isset($input['kinerja'][$peg['nipbaru']]) ? $input['kinerja'][$peg['nipbaru']] : 100,
             'tpp_kotor' => $nominal_tpp
         ];
 
@@ -605,7 +641,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-//        comp\FUNC::showPre($presensi);exit;
+//        comp\FUNC::showPre($presensi);//exit;
 
 
         $tbpresensi = $this->save('tb_presensi', $presensi);

@@ -125,7 +125,7 @@ foreach ($pegawai['value'] as $peg) {
             $rupiah_pot = 0;
             if (isset($tpp_pegawai['nominal_tp'])) {
                 $tpp36 = $tpp_pegawai['nominal_tp'] * 36 / 100;
-                $rupiah_pot = round($tpp36 * $rekap[$key]['sum_pot']['all'] / 100, -1);
+                $rupiah_pot = round($tpp36 * $rekap[$key]['sum_pot']['all'] / 100, 0);
             }
             ?>
         </tbody>
