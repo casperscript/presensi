@@ -77,22 +77,28 @@ if (count($rekap) == 0) {
 <table class="bordered hoverable custom-border scrollable">
     <thead>
         <tr>
-            <th class="grey lighten-2 center-align" rowspan="2">No</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Nama / NIP / NPWP / Jabatan</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Kelas Jab.</th>
-            <th class="grey lighten-2 center-align" colspan="2">Tambahan Penghasilan<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" colspan="3">Persentase Potongan<br />(%)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Total Potongan<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">TPP Kotor (TPP - Tot Pot)<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Pajak<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">TPP Bersih (TPP Kotor - Pajak)<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Pot Kepesertaan BPJS Kesehatan<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Diterimakan (TPP Bersih - BPJS Kes)<br />(Rp)</th>
-            <th class="grey lighten-2 center-align" rowspan="2">Tanda Tangan</th>
+            <th class="grey lighten-2 center-align" rowspan="3">No</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Nama / NIP / NPWP / Jabatan</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Kelas Jab.</th>
+            <th class="grey lighten-2 center-align" colspan="3">Tambahan Penghasilan<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" colspan="4">Persentase Potongan<br />(%)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Total Potongan<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">TPP Kotor (TPP - Tot Pot)<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Pajak<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">TPP Bersih (TPP Kotor - Pajak)<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Pot Kepesertaan BPJS Kesehatan<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Diterimakan (TPP Bersih - BPJS Kes)<br />(Rp)</th>
+            <th class="grey lighten-2 center-align" rowspan="3">Tanda Tangan</th>
         </tr>
         <tr>
-            <th class="grey lighten-2 center-align">Beban Kerja (40%)</th>
-            <th class="grey lighten-2 center-align">Prestasi Kerja (60%)</th>
+            <th class="grey lighten-2 center-align" rowspan="2">Beban Kerja (40%)</th>
+            <th class="grey lighten-2 center-align" colspan="2">Prestasi Kerja (60%)</th>
+            <th class="grey lighten-2 center-align" colspan="3">e-Presensi</th>
+            <th class="grey lighten-2 center-align" rowspan="2">e-Ki nerja</th>
+        </tr>
+        <tr>
+            <th class="grey lighten-2 center-align">e-Presensi (36%)</th>
+            <th class="grey lighten-2 center-align">e-Kinerja (24%)</th>
             <th class="grey lighten-2 center-align">MK</th>
             <th class="grey lighten-2 center-align">AP</th>
             <th class="grey lighten-2 center-align">PK</th>
@@ -104,7 +110,8 @@ if (count($rekap) == 0) {
         $pin_absen = '';
         $tot_tpp = 0;
         $tot_tpp40 = 0;
-        $tot_tpp60 = 0;
+        $tot_tpp36 = 0;
+        $tot_tpp24 = 0;
         $tot_pot = 0;
         $tot_tppkotor = 0;
         $tot_pajak = 0;
@@ -120,11 +127,13 @@ if (count($rekap) == 0) {
             $sum['text'] = $sum['all'];
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
             $sum['all'] = ($sum['all'] > 100 ? 100 : $sum['all']);
+            $pot_kinerja = 100 - $find['pot_kinerja'];
 
             $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
-            $nominal_tp60 = $peg['nominal_tp'] * 60 / 100;
+            $nominal_tp36 = $peg['nominal_tp'] * 36 / 100;
+            $nominal_tp24 = $peg['nominal_tp'] * 24 / 100;
             
-            $pot = round($sum['all'] / 100 * $nominal_tp60, -1);
+            $pot = round($sum['all'] / 100 * $nominal_tp36 + ($pot_kinerja / 100 * $nominal_tp24), 0);
             $tpp_kotor = $peg['nominal_tp'] - $pot;
             //remove whitespace-- ambil % pajak
             $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
@@ -143,23 +152,26 @@ if (count($rekap) == 0) {
                 </td>
                 <td class="center-align"><?= $peg['kelas'] ?></td>
                 <td class="right-align"><?= ($nominal_tp40 > 0 ? number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
-                <td class="right-align"><?= ($nominal_tp60 > 0 ? number_format($nominal_tp60, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($nominal_tp36 > 0 ? number_format($nominal_tp36, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($nominal_tp24 > 0 ? number_format($nominal_tp24, 0, ",", ".") : '-') ?></td>
                 <?php
                 if ($pot_penuh) :
                     $sum['all'] = 100;
                     ?>
                     <td class="center-align" colspan="3"><?= $sum['text'] ?></td>
+                    <td class="center-align"><?= $pot_kinerja ?></td>
                 <?php else: ?>
-                    <td class='center-align'><?= $sum['mk'] ?></td>
-                    <td class='center-align'><?= $sum['ap'] ?></td>
-                    <td class='center-align'><?= $sum['pk'] ?></td>
+                    <td class="center-align"><?= $sum['mk'] ?></td>
+                    <td class="center-align"><?= $sum['ap'] ?></td>
+                    <td class="center-align"><?= $sum['pk'] ?></td>
+                    <td class="center-align"><?= $pot_kinerja ?></td>
                 <?php endif; ?>
 
                 <td class="right-align"><?= ($pot > 0 ? number_format($pot, 0, ",", ".") : '-') ?></td> <!-- total potongan kehadiran -->
                 <td class="right-align"><?= ($tpp_kotor ? number_format($tpp_kotor, 0, ",", ".") : '-') ?></td> <!-- tpp kotor -->
                 <td class="right-align"><?= ($pot_pajak ? number_format($pot_pajak, 0, ",", ".") : '-') ?></td> <!-- pajak -->
                 <td class="right-align"><?= ($terima ? number_format($terima, 0, ",", ".") : '-') ?></td> <!-- tpp bersih -->
-                <td class="right-align"><?= ($pot_bpjs ? number_format($pot_bpjs, 0, ",", ".") : '-') ?></td> <!-- pot bpjs -->
+                <td class="right-align"><?= ($pot_bpjs ? number_format($pot_bpjs, 0, ",", ".") : '-') ?></td> <!-- potongan bpjs -->
                 <td class="right-align"><?= ($terima_potbpjs ? number_format($terima_potbpjs, 0, ",", ".") : '-') ?></td> <!-- diterimakan dipotong bpjs -->
                 <td></td>
             </tr>
@@ -167,7 +179,8 @@ if (count($rekap) == 0) {
             $pin_absen .= $pin . (count($pegawai['value']) != $no ? ',' : '');
             $tot_tpp += $peg['nominal_tp'];
             $tot_tpp40 += $nominal_tp40;
-            $tot_tpp60 += $nominal_tp60;
+            $tot_tpp36 += $nominal_tp36;
+            $tot_tpp24 += $nominal_tp24;
             $tot_pot += $pot;
             $tot_tppkotor += $tpp_kotor;
             $tot_pajak += $pot_pajak;
@@ -179,14 +192,11 @@ if (count($rekap) == 0) {
         }
         ?>
         <tr>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th colspan="3"></th>
             <th class="right-align"><?= number_format($tot_tpp40, 0, ",", ".") ?></th>
-            <th class="right-align"><?= number_format($tot_tpp60, 0, ",", ".") ?></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th class="right-align"><?= number_format($tot_tpp36, 0, ",", ".") ?></th>
+            <th class="right-align"><?= number_format($tot_tpp24, 0, ",", ".") ?></th>
+            <th colspan="4"></th>
             <th class="right-align"><?= ($tot_pot > 0 ? number_format($tot_pot, 0, ",", ".") : '-') ?></th>
             <th class="right-align"><?= number_format($tot_tppkotor, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_pajak, 0, ",", ".") ?></th>
@@ -200,6 +210,7 @@ if (count($rekap) == 0) {
 <br>
 <input type="hidden" id="verified" value="<?= isset($laporan['kepala_opd']) ? 1 : 0 ?>">
 <?php
+
 if ($download == 0) {
     echo '<br><br><div style="color: #ddd;">source: db_backup-rekapbc</div>';
     exit;
@@ -237,7 +248,7 @@ if ($tpp['nip_kepala'] != '' && $tpp['nip_bendahara'] != '') {
         <p><strong>Keterangan</strong></p>
         <table>
             <tr><td>Jumlah TPP Beban Kerja</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp40) ?></td></tr>
-            <tr><td>Jumlah TPP Prestasi Kerja - Potongan</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp60 - $tot_pot) ?></td></tr>
+            <tr><td>Jumlah TPP Prestasi Kerja - Potongan</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tpp36 + $tot_tpp24 - $tot_pot) ?></td></tr>
         <tr><td>Jumlah TPP Kotor</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tppkotor) ?></td></tr>
             <tr><td>Pajak</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_pajak) ?></td></tr>
             <tr><td>TPP Bersih</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_terima) ?></td></tr>
@@ -250,7 +261,6 @@ if ($tpp['nip_kepala'] != '' && $tpp['nip_bendahara'] != '') {
     <br>
     <?php
 }
-
 require_once ('comp/mpdf60/mpdf.php');
 $html = ob_get_contents();
 ob_end_clean();
