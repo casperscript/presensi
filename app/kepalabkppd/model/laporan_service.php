@@ -337,6 +337,41 @@ class laporan_service extends system\Model {
 
         return $daftarModPegawai;
     }
+    
+    public function getDaftarVerMod_v3($data)
+    {
+        parent::setConnection('db_presensi');
+
+        $data['periode'] = $data['bulan'].$data['tahun'];
+        $where = "AND (CONCAT(MONTH(tanggal_awal), YEAR(tanggal_awal)) = ? OR CONCAT(MONTH(tanggal_akhir), YEAR(tanggal_akhir)) = ?)";
+
+        $sql = "SELECT tmod.*, tjm.nama_jenis, tkp.ket_kode_presensi, tkp.pot_kode_presensi '
+            FROM tb_moderasi tmod 
+            INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi 
+            INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis 
+            WHERE pin_absen in (".$data['pin_absen'].") ".$where." ORDER BY tanggal_awal";
+
+        $params = [$data['periode'], $data['periode']];
+
+        $daftarModerasi = $this->getData($sql, $params)["value"];
+
+        parent::setConnection('db_pegawai');        
+        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, ' ', namapeg, ' ', gelar_blkg) AS nama_lengkap, pin_absen, singkatan_lokasi FROM texisting_personal tperson INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru INNER JOIN tref_lokasi_kerja tlokasi ON tpeg.kdlokasi = tlokasi.kdlokasi WHERE pin_absen in (".$data['pin_absen'].")";
+        $daftarPegawai = $this->getData($sql, [])["value"];
+
+        $daftarModPegawai = [];
+
+        foreach ($daftarModerasi as $mod) {
+            foreach ($daftarPegawai as $peg) {
+                if ($mod["pin_absen"] === $peg["pin_absen"]) {
+                    $daftarModPegawai[] = array_merge($mod, $peg);
+                    break;
+                }
+            }
+        }
+
+        return $daftarModPegawai;
+    }
 
     public function getJadwalkerja($data) {
         parent::setConnection('db_presensi');

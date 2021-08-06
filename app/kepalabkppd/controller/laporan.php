@@ -348,7 +348,7 @@ class laporan extends system\Controller {
             //$nomod = true;
             if ($nomod['count'] > 0) {
                 $data['title'] = 'Daftar Proses Pengajuan Moderasi';
-                $data['daftarVerMod'] = $this->laporan_service->getDaftarVerMod($input);
+                $data['daftarVerMod'] = $this->laporan_service->getDaftarVerMod_v3($input);
                 $data['dateLimit'] = $this->dateLimit;
                 $this->subView('daftarmod', $data);
                 exit;
