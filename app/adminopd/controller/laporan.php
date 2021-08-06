@@ -518,10 +518,10 @@ class laporan extends system\Controller {
             $data['laporan'] = $this->laporan_service->getLaporan($input);
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
-            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-                $this->tabelrekapc1bc($input);
-                exit;
-            }
+//            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+//                $this->tabelrekapc1bc($input);
+//                exit;
+//            }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilBatch($input['pin_absen'], true);
             $data['personil'] = '';
@@ -539,7 +539,7 @@ class laporan extends system\Controller {
             $data['jenis'] = '';
             $data['personil'] = $input['pin_absen'];
 
-            //ambil ttd
+            ###ambil ttd
             if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) :
                 $data['tingkat'] = 3;
             endif;
@@ -588,7 +588,7 @@ class laporan extends system\Controller {
             $data['jenis'] = '';
             $data['personil'] = $input['pin_absen'];
 
-            //ambil ttd
+            ###ambil ttd
             if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) :
                 $data['tingkat'] = 3;
             endif;
