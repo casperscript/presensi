@@ -454,6 +454,46 @@ class backup_service extends system\Model {
 
             $tbpersonil = $this->save('tb_personil', $p);
             
+            #simpan presensi
+            $input['kinerja'] = 0;
+            if ($tbpersonil['error'] && $w_presensi) {
+                $peg['pajak_tpp'] = $p['pajak_tpp'];
+                $tbpresensi = $this->save_presensi_v2($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs'], $input);
+                if (!$tbpresensi['error']) :
+                    return $tbpresensi;
+                endif;
+            }
+        }
+        return $tbpresensi;
+    }
+    
+    public function save_personil_v3($input, $tbinduk, $rekap, $w_presensi) {
+        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input, true);
+        $pajak = $this->laporan_service->getArraypajak();
+
+        parent::setConnection('db_backup');
+        foreach ($pegawai['value'] as $peg) {
+            $field = array_keys($this->getTabel('tb_personil'));
+
+            foreach ($field as $i) :
+                $p[$i] = (isset($peg[$i])) ? $peg[$i] : '';
+            endforeach;
+
+            if (empty($p['nominal_tp']) || $p['tunjangan_jabatan'] == 1) :
+                $p['tampil_tpp'] = 0;
+            else :
+                $p['tampil_tpp'] = 1;
+            endif;
+
+            //remove whitespace-- ambil % pajak
+            $clean = str_replace(" ", "", $peg['golruang']);
+            $gol = explode("/", $clean)[0];
+            $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
+            $p['induk_id'] = $tbinduk['inserted_id'];
+            $p['dateAdd'] = date('Y-m-d H:i:s');
+
+            $tbpersonil = $this->save('tb_personil', $p);
+            
             ################## Begin Get API Kinerja ####################
             //ambil data kinerja
             $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
@@ -475,7 +515,7 @@ class backup_service extends system\Model {
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
-                $tbpresensi = $this->save_presensi_v2($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs'], $input);
+                $tbpresensi = $this->save_presensi_v3($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs'], $input);
                 if (!$tbpresensi['error']) :
                     return $tbpresensi;
                 endif;
@@ -626,6 +666,79 @@ class backup_service extends system\Model {
         $pot = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp60, -1);
 
         $tpp_kotor = $nominal_tp40 + $nominal_tp60 - $pot;
+        $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
+        $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
+
+        $checkBpjsGaji = round((($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
+                ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
+                $nominal_tpp * 0.01);
+        $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
+        $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
+        $presensi['pot_bpjskes'] = $pot_bpjs;
+        $presensi['tpp_terima'] = $terima_potbpjs;
+
+        for ($i = 1; $i <= 31; $i++) {
+            $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
+        }
+        $presensi['dateAdd'] = date('Y-m-d H:i:s');
+//        comp\FUNC::showPre($presensi);//exit;
+
+
+        $tbpresensi = $this->save('tb_presensi', $presensi);
+        if ($tbpresensi['error']) :
+            $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
+        endif;
+
+        return $tbpresensi;
+    }
+    
+    public function save_presensi_v3($rekap, $peg, $personil_id, $kenabpjs = [], $input = []) {
+        parent::setConnection('db_backup');
+        $saveto = [];
+        $pot_penuh = [];
+        $sum_pot = [];
+        $pin_absen = $peg['pin_absen'];
+
+        for ($i = 1; $i <= 6; $i++) {
+            $get = $rekap[$i][$pin_absen];
+            $pot_penuh[$i] = $get['pot_penuh'];
+
+            ################# Begin Mengenolkan TPP Sekolah ####################
+            $bln_tanpapot = [4];
+            $thn_tanpapot = [2021];
+            $grub_tanpapot = ['G13', 'G14', 'G15', 'G16'];
+            if (in_array($input['bulan'], $bln_tanpapot) && in_array($input['tahun'], $thn_tanpapot) && in_array($input['satker']['kd_kelompok_lokasi_kerja'], $grub_tanpapot) && $i == 6) {
+                $get['sum_pot'] = ['mk' => 0, 'ap' => 0, 'pk' => 0, 'all' => 0];
+            }
+            ################# End Mengenolkan TPP Sekolah ####################
+
+            $sum_pot[$i] = $get['sum_pot'];
+            foreach ($get as $tgl => $isi) {
+                $saveto[$tgl][$i] = $isi;
+            }
+        }
+
+        $nominal_tpp = isset($peg['nominal_tp']) ? $peg['nominal_tp'] : 0;
+        $final = ($sum_pot[6]['all'] > 100 ? 100 : $sum_pot[6]['all']);
+
+        $presensi = [
+            'id' => '',
+            'personil_id' => $personil_id,
+            'pot_penuh' => json_encode($pot_penuh),
+            'sum_pot' => json_encode($sum_pot),
+            'pot_final' => $final,
+            'poin_kinerja' => isset($input['kinerja'][$peg['nipbaru']]) ? $input['kinerja'][$peg['nipbaru']] : 0,
+            'tpp_kotor' => $nominal_tpp
+        ];
+
+//        $nominal_tp40 = $nominal_tpp * 40 / 100;
+        $nominal_tp36 = $nominal_tpp * 36 / 100;
+        $nominal_tp24 = $nominal_tpp * 24 / 100;
+
+        $pot_tp36 = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp36, 0);
+        $pot_tp24 = round((100 - $presensi['poin_kinerja']) / 100 * $nominal_tp24, 0);
+
+        $tpp_kotor = $nominal_tpp - ($pot_tp36 + $pot_tp24);
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 

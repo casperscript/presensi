@@ -400,7 +400,7 @@ class backuplaporan extends system\Controller {
                 $input['tingkat'] = $i;
                 $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
             }
-            $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
+            $tbpersonil = $this->backup_service->save_personil_v3($input, $tbinduk, $rekap, true);
             
             //simpan tpp
             $tbtpp = $this->backup_service->save_tpp($input, $tbinduk);

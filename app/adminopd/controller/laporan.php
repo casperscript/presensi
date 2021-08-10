@@ -738,10 +738,10 @@ class laporan extends system\Controller {
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
             //admbil dari data backupan
-//            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-//                $this->tabeltppbc_v3($input);
-//                exit;
-//            }
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc_v3($input);
+                exit;
+            }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
 

@@ -127,7 +127,7 @@ if (count($rekap) == 0) {
             $sum['text'] = $sum['all'];
             $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
             $sum['all'] = ($sum['all'] > 100 ? 100 : $sum['all']);
-            $pot_kinerja = 100 - $find['pot_kinerja'];
+            $pot_kinerja = 100 - $find['poin_kinerja'];
 
             $nominal_tp40 = $peg['nominal_tp'] * 40 / 100;
             $nominal_tp36 = $peg['nominal_tp'] * 36 / 100;
