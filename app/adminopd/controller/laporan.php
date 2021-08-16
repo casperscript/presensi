@@ -764,7 +764,6 @@ class laporan extends system\Controller {
 
             //ambil data kinerja
             $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
-//            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
             $method = 'poin_pns';
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
@@ -784,7 +783,7 @@ class laporan extends system\Controller {
 //            $a = array_column($kinerja['data'], 'nip');
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
-            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['rekap'] = $this->laporan_service->getRekapAll_v3($data, $data['laporan'], true);
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
             $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;

@@ -398,7 +398,7 @@ class backuplaporan extends system\Controller {
             $laporan = $this->laporan_service->getLaporan($input);
             for ($i = 1; $i <= 6; $i++) {
                 $input['tingkat'] = $i;
-                $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
+                $rekap[$i] = $this->backup_service->getRekapAll_v2($input, $laporan, true);
             }
             $tbpersonil = $this->backup_service->save_personil_v3($input, $tbinduk, $rekap, true);
             

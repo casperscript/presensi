@@ -1544,6 +1544,286 @@ class backup_service extends system\Model {
         $all['allverified'] = $allverified;
         return $all;
     }
+    
+    public function getRekapAll_v2($data, $laporan, $hitungpot = false) {
+        $moderasi = $this->laporan_service->getArraymodAll($data, $laporan);
+        $libur = $this->laporan_service->getLibur($data);
+        $data_pot = $this->laporan_service->getArraypot();
+        $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
+        $hitungmod = $moderasi['hitung'];
+
+        $data['pin_absen'] = $data['personil'];
+        $log = $this->getLogPersonil($data);
+        $masuk = $log['masuk'];
+        $pulang = $log['pulang'];
+        $apel = $this->getRecordApel($data);
+
+        $allverified = true;
+        foreach ($data['pegawai']['value'] as $peg) {
+            $tot = 0;
+            $key = $peg['pin_absen'];
+            $sum_mk = 0;
+            $sum_ap = 0;
+            $sum_pk = 0;
+            $pot_penuh = [];
+            $jumlah_tk = 0;
+            $hitungpot = true;
+            for ($i = 1; $i <= $hitungtgl; $i++) {
+
+                $tgl = $data['tahun'] . '-' . $data['bulan'] . '-' . $i;
+//                $hari = date("l", strtotime($tgl));
+
+                $kd_masuk = '';
+                $kd_apel = '';
+                $kd_pulang = '';
+                $pot_masuk = 0;
+                $pot_apel = 0;
+                $pot_pulang = 0;
+                $color1 = '';
+                $color2 = '';
+                $color3 = '';
+                $hl = false;
+                if (isset($masuk[$key][$i])) {
+
+                    if ($masuk[$key][$i]['kode'] == 'HL') :
+                        $hl = true;
+                    else :
+                        $kd_masuk = $masuk[$key][$i]['kode'];
+                    endif;
+
+                    if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) :
+                        $color1 = 'yellow accent-2';
+                    endif;
+                } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
+                    $color1 = 'yellow accent-2';
+                    $kd_masuk = 'M0';
+                }
+
+                if (isset($apel[$key][$i])) {
+                    if ($apel[$key][$i]['kode'] != 'HL') :
+                        $kd_apel = $apel[$key][$i]['kode'];
+                    endif;
+
+                    if ($kd_apel == 'A0') :
+                        $color2 = 'yellow accent-2';
+                    endif;
+                } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
+                    $color2 = 'yellow accent-2';
+                    $kd_apel = 'A0';
+                }
+
+                if (isset($pulang[$key][$i])) {
+                    if ($pulang[$key][$i]['kode'] != 'HL') :
+                        $kd_pulang = $pulang[$key][$i]['kode'];
+                    endif;
+
+                    if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0'])) :
+                        $color3 = 'yellow accent-2';
+                    endif;
+                } elseif (!in_array($i, $libur) && strtotime($tgl) <= strtotime(date('Y-m-d'))) {
+                    $color3 = 'yellow accent-2';
+                    $kd_pulang = 'P0';
+                }
+
+                $gabung = false;
+                $tampil_mod = true;
+                if (in_array($i, $libur)) {
+                    $tampil_mod = false;
+                    $kd_masuk = 'HL';
+                    $kd_apel = 'HL';
+                    $kd_pulang = 'HL';
+                    $color1 = '';
+                    $color2 = '';
+                    $color3 = '';
+                    //libur nasional tpi finger
+                    if (isset($masuk[$key][$i]) && $masuk[$key][$i]['kode'] != 'HL') {
+                        $tampil_mod = true;
+                        $kd_masuk = $masuk[$key][$i]['kode'];
+                        if (in_array($kd_masuk, ['M2', 'M3', 'M4', 'M5', 'M0'])) :
+                            $color1 = 'yellow accent-2';
+                        endif;
+                    }
+                    if (isset($pulang[$key][$i]) && $pulang[$key][$i]['kode'] != 'HL') {
+                        $tampil_mod = true;
+                        $kd_pulang = $pulang[$key][$i]['kode'];
+                        if (in_array($kd_pulang, ['P2', 'P3', 'P4', 'P5', 'P0'])) :
+                            $color3 = 'yellow accent-2';
+                        endif;
+                    }
+                } elseif (strtotime($tgl) > strtotime(date('Y-m-d'))) {
+                    $tampil_mod = false;
+                    $kd_masuk = '';
+                    $kd_pulang = '';
+                    $color1 = '';
+                    $color2 = '';
+                    $color3 = '';
+                }
+
+                if ($tampil_mod && isset($moderasi[$key][$i])) {
+                    foreach ($moderasi[$key][$i] as $jnsmod => $modr) {
+                        $ver = $moderasi[$key][$i][$jnsmod]['verified'];
+                        if ($ver != null && ($ver == 0 || $ver == 3)) :
+                            continue;
+                        endif;
+
+                        if ($ver == null) :
+                            $allverified = false;
+                        endif;
+
+                        if ($kd_masuk && ($jnsmod == 'JNSMOD04' || $jnsmod == 'JNSMOD01')) {
+                            $color1 = 'red accent-3';
+                            $kd_masuk = $modr['kode'];
+                        }
+                        if ($kd_apel && ($jnsmod == 'JNSMOD04' || $jnsmod == 'JNSMOD02')) {
+                            $color2 = 'red accent-3';
+                            $kd_apel = $modr['kode'];
+                        }
+                        if ($kd_pulang && ($jnsmod == 'JNSMOD04' || $jnsmod == 'JNSMOD03')) {
+                            $color3 = 'red accent-3';
+                            $kd_pulang = $modr['kode'];
+                        }
+
+                        //jk jenisnya semuanya atau kode moderasi masuk, apel, pulang sama dalam 1 hari maka potongan dijasikan 1
+                        if ($jnsmod == 'JNSMOD04' || ($kd_apel == $kd_masuk && $kd_pulang == $kd_masuk)) :
+                            $gabung = true;
+                        endif;
+                        
+                    }
+                }
+
+                //jk M0 && A0 && P0 ---> jadi TK (tidak masuk kerja tanpa alasan yg sah)
+                if ($kd_masuk == 'M0' && ($kd_apel == 'A0' || $kd_apel == 'NR') && $kd_pulang == 'P0') {
+                    $kd_masuk = 'TK';
+                    $kd_apel = 'TK';
+                    $kd_pulang = 'TK';
+                    $color2 = 'yellow accent-2';
+                }
+
+                if ($hitungpot) {
+                    $hitung = 1;
+                    if ($kd_masuk != 'M0') :
+                        $hitung = isset($hitungmod[$key][$kd_masuk]) ? $hitungmod[$key][$kd_masuk] : 1;
+                    endif;
+
+                    if ($kd_masuk && isset($data_pot[$kd_masuk])) {
+                        foreach ($data_pot[$kd_masuk] as $p) {
+                            if ($hitung >= $p['minimal']) {
+                                $pot_masuk = $p['pot'];
+                                break;
+                            }
+                        }
+
+                        if ($pot_masuk == 100) :
+                            $pot_penuh[] = $kd_masuk;
+                        endif;
+                    }
+
+                    if ($kd_apel != 'A0') :
+                        $hitung = isset($hitungmod[$key][$kd_apel]) ? $hitungmod[$key][$kd_apel] : 1;
+                    endif;
+
+                    if ($kd_apel && isset($data_pot[$kd_apel])) {
+                        foreach ($data_pot[$kd_apel] as $p) {
+                            if ($hitung >= $p['minimal']) {
+                                $pot_apel = $p['pot'];
+                                break;
+                            }
+                        }
+
+                        if ($pot_apel == 100) :
+                            $pot_penuh[] = $kd_apel;
+                        endif;
+
+                        //jk kode sama, potongan jadi 1
+                        if ($kd_apel == $kd_masuk) :
+                            $pot_apel = 0;
+                        endif;
+                    }
+
+                    if ($kd_pulang != 'P0') :
+                        $hitung = isset($hitungmod[$key][$kd_pulang]) ? $hitungmod[$key][$kd_pulang] : 1;
+                    endif;
+
+                    if ($kd_pulang && isset($data_pot[$kd_pulang])) {
+                        foreach ($data_pot[$kd_pulang] as $p) {
+                            if ($hitung >= $p['minimal']) {
+                                $pot_pulang = $p['pot'];
+                                break;
+                            }
+                        }
+
+                        if ($pot_pulang == 100) :
+                            $pot_penuh[] = $kd_pulang;
+                        endif;
+
+                        //jk kode sama, potongan jadi 1
+                        if ($kd_pulang == $kd_masuk || $kd_pulang == $kd_apel) :
+                            $pot_pulang = 0;
+                        endif;
+                    }
+                }
+
+                if ($gabung) {
+                    $pot_apel = 0;
+                    $pot_pulang = 0;
+                }
+
+                $subtot = $pot_masuk + $pot_apel + $pot_pulang;
+                $all[$key][$i] = [
+                    'mk' => [
+                        'waktu' => (isset($masuk[$key][$i]) ? $masuk[$key][$i]['waktu'] : $kd_masuk),
+                        'kode' => $kd_masuk,
+                        'pot' => ($pot_masuk > 0 ? $pot_masuk : ''),
+                        'color' => $color1
+                    ],
+                    'ap' => [
+                        'waktu' => (isset($apel[$key][$i]) ? $apel[$key][$i]['waktu'] : $kd_apel),
+                        'kode' => $kd_apel,
+                        'pot' => ($pot_apel > 0 ? $pot_apel : ''),
+                        'color' => $color2
+                    ],
+                    'pk' => [
+                        'waktu' => (isset($pulang[$key][$i]) ? $pulang[$key][$i]['waktu'] : $kd_pulang),
+                        'kode' => $kd_pulang,
+                        'pot' => ($pot_pulang > 0 ? $pot_pulang : ''),
+                        'color' => $color3
+                    ],
+                    'all' => ($subtot > 0 ? $subtot : '')
+                ];
+
+                if ($hitungpot) :
+                    $sum_mk += $pot_masuk;
+                endif;
+                $sum_ap += $pot_apel;
+                $sum_pk += $pot_pulang;
+
+                if ($kd_masuk == 'TK') :
+                    $jumlah_tk++;
+                endif;
+
+                if ($jumlah_tk >= 10) :
+                    $pot_penuh[] = 'TK';
+                endif;
+            }
+
+            $all[$key]['pot_penuh'] = array_unique($pot_penuh);
+
+            if (count($pot_penuh) == 0) {
+                $tot = ($sum_mk + $sum_ap + $sum_pk);
+            } else {
+                $implode = implode(",", $all[$key]['pot_penuh']);
+                $tot = "100% (" . $implode . ")";
+            }
+
+            $all[$key]['sum_pot'] = [
+                'mk' => $sum_mk, 'ap' => $sum_ap, 'pk' => $sum_pk,
+                'all' => $tot
+            ];
+        }
+
+        $all['allverified'] = $allverified;
+        return $all;
+    }
 
 //-----------------------------------------------------------------------//
     public function save_cpns($induk_id, $data, $rekap) {
