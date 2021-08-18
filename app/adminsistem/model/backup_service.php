@@ -497,9 +497,9 @@ class backup_service extends system\Model {
             ################## Begin Get API Kinerja ####################
             //ambil data kinerja
             $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
-            $method = 'poin';
+            $method = 'poin_pns';
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
-            $request = array('opd' => $input['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+            $request = array('pin' => $input['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
             $poin = [];
             if (!empty($kinerja)) {
