@@ -12,6 +12,21 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
   $path_ttd = $this->link()."upload/ttd/";
  */
 $period = $bulan . $tahun;
+
+if ($period == '122018') {
+    echo '<div class="alert-verifikasi">
+        <i class="fa fa-info-circle"></i>
+        Cetak TPP Bulan ' . $namabulan[$bulan - 1] . ' ' . $tahun . ' melalui menu <a href="../../adminopd/laporandes18/tpp" style="color: #000">Desember 2018</a>
+    </div>';
+    exit;
+} elseif ($period == '122019') {
+    echo '<div class="alert-verifikasi">
+        <i class="fa fa-info-circle"></i>
+        Cetak TPP Bulan ' . $namabulan[$bulan - 1] . ' ' . $tahun . ' melalui menu <a href="../../adminopd/laporandes19/tpp" style="color: #000">Desember 2019</a>
+    </div>';
+    exit;
+}
+
 if ($period != '12018' && $period != '22018') {
     if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
         echo '<div class="alert-verifikasi">
@@ -49,6 +64,43 @@ if ($period != '12018' && $period != '22018') {
     }
 }
 ?>
+<?php
+if ($download == 0) {
+    ?>
+    <div class="row ini-kotak">
+        <div class="input-field col s4 right-align" style="padding-top: 15px">
+            <b>BENDAHARA PENGELUARAN</b>
+        </div>
+        <div class="input-field col s5" id="ini-bendahara">
+            <select id="pilihbendahara">
+                <option value="">-- Pilih Pegawai --</option>
+                <?php
+                /* foreach ($pegawai['value'] as $peg) {
+                  $selected = '';
+                  if (is_array($bendahara) && $bendahara['nipbaru'] == $peg['nipbaru'])
+                  $selected = 'selected';
+
+                  echo '<option value="'.$peg['nipbaru'].'" '.$selected.'>'.$peg['nama_personil'].'</option>';
+                  } */
+                foreach ($pilbendahara as $bend) {
+                    $selected = '';
+                    if (is_array($bendahara) && $bendahara['nipbaru'] == $bend['nipbaru']) {
+                        $selected = 'selected';
+                    }
+
+                    echo '<option value="' . $bend['nipbaru'] . '" ' . $selected . '>' . $bend['nama_personil'] . '</option>';
+                }
+                ?>
+                <?= comp\MATERIALIZE::inputKey('bendahara', (is_array($bendahara) ? $bendahara['id_bendahara'] : '')); ?>
+            </select>
+        </div>
+        <div class="input-field col s3 left-right">
+            <button type="button" class="btn waves-effect waves-light blue" title="Ubah" type="button" id="btnBendahara">
+                ubah
+            </button>
+        </div>
+    </div>
+<?php } ?>
 <div class="row lap">
     <div class="format-lap">
         Format TPP 
@@ -60,7 +112,7 @@ if ($period != '12018' && $period != '22018') {
         ?>
         <span class="ket-small">
             <?php
-            if ($period != '12018' && $period != '22018')
+            if ($period != '12018' && $period != '22018') :
                 switch ($tingkat) {
                     case '1':
                         echo '<br>Belum Diverifikasi Admin OPD.';
@@ -81,15 +133,18 @@ if ($period != '12018' && $period != '22018') {
                         # code...
                         break;
                 }
+            endif;
             ?>
         </span>
     </div>
 </div>
-<h5 class="center-align"><b>
-        DAFTAR PENERIMAAN TAMBAHAN PENGHASILAN<br>
+<h5 class="center-align">
+    <b>
+        DAFTAR PENERIMAAN TAMBAHAN &nbsp; PENGHASILAN<br>
         <?= $satker ?><br>
         <small>Bulan <?= $namabulan[$bulan - 1] ?> Tahun <?= $tahun ?></small>
-    </b></h5>
+    </b>
+</h5>
 <table class="bordered hoverable custom-border scrollable <?= (!isset($laporan['sah_final']) && $period != '12018' && $period != '22018') ? 'ini-draft' : '' ?>">
     <thead>
         <tr>
@@ -137,11 +192,7 @@ if ($period != '12018' && $period != '22018') {
             }
 
             //mengenolkan tunj
-            /*
-              $no_tunj = $peg['tunjangan_jabatan'];
-              if ($no_tunj)
-              $sum['all'] = 0; $sum['all'] = 0; $sum['mk'] = '-'; $sum['ap'] = '-'; $sum['pk'] = '-';
-             */
+            $sum['all'] = (!is_numeric($sum['all']) ? 100 : $sum['all']);
             $pot = ($sum['all'] / 100 * $peg['nominal_tp']);
             $tpp_kotor = $peg['nominal_tp'] - $pot;
             //remove whitespace-- ambil % pajak
@@ -152,79 +203,86 @@ if ($period != '12018' && $period != '22018') {
                 $pot_pajak = round($pajak[$gol] * $tpp_kotor);
             }
 
-            $terima = $tpp_kotor - $pot_pajak;
+            $terima = round($tpp_kotor - $pot_pajak);
 
             /* acil 20200208 */
-            $pot_bpjs = round((($terima + $peg['totgaji']) > $kenabpjs['value']) ? ($kenabpjs['value'] - $peg['totgaji']) * 0.01 : $terima * 0.01);
-            $terima_potbpjs = $terima - $pot_bpjs;
+//            $pot_bpjs = round((($terima + $peg['totgaji']) > $kenabpjs['value']) ? ($kenabpjs['value'] - $peg['totgaji']) * 0.01 : $terima * 0.01); // edited 20201007
+            $checkBpjsGaji = round((($peg['nominal_tp'] + $peg['totgaji']) > $kenabpjs['value']) ?
+                    ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
+                    $peg['nominal_tp'] * 0.01);
+            $pot_bpjs = ($terima > $checkBpjsGaji) ? $checkBpjsGaji : $terima;
+            $terima_potbpjs = round($terima - $pot_bpjs);
             /* END acil 20200208 */
-            
-            echo '<tr>
-    	<td class="center-align">' . $no . '</td>
-    	<td>' . $peg['nama_personil'] .
-            '<br>' . $peg['nipbaru'] .
-            '<br>' . ($peg['npwp'] ? $peg['npwp'] : '-') .
-            '<br>' . $peg['gol_jbtn'] .
-            '</td>';
             ?>
-        <td><?= $peg['golruang'] ?></td>
-        <td class="right-align"><?= ($peg['nominal_tp'] > 0 ? 'Rp ' . number_format($peg['nominal_tp'], 0, ",", ".") : '-') ?></td>
-        <?php
-        if ($rekap[$pin]['pot_penuh']) {
-            echo '<td class="center-align" colspan="3">' . $rekap[$pin]['sum_pot']['all'] . '</td>';
-            $sum['all'] = 100;
-        } else {
-            echo "<td class='center-align'>" . $sum['mk'] . "</td>
-            <td class='center-align'>" . $sum['ap'] . "</td>
-        	<td class='center-align'>" . $sum['pk'] . "</td>";
+            <tr>
+                <td class="center-align"><?= $no ?></td>
+                <td>
+                    <?= $peg['nama_personil'] ?>
+                    <br><?= $peg['nipbaru'] ?>
+                    <br><?= ($peg['npwp'] ? $peg['npwp'] : '-') ?>
+                    <br><?= $peg['gol_jbtn'] ?>
+                </td>
+                <td><?= $peg['golruang'] ?></td>
+                <td class="right-align"><?= ($peg['nominal_tp'] > 0 ? 'Rp ' . number_format($peg['nominal_tp'], 0, ",", ".") : '-') ?></td>
+                <?php
+                if ($rekap[$pin]['pot_penuh']) {
+                    echo '<td class="center-align" colspan="3">' . $rekap[$pin]['sum_pot']['all'] . '</td>';
+                    $sum['all'] = 100;
+                } else {
+                    ?>
+                    <td class='center-align'><?= $sum['mk'] ?></td>
+                    <td class='center-align'><?= $sum['ap'] ?></td>
+                    <td class='center-align'><?= $sum['pk'] ?></td>
+                    <?php
+                }
+                ?>
+
+                <td class="right-align"><?= ($pot > 0 ? 'Rp ' . number_format($pot, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($tpp_kotor ? 'Rp ' . number_format($tpp_kotor, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($pot_pajak ? 'Rp ' . number_format($pot_pajak, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($terima ? 'Rp ' . number_format($terima, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($pot_bpjs ? 'Rp ' . number_format($pot_bpjs, 0, ",", ".") : '-') ?></td> <!-- pot bpjs -->
+                <td class="right-align"><?= ($terima_potbpjs ? 'Rp ' . number_format($terima_potbpjs, 0, ",", ".") : '-') ?></td> <!-- diterimakan dipotong bpjs -->
+                <td></td>
+            </tr>
+            <?php
+            $pin_absen .= $pin . (count($pegawai['value']) != $no ? ',' : '');
+            $tot_tpp += $peg['nominal_tp'];
+            $tot_pot += $pot;
+            $tot_tppkotor += $tpp_kotor;
+            $tot_pajak += $pot_pajak;
+            $tot_terima += $terima;
+            $tot_potbpjs += $pot_bpjs; //acil
+            $tot_terimapotbpjs += $terima_potbpjs; //acil
+            //first page
+            /* if ($download == 1 && $no == 6 && count($pegawai['value']) == ($no + 1) )
+              echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br></td></tr>';
+              elseif ($download == 1 && (($no == 13 || ($no + 2) % 8 == 0) && count($pegawai['value']) == ($no + 1)))
+              echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br><br><br><br><br><br><br><br><br><br></td></tr>';
+             */
+            $no++;
         }
         ?>
-
-        <td class="right-align"><?= ($pot > 0 ? 'Rp ' . number_format($pot, 0, ",", ".") : '-') ?></td>
-        <td class="right-align"><?= ($tpp_kotor ? 'Rp ' . number_format($tpp_kotor, 0, ",", ".") : '-') ?></td>
-        <td class="right-align"><?= ($pot_pajak ? 'Rp ' . number_format($pot_pajak, 0, ",", ".") : '-') ?></td>
-        <td class="right-align"><?= ($terima ? 'Rp ' . number_format(round($terima), 0, ",", ".") : '-') ?></td>
-        <td class="right-align"><?= ($pot_bpjs ? 'Rp ' . number_format(round($pot_bpjs), 0, ",", ".") : '-') ?></td> <!-- pot bpjs -->
-        <td class="right-align"><?= ($terima_potbpjs ? 'Rp ' . number_format(round($terima_potbpjs), 0, ",", ".") : '-') ?></td> <!-- diterimakan dipotong bpjs -->
-        <td></td>
-        <?php
-        echo '</tr>';
-        $pin_absen .= $pin . (count($pegawai['value']) != $no ? ',' : '');
-        $tot_tpp += $peg['nominal_tp'];
-        $tot_pot += $pot;
-        $tot_tppkotor += $tpp_kotor;
-        $tot_pajak += $pot_pajak;
-        $tot_terima += $terima;
-        $tot_potbpjs += $pot_bpjs; //acil
-        $tot_terimapotbpjs += $terima_potbpjs; //acil
-        //first page
-        /* if ($download == 1 && $no == 6 && count($pegawai['value']) == ($no + 1) )
-          echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br></td></tr>';
-          elseif ($download == 1 && (($no == 13 || ($no + 2) % 8 == 0) && count($pegawai['value']) == ($no + 1)))
-          echo '<tr style="border-right: 1px solid #fff"><td style="border: 1px solid #fff; color: #fff">.<br><br><br><br><br><br><br><br><br><br><br><br></td></tr>';
-         */
-        $no++;
-    }
-    ?>
-    <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_tpp, 0, ",", ".") ?></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th class="right-align"><?= ($tot_pot > 0 ? 'Rp ' . number_format($tot_pot, 0, ",", ".") : '-') ?></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_tppkotor, 0, ",", ".") ?></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_pajak, 0, ",", ".") ?></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_terima, 0, ",", ".") ?></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_potbpjs, 0, ",", ".") ?></th>
-        <th class="right-align"><?= 'Rp ' . number_format($tot_terimapotbpjs, 0, ",", ".") ?></th>
-        <th></th>
-    </tr>
-</tbody>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_tpp, 0, ",", ".") ?></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="right-align"><?= ($tot_pot > 0 ? 'Rp ' . number_format($tot_pot, 0, ",", ".") : '-') ?></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_tppkotor, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_pajak, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_terima, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_potbpjs, 0, ",", ".") ?></th>
+            <th class="right-align"><?= 'Rp ' . number_format($tot_terimapotbpjs, 0, ",", ".") ?></th>
+            <th></th>
+        </tr>
+    </tbody>
 </table>
 <br>
+<input type="hidden" id="verified" value="<?= isset($laporan['kepala_opd']) ? 1 : 0 ?>">
 <?php
 if ($download == 0) {
     exit;
@@ -235,10 +293,8 @@ if ($bendahara != '') {
     <div class="ttd-laporan">
         <table class="small-padding">
             <tr>
-                <td width="50%">
-
-                </td>
-                <td width="50%" style="padding-left: 45mm">
+                <td width="50%"></td>
+                <td width="50%" style="padding-left: 48mm">
                     Pekalongan, <?= FUNC::tanggal(date("Y-m-d"), 'long_date') ?>
                 </td>
             </tr>
@@ -263,15 +319,16 @@ if ($bendahara != '') {
     <br /><br />
     <p><strong>Keterangan</strong></p>
     <table>
-        <tr><td>Jumlah TPP Kotor</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format(round($tot_tppkotor)) ?></td></tr>
-        <tr><td>Pajak</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format(round($tot_pajak)) ?></td></tr>
-        <tr><td>TPP Bersih</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format(round($tot_terima)) ?></td></tr>
-        <tr><td>BPJS 1%</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format(round($tot_potbpjs)) ?></td></tr>
-        <tr><td>TPP yang diterimakan</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format(round($tot_terimapotbpjs)) ?></td></tr>
+        <tr><td>Jumlah TPP Kotor</td><td width="5px">:</td><td class="right-align"><?= 'Rp ' . number_format($tot_tppkotor) ?></td></tr>
+        <tr><td>Pajak</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_pajak) ?></td></tr>
+        <tr><td>TPP Bersih</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_terima) ?></td></tr>
+        <tr><td>BPJS 1%</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_potbpjs) ?></td></tr>
+        <tr><td>TPP yang diterimakan</td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_terimapotbpjs) ?></td></tr>
         <tr><td colspan="3">&nbsp;</td></tr>
-        <tr><td>BPJS 4% dibayar Pemda &nbsp; &nbsp; </td><td>:</td><td class="right-align"><strong><?= 'Rp ' . number_format(round($tot_tppkotor * 4)) ?></td></tr>
+        <tr><td>BPJS 4% dibayar Pemda &nbsp; &nbsp; </td><td>:</td><td class="right-align"><?= 'Rp ' . number_format($tot_potbpjs * 4) ?></td></tr>
+        <tr><td>Total BPJS 5%</td><td>:</td><td class="right-align"><strong><?= 'Rp ' . number_format($tot_potbpjs * 5) ?></strong></td></tr>
     </table>
-    <br />
+    <br>
     <?php
 }
 

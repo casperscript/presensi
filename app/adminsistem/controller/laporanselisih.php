@@ -39,6 +39,7 @@ class laporanselisih extends system\Controller {
         $data['listTahun'] = comp\FUNC::numbSeries('2018', date('Y'));
         $data['listBulan'] = comp\FUNC::$namabulan1;
         $data['listSatker'] = $this->pegawai_service->getPilLokasi(['status_lokasi_kerja' => 1]);
+        $data['listFormat'] = ['tabeltppselisih_v3' => 'Selisih V3', 'tabeltppselisih_v2' => 'Selisih V2', 'tabeltppdesbc_v1' => 'TPP Des V1'];
         $this->showView('index', $data, 'theme_admin');
     }
 
@@ -46,8 +47,11 @@ class laporanselisih extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             switch ($input['format']) {
-                case 'tabeltppselisih':
-                    $this->tabeltppselisih($input);
+                case 'tabeltppselisih_v2':
+                    $this->tabeltppselisih_v2($input, true);
+                    break;
+                case 'tabeltppselisih_v3':
+                    $this->tabeltppselisih_v3($input, true);
                     break;
                 case 'tabeltppdesbc_v1':
                     $this->tabeltppdesbc_v1($input);
@@ -58,12 +62,10 @@ class laporanselisih extends system\Controller {
         }
     }
 
-    protected function tabeltppselisih() {
-        $input = $this->post(true);
-        $input['tingkat'] = '6';
-        $input['format'] = 'TPP';
-
-        if ($input) {
+    protected function tabeltppselisih_v2($input, $verified) {
+        if ($verified) {
+            $input['tingkat'] = '6';
+            $input['format'] = 'TPP';
             $input['satker'] = $this->pegawai_service->getDataSatker($input['kdlokasi']);
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
@@ -103,6 +105,66 @@ class laporanselisih extends system\Controller {
         }
     }
 
+    //Laporan TPP Versi 3 dengan penambahan poin kinerja
+    protected function tabeltppselisih_v3($input, $verified) {
+        if ($verified) {
+            $input['tingkat'] = '6';
+            $input['format'] = 'TPP';
+            $input['satker'] = $this->pegawai_service->getDataSatker($input['kdlokasi']);
+
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            //ambil tambahan data pilih bendahara
+            $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
+            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+                $parent = $get['value'][0]['kdlokasi_parent'];
+                $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            }
+            
+            //ambil data kinerja
+//            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+//            $method = 'poin_pns';
+//            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+//            $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+//            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+//            $poin = [];
+//            if (!empty($kinerja)) {
+//                $arrNip = array_column($kinerja['data'], 'nip');
+//                $arrPoin = array_column($kinerja['data'], 'poin');
+//                $poin = array_combine($arrNip, $arrPoin);
+//            }
+
+            $data['kinerja'] = $poin;
+
+            $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+            $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
+            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+
+            // backup
+            $data['tppbackup'] = $this->backup_service->getTppTerima($input);
+
+            $this->subView('tabeltpp2021', $data);
+        }
+    }
+
     protected function tabeltppdesbc_v1($input) {
         foreach ($input as $key => $i) :
             $data[$key] = $i;
@@ -124,13 +186,13 @@ class laporanselisih extends system\Controller {
 
         //ambil dari presensi backup
         $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
-        
+
         $data['download'] = 0;
         $data['tpp_periodik'] = $this->materpresensi_service->getDataTppForm(5);
         $data['tingkat'] = $data['tpp_periodik']['tingkat'];
         $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
 //        comp\FUNC::showPre($data['rekap']); exit;
-        
+
         $this->subView('tabeltppbcall_v1', $data);
     }
 

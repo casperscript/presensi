@@ -6,7 +6,9 @@ use app\adminsistem\model\servicemain;
 use app\adminsistem\model\laporan_service;
 use app\adminsistem\model\pegawai_service;
 use app\adminsistem\model\backup_service;
+use app\adminsistem\model\webadapter;
 use system;
+use comp;
 
 class laporan extends system\Controller {
 
@@ -18,7 +20,8 @@ class laporan extends system\Controller {
         if ($session['status'] === true) {
             $this->laporan_service = new laporan_service();
             $this->pegawai_service = new pegawai_service();
-			$this->backup_service = new backup_service();
+            $this->backup_service = new backup_service();
+            $this->webadapter = new webadapter();
 
             $this->setSession('SESSION_LOGIN', $session['data']);
             $this->login = $this->getSession('SESSION_LOGIN');
@@ -51,8 +54,9 @@ class laporan extends system\Controller {
             $laporan = $this->laporan_service->getAllLaporan($input)['value'];
             $sudah = [];
             foreach ($laporan as $i) {
-                if ($i['ver_admin_kota'])
+                if ($i['ver_admin_kota']) {
                     $sudah[$i['kdlokasi']] = $lokasi[$i['kdlokasi']];
+                }
             }
 
             header('Content-Type: application/json');
@@ -83,8 +87,9 @@ class laporan extends system\Controller {
                 $input['personil'] = implode(',', $personil);
             }
 
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) {
                 $data[$key] = $i;
+            }
 
             $data['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
 			//$data['rekap'] = $this->laporan_service->getRecordPersonil($input);
@@ -104,8 +109,9 @@ class laporan extends system\Controller {
     protected function tabelpresensi() {
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) {
                 $data[$key] = $i;
+            }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
             $data['personil'] = '';
@@ -125,12 +131,13 @@ class laporan extends system\Controller {
                 exit;
             }
 
-            if ($data['jenis'] == 1)
+            if ($data['jenis'] == 1) :
                 $view = 'tabelmasuk';
-            elseif ($data['jenis'] == 2)
+            elseif ($data['jenis'] == 2) :
                 $view = 'tabelapel';
-            elseif ($data['jenis'] == 3)
+            elseif ($data['jenis'] == 3) :
                 $view = 'tabelpulang';
+            endif;
 
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
@@ -143,8 +150,9 @@ class laporan extends system\Controller {
     protected function tabelmasukold() {
         $input = $this->post(true);
         if ($input && $input['kdlokasi']) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
             $data['personil'] = '';
@@ -173,8 +181,9 @@ class laporan extends system\Controller {
     protected function tabelpulangold() {
         $input = $this->post(true);
         if ($input && $input['kdlokasi']) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
             $data['personil'] = '';
@@ -203,8 +212,9 @@ class laporan extends system\Controller {
     protected function tabelpersonil() {
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
@@ -223,8 +233,9 @@ class laporan extends system\Controller {
     protected function tabelrekapc1() {
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['laporan'] = $this->laporan_service->getLaporan($input);
             $data['induk'] = $this->backup_service->getDataInduk($input);
@@ -260,8 +271,9 @@ class laporan extends system\Controller {
     protected function tabelrekapc2() {
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['laporan'] = $this->laporan_service->getLaporan($input);
             $data['induk'] = $this->backup_service->getDataInduk($input);
@@ -286,16 +298,38 @@ class laporan extends system\Controller {
     }
 
     protected function tabeltpp() {
+        ini_set('memory_limit', '-1');
         $input = $this->post(true);
         if ($input) {
-            foreach ($input as $key => $i)
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
+            switch ($versi['data_1']) {
+                case 'v1':
+                    $this->tabeltpp_v1($input, true);
+                    break;
+                case 'v2':
+                    $this->tabeltpp_v2($input, true);
+                    break;
+                case 'v3':
+                    $this->tabeltpp_v3($input, true);
+                    break;
+                default:
+                    echo '<h4 class="center-align">Versi tidak ditemukan</h4>';
+            }
+        }
+    }
+    
+    protected function tabeltpp_v1x($input, $verified) {
+        if ($verified) {
+            foreach ($input as $key => $i) {
                 $data[$key] = $i;
+            }
 
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
+//            comp\FUNC::showPre($data);exit;
             //admbil dari data backupan
             if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
-                $this->tabeltppbc($input);
+                $this->tabeltppbc($input, true);
                 exit;
             }
             
@@ -319,12 +353,165 @@ class laporan extends system\Controller {
 
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
-			$data['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
-			$data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
 
-            $this->subView('tabeltpp', $data);
+            $this->subView('tabeltpp_v1x', $data);
+        }
+    }
+    
+    protected function tabeltpp_v1($input, $verified) {
+        if ($verified) {
+            $input['kdlokasi'] = $this->login['kdlokasi'];
+            $input['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            //admbil dari data backupan
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc($input, true);
+                exit;
+            }
+
+            $data['pegawai'] = $this->laporan_service->getDataPersonilTpp($input);
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            //ambil tambahan data pilih bendahara
+            $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
+            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+                $parent = $get['value'][0]['kdlokasi_parent'];
+                $data['pilbendahara'] += $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            }
+
+            //bulan jan dn feb masih uji coba
+            $period = $data['bulan'] . $data['tahun'];
+            if ($period == '12018' || $period == '22018') {
+                $data['tingkat'] = 6;
+            }
+
+            $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+            $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
+
+            $this->subView('tabeltpp_v1', $data);
+        }
+    }
+    
+    protected function tabeltpp_v2($input, $verified) {
+        if ($verified) {
+            $input['satker'] = $this->pegawai_service->getDataSatker($input['kdlokasi']);
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            //admbil dari data backupan
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc($input, true);
+                exit;
+            }
+
+            $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            //ambil tambahan data pilih bendahara
+            $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
+            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+                $parent = $get['value'][0]['kdlokasi_parent'];
+                $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            }
+
+            $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+            $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
+            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+            $this->subView('tabeltpp_v2', $data);
+        }
+    }
+    
+    protected function tabeltpp_v3($input, $verified) {
+        if ($verified) {
+            $input['satker'] = $this->pegawai_service->getDataSatker($input['kdlokasi']);
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['laporan'] = $this->laporan_service->getLaporan($data);
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            //admbil dari data backupan
+            if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
+                $this->tabeltppbc($input, true);
+                exit;
+            }
+
+            $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            //ambil tambahan data pilih bendahara
+            $bendahara_satker = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $input['kdlokasi']])['value'];
+            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "' . $input['kdlokasi'] . '" LIMIT 1', []);
+            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+                $parent = $get['value'][0]['kdlokasi_parent'];
+                $bendahara_parent = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            }
+
+            //ambil data kinerja
+            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $method = 'poin_pns';
+            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+            $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+            $poin = [];
+            if (!empty($kinerja)) {
+                $arrNip = array_column($kinerja['data'], 'nip');
+                $arrPoin = array_column($kinerja['data'], 'poin');
+                $poin = array_combine($arrNip, $arrPoin);
+            }
+
+            $data['kinerja'] = $poin;
+            $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+            $data['pajak'] = $this->laporan_service->getArraypajak();
+            $data['rekap'] = $this->laporan_service->getRekapAll_v3($data, $data['laporan'], true);
+            $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+            $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
+            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+
+            $this->subView('tabeltpp_v3', $data);
         }
     }
 
@@ -332,8 +519,9 @@ class laporan extends system\Controller {
         $input = $this->post(true);
 
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
             
             $nomod = $this->laporan_service->getModerasi($input);
             //$nomod = true;
@@ -361,8 +549,9 @@ class laporan extends system\Controller {
                 'tahun' => $input['tahun']
             ];
 
-            if ($input['format'] == 'C')
+            if ($input['format'] == 'C') :
                 $idKeys['pin_absen'] = $input['pin_absen'];
+            endif;
 
             $ver = [
                 'ver_admin_kota' => $this->login['nipbaru'],
@@ -388,8 +577,9 @@ class laporan extends system\Controller {
 /*******************************START*AMBIL DATA BACKUP****************************************/
     protected function tabelpresensibc($input) {
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['induk'] = $this->backup_service->getDataInduk($input);
             if (!$data['induk']) {
@@ -408,12 +598,13 @@ class laporan extends system\Controller {
                 $data['personil'] = implode(',', $personil);
             }
 
-            if ($data['jenis'] == 1)
+            if ($data['jenis'] == 1) :
                 $view = 'tabelmasukbc';
-            elseif ($data['jenis'] == 2)
+            elseif ($data['jenis'] == 2) :
                 $view = 'tabelapelbc';
-            elseif ($data['jenis'] == 3)
+            elseif ($data['jenis'] == 3) :
                 $view = 'tabelpulangbc';
+            endif;
 
             $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
 
@@ -421,10 +612,11 @@ class laporan extends system\Controller {
                 JOIN tb_personil ON tb_personil.id = tb_presensi.personil_id
                 WHERE induk_id = ?", [$data['induk']['id']]);
 
-            if ($check['count'] == $data['pegawai']['count'])
+            if ($check['count'] == $data['pegawai']['count']) :
                 $data['rekapbc'] = $this->backup_service->getRekapAllView($data['induk']['id']);
-            else
+            else :
                 $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            endif;
 
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
@@ -434,8 +626,9 @@ class laporan extends system\Controller {
 
     protected function tabelpersonilbc($input) {
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['induk'] = $this->backup_service->getDataInduk($input);
             if (!$data['induk']) {
@@ -452,8 +645,9 @@ class laporan extends system\Controller {
 
     protected function tabelrekapc1bc($input) {
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['induk'] = $this->backup_service->getDataInduk($input);
             if (!$data['induk']) {
@@ -478,8 +672,9 @@ class laporan extends system\Controller {
             $data['personil'] = $input['pin_absen'];
 
             //ambil ttd
-            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018)
+            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) :
                 $data['tingkat'] = 3;
+            endif;
 
             $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
             $check = $this->backup_service->getData("SELECT tb_presensi.* FROM tb_presensi 
@@ -502,8 +697,9 @@ class laporan extends system\Controller {
 
     protected function tabelrekapc2bc($input) {
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
 
             $data['induk'] = $this->backup_service->getDataInduk($input);
             if (!$data['induk']) {
@@ -517,8 +713,9 @@ class laporan extends system\Controller {
             $data['personil'] = $input['pin_absen'];
 
             //ambil ttd
-            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018)
+            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) :
                 $data['tingkat'] = 3;
+            endif;
 
             $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
             $check = $this->backup_service->getData("SELECT tb_presensi.* FROM tb_presensi 
@@ -526,21 +723,43 @@ class laporan extends system\Controller {
                 JOIN tb_induk ON tb_induk.id = tb_personil.induk_id
                 WHERE tb_induk.id = ".$data['induk']['id']." AND tb_personil.pin_absen IN (".$data['pin_absen'].")");
 
-            if ($check['count'] > 0)
+            if ($check['count'] > 0) :
                 $data['rekapbc'] = $this->backup_service->getRekapAllView($data['induk']['id'], $data['pin_absen']);
-            else
+            else :
                 $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
+            endif;
 
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
             $this->subView('tabelrekapc2bc', $data);
         }
     }
+    
+    protected function tabeltppbc($input, $verified = false) {
+        ini_set('memory_limit', '-1');
+        if ($verified) {
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
+            switch ($versi['data_1']) {
+                case 'v1':
+                    $this->tabeltppbc_v1($input, true);
+                    break;
+                case 'v2':
+                    $this->tabeltppbc_v2($input, true);
+                    break;
+                case 'v3':
+                    $this->tabeltppbc_v3($input, true);
+                    break;
+                default:
+                    echo 'Versi tidak ditemukan';
+            }
+        }
+    }
 
-    protected function tabeltppbc($input) {
+    protected function tabeltppbc_v1x($input) {
         if ($input) {
-            foreach ($input as $key => $i)
+            foreach ($input as $key => $i) :
                 $data[$key] = $i;
+            endforeach;
             
             $data['induk'] = $this->backup_service->getDataInduk($input);
             if (!$data['induk']) {
@@ -570,8 +789,9 @@ class laporan extends system\Controller {
 
             //bulan jan dn feb masih uji coba
             $period = $data['bulan'].$data['tahun'];
-            if ($period == '12018' || $period == '22018')
+            if ($period == '12018' || $period == '22018') :
                 $data['tingkat'] = 6;
+            endif;
 
             $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
 
@@ -590,6 +810,103 @@ class laporan extends system\Controller {
             }
         }
     }
+    
+    protected function tabeltppbc_v1($input, $verified = false) {
+        if ($verified) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            if (!$data['induk']) {
+                $this->subView('notfound', $data);
+                exit;
+            }
+
+            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['pegawai'] = $this->backup_service->getDataPersonilBatch($data, true);
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
+
+            //bulan jan dn feb masih uji coba
+            $period = $data['bulan'] . $data['tahun'];
+            if ($period == '12018' || $period == '22018') :
+                $data['tingkat'] = 6;
+            endif;
+
+            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
+
+            $check = $this->backup_service->getData("SELECT tb_presensi.* FROM tb_presensi 
+                JOIN tb_personil ON tb_personil.id = tb_presensi.personil_id
+                WHERE induk_id = ?", [$data['induk']['id']]);
+
+            //ambil dari presensi backup
+            $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+            $this->subView('tabeltppbcall', $data);
+        }
+    }
+    
+    protected function tabeltppbc_v2($input) {
+        if ($input) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            if (!$data['induk']) {
+                $this->subView('notfound', $data);
+                exit;
+            }
+
+            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['pegawai'] = $this->backup_service->getDataPersonilBatch_v2($data, true);
+
+            $arrPin = array_column($data['pegawai']['value'], 'pin_absen');
+            $data['personil'] = implode(',', $arrPin);
+            $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
+            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
+
+            //ambil dari presensi backup
+            $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+            $this->subView('tabeltppbcall_v2', $data);
+        }
+    }
+    
+    protected function tabeltppbc_v3($input) {
+        if ($input) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            if (!$data['induk']) {
+                $this->subView('notfound', $data);
+                exit;
+            }
+
+            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['pegawai'] = $this->backup_service->getDataPersonilBatch_v2($data, true);
+
+            $arrPin = array_column($data['pegawai']['value'], 'pin_absen');
+            $data['personil'] = implode(',', $arrPin);
+            $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
+            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
+
+            //ambil dari presensi backup
+            $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+            $this->subView('tabeltppbcall_v3', $data);
+        }
+    }
+    
+    
 
     public function updateBendaharabc() {
         $input = $this->post(true);
