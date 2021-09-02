@@ -7,7 +7,6 @@ use app\pns\model\laporan_service;
 use app\pns\model\pegawai_service;
 use app\pns\model\backup_service;
 use app\pns\model\HusnanWModerasiModel;
-use app\adminsistem\model\webadapter;
 use system;
 use comp;
 
@@ -23,7 +22,6 @@ class laporan extends system\Controller {
             $this->laporan_service = new laporan_service();
             $this->pegawai_service = new pegawai_service();
             $this->backup_service = new backup_service();
-            $this->webadapter = new webadapter();
 
             $this->setSession('SESSION_LOGIN', $session['data']);
             $this->login = $this->getSession('SESSION_LOGIN');
@@ -154,26 +152,9 @@ class laporan extends system\Controller {
                 $this->tabelrekapc1bc($data);
                 exit;
             }
-            
-            //ambil data kinerja
-            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
-            $method = 'poin_pns';
-            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
-            $request = array('pin' => $data['pegawai']['pin_absen'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
-            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-            $poin = [];
-            if (!empty($kinerja)) {
-                $arrNip = array_column($kinerja['data'], 'nip');
-                $arrPoin = array_column($kinerja['data'], 'poin');
-                $poin = array_combine($arrNip, $arrPoin);
-            }
-
-            $data['kinerja'] = $poin;
 
             $data['tpp_pegawai'] = $this->laporan_service->getTpp_v2($input + ['nipbaru' => $data['pegawai']['nipbaru']]);
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
-//            comp\FUNC::showPre($this->login['kdlokasi']);exit;
-//            comp\FUNC::showPre($data['rekap']);exit;
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
             $this->subView('tabelrekapc1_v3', $data);
@@ -221,7 +202,7 @@ class laporan extends system\Controller {
 
     protected function tabelrekapc1bc($input) {
         if ($input) {
-            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
+            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
             switch ($versi['data_1']) {
                 case 'v1':
                     $this->tabelrekapc1bc_v1($input, true);
@@ -229,20 +210,14 @@ class laporan extends system\Controller {
                 case 'v2':
                     $this->tabelrekapc1bc_v2($input, true);
                     break;
-                case 'v3':
-                    $this->tabelrekapc1bc_v3($input, true);
-                    break;
-                default:
-                    echo 'Versi laporan TPP tidak ditemukan!';
             }
         }
     }
 
     protected function tabelrekapc1bc_v1($input) {
         if ($input) {
-            foreach ($input as $key => $i) :
+            foreach ($input as $key => $i)
                 $data[$key] = $i;
-            endforeach;
 
             $data['pin_absen'] = $this->pinAbsen;
             $data['induk'] = $data['backup']['value'][0];
@@ -310,43 +285,6 @@ class laporan extends system\Controller {
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
             $this->subView('tabelrekapc1bc_v2', $data);
-        }
-    }
-    
-    protected function tabelrekapc1bc_v3($input) {
-        if ($input) {
-            foreach ($input as $key => $i) :
-                $data[$key] = $i;
-            endforeach;
-
-            $data['pin_absen'] = $this->pinAbsen;
-            $data['induk'] = $data['backup']['value'][0];
-            $data['satker'] = $data['induk']['singkatan_lokasi'];
-            $data['pegawai'] = $this->backup_service->getDataPersonilBatch_v2($data, true);
-            $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
-            $data['format'] = 'A';
-            $data['jenis'] = '';
-
-            //ambil ttd
-            if ($data['tingkat'] == 6 && $data['bulan'] == 1 && $data['tahun'] == 2018) {
-                $data['tingkat'] = 3;
-            }
-
-            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
-            $check = $this->backup_service->getData("SELECT tb_presensi.* FROM tb_presensi 
-                JOIN tb_personil ON tb_personil.id = tb_presensi.personil_id
-                JOIN tb_induk ON tb_induk.id = tb_personil.induk_id
-                WHERE tb_induk.id = " . $data['induk']['id'] . " AND tb_personil.pin_absen IN (" . $data['pin_absen'] . ")");
-
-            if ($check['count'] > 0) {
-                $data['rekapbc'] = $this->backup_service->getRekapAllView($data['induk']['id'], $data['pin_absen']);
-            } else {
-                $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
-                $data['tpp_pegawai'] = $this->laporan_service->getTpp($data['personil']);
-            }
-
-            $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
-            $this->subView('tabelrekapc1bc_v3', $data);
         }
     }
 

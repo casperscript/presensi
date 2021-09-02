@@ -479,7 +479,8 @@ class backup_service extends system\Model {
     }
     
     public function save_personil_v3($input, $tbinduk, $rekap, $w_presensi) {
-        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input, true);
+        $pegawai = $this->laporan_service->getDataPersonilTppToBackup_v3($input, true);
+//        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
         $pajak = $this->laporan_service->getArraypajak();
 
         parent::setConnection('db_backup');

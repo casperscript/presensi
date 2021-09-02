@@ -145,7 +145,7 @@ class moderasi extends system\Controller {
             $chkBatasAtasMod = $input['tanggal_awal'] > $tglBatasAtasMod ? false : true;
 
             // Mewajibkan jenis moderasi tertentu untuk melampirkan dokumen
-            $arrModWajibLampiran = ['CD'];
+            $arrModWajibLampiran = ['CD','DD'];
             if (in_array($input['kode_presensi'], $arrModWajibLampiran) && ($_FILES['lampiran']['error'] != 0)) :
                 $impModWajibLampiran = implode(', ', $arrModWajibLampiran);
                 $error_msg = [

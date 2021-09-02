@@ -1,6 +1,6 @@
 <?php
 ob_start();
-//comp\FUNC::showPre($data);
+
 use comp\FUNC;
 ?>
 <style>
@@ -14,12 +14,17 @@ $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
 $path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
 $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
+/*
+  $path_stempel = $this->link()."upload/stempel/";
+  $path_ttd = $this->link()."upload/ttd/";
+ */
 
 if ($tingkat == 3 && !isset($laporan['kepala_opd'])) {
     echo '<div class="alert-verifikasi">
         <i class="fa fa-info-circle"></i>
         Laporan Tingkat 3 Bulan ' . $namabulan[$bulan - 1] . ' belum diverifikasi dan disahkan oleh Kepala OPD
     </div>';
+    //exit;
 } elseif ($tingkat == 6 && !isset($laporan['final'])) {
     echo '<div class="alert-verifikasi">
         <i class="fa fa-info-circle"></i>
@@ -126,40 +131,19 @@ $key = $data['personil'];
 
         $rupiah_pot = 0;
         if (isset($tpp_pegawai['nominal_tp'])) {
-            $tpp36 = $tpp_pegawai['nominal_tp'] * 36 / 100;
-            $rupiah_pot = round($tpp36 * $rekap[$key]['sum_pot']['all'] / 100, 0);
-        }
-        $pot_kinerja = 'NAN';
-        $rupiah_pot_kinerja = 0;
-        if (isset($kinerja[$pegawai['nipbaru']])) {
-            $tpp24 = $tpp_pegawai['nominal_tp'] * 24 / 100;
-            $pot_kinerja = 100 - $kinerja[$pegawai['nipbaru']];
-            $rupiah_pot_kinerja = round($tpp24 * $pot_kinerja / 100, 0);
+            $tpp60 = $tpp_pegawai['nominal_tp'] * 60 / 100;
+            $rupiah_pot = round($tpp60 * $rekap[$key]['sum_pot']['all'] / 100, -1);
         }
         ?>
     </tbody>
     <tfoot>
         <tr class="grey lighten-2">
-            <td class="center-align" colspan="7"><b>POTONGAN PRESENSI</b></td>
-            <td class="center-align">
-                <b>
-                    <?= $rekap[$key]['sum_pot']['all'] . '%' ?>
-                    <?= $rupiah_pot == 0 ? '-' : ' (Rp ' . number_format($rupiah_pot, 0, ",", ".") . ')' ?>
-                </b>
-            </td>
-        </tr>
-        <tr class="grey lighten-2">
-            <td class="center-align" colspan="7"><b>POTONGAN KINERJA</b></td>
-            <td class="center-align">
-                <b>
-                    <?= !empty($pot_kinerja) ? $pot_kinerja . '%' : '' ?>
-                    <?= !empty($rupiah_pot_kinerja) ? ' (Rp ' . number_format($rupiah_pot_kinerja, 0, ",", ".") . ')' : 'NAN' ?>
-                </b>
-            </td>
+            <td class="center-align" colspan="7"><b>JUMLAH PERSENTASE POTONGAN (%)</b></td>
+            <td class="center-align"><b><?= $rekap[$key]['sum_pot']['all'] ?></b></td>
         </tr>
         <tr class="grey lighten-2">
             <td class="center-align" colspan="7"><b>JUMLAH POTONGAN TPP</b></td>
-            <td class="center-align"><b><?= ($rupiah_pot + $rupiah_pot_kinerja == 0) ? '-' : 'Rp ' . number_format($rupiah_pot + $rupiah_pot_kinerja, 0, ",", ".") ?></b></td>
+            <td class="center-align"><b><?= $rupiah_pot == 0 ? '-' : 'Rp ' . number_format($rupiah_pot, 0, ",", ".") ?></b></td>
         </tr>
     </tfoot>
 </table>

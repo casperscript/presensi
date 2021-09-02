@@ -311,8 +311,12 @@ class HusnanWModerasiModel extends system\Model {
     public function getDaftarPegawaiModerasi($kodeLokasi) {
         parent::setConnection('db_pegawai');
 
-        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, ' ', namapeg, ' ', gelar_blkg) AS nama_lengkap, pin_absen FROM texisting_personal tperson INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru INNER JOIN tref_golongan_ruang tgolruang ON tpeg.golruang = tgolruang.golruang WHERE tpeg.kdlokasi = ? OR tpeg.kdsublokasi = ? ORDER BY kdgol";
+        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, IF(gelar_depan = '', '', ' '), namapeg, IF(gelar_blkg = '', '', ', '), gelar_blkg) AS nama_lengkap, pin_absen "
+                . "FROM texisting_personal tperson "
+                . "INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru "
+                . "WHERE tpeg.kdlokasi = ? OR tpeg.kdsublokasi = ? ORDER BY namapeg";
         $daftarPegawai = $this->getData($sql, [$kodeLokasi,$kodeLokasi])["value"];
+//        $daftarPegawai = $this->getData($sql, [$kodeLokasi,$kodeLokasi]);
 
         return $daftarPegawai;
     }
