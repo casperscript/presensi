@@ -301,6 +301,7 @@ class backuplaporan extends system\Controller {
     }
 
     protected function dobackup() {
+        set_time_limit(0);
         $input = $this->post(true);
         if ($input) {
             $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $input);
