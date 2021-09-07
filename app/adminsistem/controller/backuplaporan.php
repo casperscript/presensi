@@ -364,10 +364,10 @@ class backuplaporan extends system\Controller {
                 $rekap[$i] = $this->backup_service->getRekapAll($input, $laporan, true);
             }
             $tbpersonil = $this->backup_service->save_personil_v2($input, $tbinduk, $rekap, true);
-            
+
             //simpan tpp
             $tbtpp = $this->backup_service->save_tpp($input, $tbinduk);
-            
+
             //hapus jika terjadi gagal backup
             if (!$tblaporan['error'] || !$tbpersonil['error'] || !$tbtpp['error']) {
                 $this->backup_service->hapusBackup($input);
@@ -378,7 +378,7 @@ class backuplaporan extends system\Controller {
         $error_msg = ($tbinduk['error']) ? array('status' => 'success', 'message' => 'Backup laporan berhasil.') : array('status' => 'error', 'message' => 'Maaf, backup laporan gagal.');
         return $error_msg;
     }
-    
+
     protected function dobackup_v3($input) {
         $input['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
@@ -401,12 +401,12 @@ class backuplaporan extends system\Controller {
                 $input['tingkat'] = $i;
                 $rekap[$i] = $this->backup_service->getRekapAll_v2($input, $laporan, true);
             }
+//            comp\FUNC::showPre($rekap);exit;
             $tbpersonil = $this->backup_service->save_personil_v3($input, $tbinduk, $rekap, true);
-//        comp\FUNC::showPre($tbpersonil);exit;
-            
+
             //simpan tpp
             $tbtpp = $this->backup_service->save_tpp($input, $tbinduk);
-            
+
             //hapus jika terjadi gagal backup
             if (!$tblaporan['error'] || !$tbpersonil['error'] || !$tbtpp['error']) {
                 $this->backup_service->hapusBackup($input);

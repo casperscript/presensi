@@ -482,6 +482,28 @@ class backup_service extends system\Model {
         $pegawai = $this->laporan_service->getDataPersonilTppToBackup_v3($input, true);
 //        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
         $pajak = $this->laporan_service->getArraypajak();
+        
+        $arrPin = array_column($pegawai['value'], 'pin_absen');
+        $impPin = implode(',', $arrPin);
+        
+        ################## Begin Get API Kinerja ####################
+        //ambil data kinerja
+        $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+        $method = 'poin_pns';
+        $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+        $request = array('pin' => $impPin, 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+        $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+        if (count($kinerja) == 0) {
+            return false;
+        }
+        
+        $poin = [];
+        if (!empty($kinerja)) {
+            $arrNip = array_column($kinerja['data'], 'nip');
+            $arrPoin = array_column($kinerja['data'], 'poin');
+            $poin = array_combine($arrNip, $arrPoin);
+        }
+        ################# End Get API Kinerja ####################
 
         parent::setConnection('db_backup');
         foreach ($pegawai['value'] as $peg) {
@@ -508,22 +530,22 @@ class backup_service extends system\Model {
             
             ################## Begin Get API Kinerja ####################
             //ambil data kinerja
-            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
-            $method = 'poin_pns';
-            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
-            $request = array('pin' => $input['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
-            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-            $poin = [];
-            if (!empty($kinerja)) {
-                $arrNip = array_column($kinerja['data'], 'nip');
-                $arrPoin = array_column($kinerja['data'], 'poin');
-                $poin = array_combine($arrNip, $arrPoin);
-            }
-
-            $input['kinerja'] = $poin;
+//            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+//            $method = 'poin_pns';
+//            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
+//            $request = array('pin' => $input['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
+//            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+//            $poin = [];
+//            if (!empty($kinerja)) {
+//                $arrNip = array_column($kinerja['data'], 'nip');
+//                $arrPoin = array_column($kinerja['data'], 'poin');
+//                $poin = array_combine($arrNip, $arrPoin);
+//            }
+//
             ################# End Get API Kinerja ####################
             
-//            comp\FUNC::showPre($pegawai); exit;
+            $input['kinerja'] = $poin;
+//            comp\FUNC::showPre($input); exit;
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
@@ -744,8 +766,8 @@ class backup_service extends system\Model {
         ];
 
 //        $nominal_tp40 = $nominal_tpp * 40 / 100;
-        $nominal_tp36 = $nominal_tpp * 36 / 100;
-        $nominal_tp24 = $nominal_tpp * 24 / 100;
+        $nominal_tp36 = round($nominal_tpp * 36 / 100);
+        $nominal_tp24 = round($nominal_tpp * 24 / 100);
 
         $pot_tp36 = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp36, 0);
         $pot_tp24 = round((100 - $presensi['poin_kinerja']) / 100 * $nominal_tp24, 0);
