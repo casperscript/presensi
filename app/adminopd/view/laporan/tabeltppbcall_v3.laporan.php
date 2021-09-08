@@ -141,6 +141,16 @@ if (count($rekap) == 0) {
             $terima = round($tpp_kotor - $pot_pajak);
             $pot_bpjs = $find['pot_bpjskes'];
             $terima_potbpjs = $find['tpp_terima'];
+            
+            if (isset($sum['tk']) && $sum['tk'] > 10) {
+                $ket = 'TK > 10 kali';
+                $pot = $peg['nominal_tp'];
+                $tpp_kotor = 0;
+                $pot_pajak = 0;
+                $terima = 0;
+                $pot_bpjs = 0;
+                $terima_potbpjs = 0;
+            }
             ?>
             <tr>
                 <td class="center-align"><?= $no ?></td>
@@ -154,8 +164,10 @@ if (count($rekap) == 0) {
                 <td class="right-align"><?= ($nominal_tp40 > 0 ? number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
                 <td class="right-align"><?= ($nominal_tp36 > 0 ? number_format($nominal_tp36, 0, ",", ".") : '-') ?></td>
                 <td class="right-align"><?= ($nominal_tp24 > 0 ? number_format($nominal_tp24, 0, ",", ".") : '-') ?></td>
+                <?php if (isset($sum['tk']) && $sum['tk'] > 10) : ?>
+                    <td class="center-align" colspan="4"><?= $ket ?></td>
                 <?php
-                if ($pot_penuh) :
+                elseif ($pot_penuh) :
                     $sum['all'] = 100;
                     ?>
                     <td class="center-align" colspan="3"><?= $sum['text'] ?></td>

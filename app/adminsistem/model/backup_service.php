@@ -788,7 +788,15 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-//        comp\FUNC::showPre($presensi);//exit;
+        
+        // jika TK lebih dari 10, tidak menerima TPP
+        if ($get['sum_pot']['tk'] > 10) {
+            $presensi['tpp_kotor'] = 0;
+            $presensi['tpp_bersih'] = 0;
+            $presensi['pot_bpjskes'] = 0;
+            $presensi['tpp_terima'] = 0;
+        }
+//        comp\FUNC::showPre($get);exit;
 
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
@@ -1842,7 +1850,9 @@ class backup_service extends system\Model {
 
             $all[$key]['pot_penuh'] = array_unique($pot_penuh);
 
-            if (count($pot_penuh) == 0) {
+            if ($jumlah_tk > 10) {
+                $tot = 'TK > 10 kali';
+            } elseif (count($pot_penuh) == 0) {
                 $tot = ($sum_mk + $sum_ap + $sum_pk);
             } else {
                 $implode = implode(",", $all[$key]['pot_penuh']);
@@ -1851,7 +1861,7 @@ class backup_service extends system\Model {
 
             $all[$key]['sum_pot'] = [
                 'mk' => $sum_mk, 'ap' => $sum_ap, 'pk' => $sum_pk,
-                'all' => $tot
+                'all' => $tot, 'tk' => $jumlah_tk
             ];
         }
 

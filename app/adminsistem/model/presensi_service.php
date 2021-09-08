@@ -249,6 +249,10 @@ class presensi_service extends system\Model {
             $q_cari .= 'AND (id_kelompok_mesin = ?) ';
             array_push($idKey, $data['id_kelompok_mesin']);
         }
+        if (!empty($data['status'])) {
+            $q_cari .= 'AND (status = ?) ';
+            array_push($idKey, $data['status']);
+        }
         
         $q_mesin = 'SELECT * FROM tb_mesin ' . $q_cari . ' ORDER BY nama_mesin';
         $j_mesin = 'SELECT COUNT(id_mesin) AS jumlah FROM tb_mesin ' . $q_cari;

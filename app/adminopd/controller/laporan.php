@@ -737,7 +737,7 @@ class laporan extends system\Controller {
 
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($input);
-            //admbil dari data backupan
+            //ambil dari data backupan
             if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') {
                 $this->tabeltppbc_v3($input);
                 exit;
@@ -778,12 +778,13 @@ class laporan extends system\Controller {
 
             $data['kinerja'] = $poin;
 //            comp\FUNC::showPre($data['personil']);exit;
-//            comp\FUNC::showPre($kinerja);exit;
 
 //            $a = array_column($kinerja['data'], 'nip');
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
             $data['rekap'] = $this->laporan_service->getRekapAll_v3($data, $data['laporan'], true);
+//            comp\FUNC::showPre($data['rekap']);exit;
+            
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
             $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;

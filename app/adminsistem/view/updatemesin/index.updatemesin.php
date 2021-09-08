@@ -37,15 +37,23 @@
                             <form id="frmData" class="navbar-search expanded" onsubmit="return false" autocomplete="off" role="search" >
                                 <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
                                 <div class="row">
-                                    <div class="input-field col s5">
+                                    <div class="input-field col s4">
                                         <?= comp\MATERIALIZE::inputSelect('id_kelompok_mesin', $pil_kel_mesin, '') ?>
                                         <label for="id_kelompok_mesin">Kelompok Lokasi Kerja</label>
                                     </div>
-                                    <div class="input-field col s5">
+                                    <div class="input-field col s2">
+                                        <?= comp\MATERIALIZE::inputSelect('status', ['enable' => 'Enable', 'disable' => 'Disable'], '') ?>
+                                        <label for="status">Status</label>
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <?= comp\MATERIALIZE::inputSelect('batas', array(5 => 5, 10 => 10, 25 => 25, 50 => 50, 1000 => 'Semua'), '10') ?>
+                                        <label for="batas">Tampilkan</label>
+                                    </div>
+                                    <div class="input-field col s2">
                                         <?= comp\MATERIALIZE::inputText('nama_mesin', 'text', '') ?>
                                         <label for="nama_mesin">Cari Nama Mesin</label>
                                     </div>
-                                    <div class="input-field col s2">
+                                    <div class="input-field col s1">
                                         <button class="waves-effect waves-light btn green" type="submit">
                                             <i class="material-icons left">search</i>Cari
                                         </button>
@@ -87,35 +95,39 @@
     </div>
     <!-- ./wrapper -->
     <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    
+
     <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
     <script>
-        (function ($) {
-            "use strict";
-            app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
-            app.loadTabel();
+                    (function ($) {
+                        "use strict";
+                        app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
+                        app.loadTabel();
 
-            $(document).on("submit", "#frmData", function () {
-                $("#page").val(1);
-                app.loadTabel();
-            });
-            $(document).on("click", ".btnForm", function () {
-                app.showForm(this.id);
-            });
-            $(document).on("click", ".btnUpdate", function () {
-                app.updateMesin(this.id);
-            });
-            $(document).on("click", ".btnImport", function () {
-                app.showFormImport(this.id);
-            });
-            $(document).on("submit", "#frmInput", function () {
-                app.importFile(this);
-            });
+                        $(document).on("change", "#status", function () {
+                            $("#page").val(1);
+                            app.loadTabel();
+                        });
+                        $(document).on("submit", "#frmData", function () {
+                            $("#page").val(1);
+                            app.loadTabel();
+                        });
+                        $(document).on("click", ".btnForm", function () {
+                            app.showForm(this.id);
+                        });
+                        $(document).on("click", ".btnUpdate", function () {
+                            app.updateMesin(this.id);
+                        });
+                        $(document).on("click", ".btnImport", function () {
+                            app.showFormImport(this.id);
+                        });
+                        $(document).on("submit", "#frmInput", function () {
+                            app.importFile(this);
+                        });
 
-            $(document).on("click", ".paging", function () {
-                app.tabelPagging($(this).attr("number-page"));
-            });
-        })(jQuery);
+                        $(document).on("click", ".paging", function () {
+                            app.tabelPagging($(this).attr("number-page"));
+                        });
+                    })(jQuery);
     </script>
 </body>

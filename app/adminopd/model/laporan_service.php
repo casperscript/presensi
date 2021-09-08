@@ -1723,7 +1723,7 @@ class laporan_service extends system\Model {
 
             $all[$key]['sum_pot'] = [
                 'mk' => $sum_mk, 'ap' => $sum_ap, 'pk' => $sum_pk,
-                'all' => $tot, 'tot2' => $tot2
+                'all' => $tot, 'tot2' => $tot2, 'tk' => $jumlah_tk
             ];
         }
 

@@ -1353,7 +1353,6 @@ class laporan_service extends system\Model {
     public function getRekapAll_v3($data, $laporan, $hitungpot = false, $custom = false) {
         $moderasi = $this->getArraymodAll($data, $laporan);
         $libur = $this->getLibur($data);
-//        return $libur;
         $data_pot = $this->getArraypot();
         if (is_array($custom)) {
             $tglawal = $custom['awal'];
@@ -1371,7 +1370,6 @@ class laporan_service extends system\Model {
 
         //apel
         $data['format'] = ($data['format'] == 'TPP' ? 'A' : $data['format']);
-        //$apel = $this->getRecordPersonil($data);
         $apel = $this->apelpagi_service->getRecordApel($data);
 
         $allverified = true;
@@ -1619,7 +1617,7 @@ class laporan_service extends system\Model {
 
             $all[$key]['sum_pot'] = [
                 'mk' => $sum_mk, 'ap' => $sum_ap, 'pk' => $sum_pk,
-                'all' => $tot, 'tot2' => $tot2
+                'all' => $tot, 'tot2' => $tot2, 'tk' => $jumlah_tk
             ];
         }
 

@@ -13,19 +13,19 @@
     </div>
     <div class="input-field col s12">
         <?= comp\MATERIALIZE::inputSelect('grup_pengguna_kd', $pil_grup_pengguna, $grup_pengguna_kd, ' required'); ?>
-        <label for="" class="">Grup Pengguna</label>
+        <label for="grup_pengguna_kd" class="active">Grup Pengguna</label>
     </div>
     <div class="input-field col s12">
         <?= comp\MATERIALIZE::inputSelect('kdlokasi', $pil_lokasi, $kdlokasi, ' required'); ?>
-        <label for="" class="">Lokasi Kerja</label>
+        <label for="kdlokasi" class="active">Lokasi Kerja</label>
     </div>
     <div class="input-field col s12">
         <?= comp\MATERIALIZE::inputSelect('nipbaru', $pil_nipbaru, $nipbaru, ' required'); ?>
-        <label for="" class="">Nama Admin</label>
+        <label for="nipbaru" class="active">Nama Admin</label>
     </div>
     <div class="input-field col s12">
         <?= comp\MATERIALIZE::inputText('password', 'text', $password, ' required'); ?>
-        <label for="" class="">Password</label>
+        <label for="password" class="">Password</label>
     </div>
     <div class="input-field col s12">
         <div class="switch m-b-md">
@@ -43,6 +43,7 @@
     (function ($) {
         "use strict";
         
+        $("#kdlokasi, #nipbaru").select2({width: '100%'});
         $("select").material_select();
         
         var aksi = "<?= $op;?>";

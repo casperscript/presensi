@@ -38,6 +38,7 @@ class updatemesin extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $data = $this->presensi_service->getTabelMesin($input);
+//            comp\FUNC::showPre($data);exit;
             
             $arrIdMesin = implode(', ', array_column($data['dataTabel'], 'id_mesin'));
             $data['update'] = $this->presensi_service->getLastUpdate($arrIdMesin);

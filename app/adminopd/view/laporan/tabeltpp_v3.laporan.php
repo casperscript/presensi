@@ -179,6 +179,7 @@ if ($download == 0) {
         foreach ($pegawai['value'] as $peg) {
             $pin = $peg['pin_absen'];
             $sum = $rekap[$pin]['sum_pot'];
+//            comp\FUNC::showPre($sum);
             $sum['all'] = ($sum['all'] > 100 ? 100 : $sum['all']);
 
             //januari&Februari 2018 --- potongan belum diberlakukan -- yg untuk dicetak    
@@ -222,6 +223,16 @@ if ($download == 0) {
                     $peg['nominal_tp'] * 0.01);
             $pot_bpjs = ($terima > $checkBpjsGaji) ? $checkBpjsGaji : $terima;
             $terima_potbpjs = round($terima - $pot_bpjs);
+            
+            if ($sum['tk'] > 10) {
+                $ket = 'TK > 10 kali';
+                $pot = $peg['nominal_tp'];
+                $tpp_kotor = 0;
+                $pot_pajak = 0;
+                $terima = 0;
+                $pot_bpjs = 0;
+                $terima_potbpjs = 0;
+            }
             ?>
             <tr>
                 <td class="center-align"><?= $no ?></td>
@@ -235,8 +246,10 @@ if ($download == 0) {
                 <td class="right-align"><?= ($nominal_tp40 > 0 ? number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
                 <td class="right-align"><?= ($nominal_tp36 > 0 ? number_format($nominal_tp36, 0, ",", ".") : '-') ?></td>
                 <td class="right-align"><?= ($nominal_tp24 > 0 ? number_format($nominal_tp24, 0, ",", ".") : '-') ?></td>
+                <?php if ($sum['tk'] > 10) : ?>
+                    <td class="center-align" colspan="4"><?= $ket ?></td>
                 <?php
-                if ($rekap[$pin]['pot_penuh']) :
+                elseif ($rekap[$pin]['pot_penuh']) :
                     $sum['all'] = 100;
                     ?>
                     <td class="center-align" colspan="3"><?= $rekap[$pin]['sum_pot']['all'] ?></td>

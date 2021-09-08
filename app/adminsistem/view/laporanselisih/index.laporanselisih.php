@@ -51,7 +51,7 @@
                                         <label class="active">Tahun</label>
                                     </div>
                                     <div class="input-field col s2">
-                                        <?= comp\BOOTSTRAP::inputSelect('format', ['tabeltppselisih' => 'Selisih V2', 'tabeltppdesbc_v1' => 'TPP Des V1'], '', 'class="pilihformat"'); ?>
+                                        <?= comp\BOOTSTRAP::inputSelect('format', $listFormat, '', 'class="pilihformat"'); ?>
                                         <label class="active">Format</label>
                                     </div>
                                     <div class="input-field col s1">
