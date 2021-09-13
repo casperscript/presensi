@@ -744,7 +744,7 @@ class laporan extends system\Controller {
             }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
-            comp\FUNC::showPre($data['pegawai']);exit;
+//            comp\FUNC::showpre($data);exit;
 
             $data['personil'] = '';
             if ($data['pegawai']['count'] > 0) {
@@ -769,7 +769,7 @@ class laporan extends system\Controller {
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-
+            
             $poin = [];
             if (!empty($kinerja)) {
                 $arrNip = array_column($kinerja['data'], 'nip');
