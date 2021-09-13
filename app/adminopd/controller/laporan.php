@@ -744,6 +744,7 @@ class laporan extends system\Controller {
             }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
+            comp\FUNC::showPre($data['pegawai']);exit;
 
             $data['personil'] = '';
             if ($data['pegawai']['count'] > 0) {
@@ -763,12 +764,12 @@ class laporan extends system\Controller {
             }
 
             //ambil data kinerja
-            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $url = 'http://192.168.254.63/super/api/';
             $method = 'poin_pns';
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
-//            $request = array('opd' => $this->login['kdlokasi'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
+
             $poin = [];
             if (!empty($kinerja)) {
                 $arrNip = array_column($kinerja['data'], 'nip');
@@ -777,13 +778,10 @@ class laporan extends system\Controller {
             }
 
             $data['kinerja'] = $poin;
-//            comp\FUNC::showPre($data['personil']);exit;
 
-//            $a = array_column($kinerja['data'], 'nip');
             $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
             $data['pajak'] = $this->laporan_service->getArraypajak();
             $data['rekap'] = $this->laporan_service->getRekapAll_v3($data, $data['laporan'], true);
-//            comp\FUNC::showPre($data['rekap']);exit;
             
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
@@ -1419,7 +1417,7 @@ class laporan extends system\Controller {
     }
 
     public function test() {
-        $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+        $url = 'http://192.168.254.63/super/api/poin_pns';
         $method = 'poin';
 
         $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];

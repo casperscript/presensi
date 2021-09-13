@@ -156,7 +156,7 @@ class laporan extends system\Controller {
             }
             
             //ambil data kinerja
-            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+            $url = 'http://192.168.254.63/super/api/';
             $method = 'poin_pns';
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['pegawai']['pin_absen'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);

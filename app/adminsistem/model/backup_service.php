@@ -488,13 +488,13 @@ class backup_service extends system\Model {
         
         ################## Begin Get API Kinerja ####################
         //ambil data kinerja
-        $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
+        $url = 'http://192.168.254.63/super/api/';
         $method = 'poin_pns';
         $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
         $request = array('pin' => $impPin, 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
         $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
         if (count($kinerja) == 0) {
-            return false;
+            return 'tes';
         }
         
         $poin = [];
@@ -527,25 +527,8 @@ class backup_service extends system\Model {
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
             $tbpersonil = $this->save('tb_personil', $p);
-            
-            ################## Begin Get API Kinerja ####################
-            //ambil data kinerja
-//            $url = 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/';
-//            $method = 'poin_pns';
-//            $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
-//            $request = array('pin' => $input['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
-//            $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-//            $poin = [];
-//            if (!empty($kinerja)) {
-//                $arrNip = array_column($kinerja['data'], 'nip');
-//                $arrPoin = array_column($kinerja['data'], 'poin');
-//                $poin = array_combine($arrNip, $arrPoin);
-//            }
-//
-            ################# End Get API Kinerja ####################
-            
             $input['kinerja'] = $poin;
-//            comp\FUNC::showPre($input); exit;
+
             #simpan presensi
             if ($tbpersonil['error'] && $w_presensi) {
                 $peg['pajak_tpp'] = $p['pajak_tpp'];
@@ -765,7 +748,6 @@ class backup_service extends system\Model {
             'tpp_kotor' => $nominal_tpp
         ];
 
-//        $nominal_tp40 = $nominal_tpp * 40 / 100;
         $nominal_tp36 = round($nominal_tpp * 36 / 100);
         $nominal_tp24 = round($nominal_tpp * 24 / 100);
 
@@ -796,8 +778,7 @@ class backup_service extends system\Model {
             $presensi['pot_bpjskes'] = 0;
             $presensi['tpp_terima'] = 0;
         }
-//        comp\FUNC::showPre($get);exit;
-
+        
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :

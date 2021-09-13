@@ -14,7 +14,7 @@ class webadapter extends system\Model {
             return array('status'=>0,'code'=>20001,'message'=>'URL/EndPoint tidak terdefinisi (kosong)','data'=>'');
         } else {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'http://pamomong.pekalongankota.go.id/e-kinerja-beta/super/api/' . $operation);
+            curl_setopt($ch, CURLOPT_URL, $endpoint . $operation);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(key($accesskey) . ':' . current($accesskey)));
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);

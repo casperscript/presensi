@@ -1023,7 +1023,8 @@ class laporan_service extends system\Model {
             $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
             $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
-            array_push($idKey, $bulan, $tahun);
+            array_push($idKey, $bulan);
+            array_push($idKey, $tahun);
         }
 
         $q_cari = '';
@@ -1056,7 +1057,7 @@ class laporan_service extends system\Model {
             WHERE 1 ' . $q_cari . '
                 AND pegawai.`kd_stspeg` IN ("04", "29")
                 AND pegawai.`tunjangan_jabatan` = 0
-                AND (pegawai.`kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
+                AND (pegawai.``kode_sert_guru` != "01" OR jabatan.`kelas` IS NOT NULL)
             ORDER BY ISNULL(kelas.`kelas`), IF(COALESCE(pegawai.`kelas_on_pegawai`), pegawai.`kelas_on_pegawai`, kelas.`kelas`) DESC, nama_personil ASC';
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
