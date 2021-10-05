@@ -744,7 +744,7 @@ class laporan extends system\Controller {
             }
 
             $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($input);
-//            comp\FUNC::showpre($data);exit;
+//            comp\FUNC::showpre($data['pegawai']);exit;
 
             $data['personil'] = '';
             if ($data['pegawai']['count'] > 0) {

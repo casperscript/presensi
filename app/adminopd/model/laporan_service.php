@@ -1020,7 +1020,7 @@ class laporan_service extends system\Model {
         $idKey = array();
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
-            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
+            $bulan = ($data['bulan'] == 12) ? '"' . 1 . '"' : '"' . $data['bulan'] + 1 . '"';
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
             $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
             array_push($idKey, $bulan);
@@ -1030,7 +1030,8 @@ class laporan_service extends system\Model {
         $q_cari = '';
         if (!empty($data['kdlokasi'])) {
             $q_cari .= 'AND ((pegawai.kdlokasi = ?) OR (pegawai.kdsublokasi = ?)) ';
-            array_push($idKey, $data['kdlokasi'], $data['kdlokasi']);
+            array_push($idKey, $data['kdlokasi']);
+            array_push($idKey, $data['kdlokasi']);
         }
 
         $query = 'SELECT 

@@ -66,10 +66,11 @@ class laporan_service extends system\Model {
         $idKey = [];
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
-            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
-            $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
+            $bulan = ($data['bulan'] == 12) ? '"' . 1 . '"' : '"' . $data['bulan'] + 1 . '"';
+            $tahun = ($data['bulan'] == 12) ? '"' . $data['tahun'] + 1 . '"' : '"' . $data['tahun'] . '"';
             $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
-            array_push($idKey, $bulan, $tahun);
+            array_push($idKey, $bulan);
+            array_push($idKey, $tahun);
         }
         
         $q_cari = 'WHERE 1 ';
@@ -170,7 +171,7 @@ class laporan_service extends system\Model {
         $idKey = array();
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
-            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
+            $bulan = ($data['bulan'] == 12) ? '"' . 1 . '"' : '"' . $data['bulan'] + 1 . '"';
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
             $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
             array_push($idKey, $bulan, $tahun);
