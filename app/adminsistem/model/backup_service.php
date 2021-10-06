@@ -399,14 +399,13 @@ class backup_service extends system\Model {
         parent::setConnection('db_pegawai');
 
         $idKey = array();
-        $dataArr = array();
         $q_cari = 'WHERE 1 ';
         /* acil 20200802 */
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
             $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
-            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            $q_carigaji .= 'AND gaji.bulan = ? AND gaji.tahun = ?) ';
             array_push($idKey, $bulan, $tahun);
         }
 
@@ -496,6 +495,7 @@ class backup_service extends system\Model {
         if (count($kinerja) == 0) {
             return 'tes';
         }
+//        comp\FUNC::showPre($pegawai);exit;
         
         $poin = [];
         if (!empty($kinerja)) {

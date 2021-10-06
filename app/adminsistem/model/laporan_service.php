@@ -171,9 +171,9 @@ class laporan_service extends system\Model {
         $idKey = array();
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
-            $bulan = ($data['bulan'] == 12) ? '"' . 1 . '"' : '"' . $data['bulan'] + 1 . '"';
+            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
-            $q_carigaji .= 'AND gaji.bulan = ? AND gaji.tahun = ?) ';
+            $q_carigaji .= 'AND gaji.bulan = ? AND gaji.tahun = ? ';
             array_push($idKey, $bulan, $tahun);
         }
         
