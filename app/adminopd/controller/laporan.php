@@ -769,9 +769,9 @@ class laporan extends system\Controller {
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-            
+//            comp\FUNC::showPre($kinerja);
             $poin = [];
-            if (!empty($kinerja)) {
+            if ($kinerja['status'] == true) {
                 $arrNip = array_column($kinerja['data'], 'nip');
                 $arrPoin = array_column($kinerja['data'], 'poin');
                 $poin = array_combine($arrNip, $arrPoin);

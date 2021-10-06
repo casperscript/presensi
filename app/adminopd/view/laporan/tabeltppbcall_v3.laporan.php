@@ -161,9 +161,9 @@ if (count($rekap) == 0) {
                     <br>Golongan <?= $peg['golruang'] ?>
                 </td>
                 <td class="center-align"><?= $peg['kelas'] ?></td>
-                <td class="right-align"><?= ($nominal_tp40 > 0 ? number_format($nominal_tp40, 0, ",", ".") : '-') ?></td>
-                <td class="right-align"><?= ($nominal_tp36 > 0 ? number_format($nominal_tp36, 0, ",", ".") : '-') ?></td>
-                <td class="right-align"><?= ($nominal_tp24 > 0 ? number_format($nominal_tp24, 0, ",", ".") : '-') ?></td>
+                <td class="right-align"><?= ($nominal_tp40 > 0 ? number_format($nominal_tp40, 0, ",", ".") : '0') ?></td>
+                <td class="right-align"><?= ($nominal_tp36 > 0 ? number_format($nominal_tp36, 0, ",", ".") : '0') ?></td>
+                <td class="right-align"><?= ($nominal_tp24 > 0 ? number_format($nominal_tp24, 0, ",", ".") : '0') ?></td>
                 <?php if (isset($sum['tk']) && $sum['tk'] > 10) : ?>
                     <td class="center-align" colspan="4"><?= $ket ?></td>
                 <?php
@@ -179,12 +179,12 @@ if (count($rekap) == 0) {
                     <td class="center-align"><?= $pot_kinerja ?></td>
                 <?php endif; ?>
 
-                <td class="right-align"><?= ($pot > 0 ? number_format($pot, 0, ",", ".") : '-') ?></td> <!-- total potongan kehadiran -->
-                <td class="right-align"><?= ($tpp_kotor ? number_format($tpp_kotor, 0, ",", ".") : '-') ?></td> <!-- tpp kotor -->
-                <td class="right-align"><?= ($pot_pajak ? number_format($pot_pajak, 0, ",", ".") : '-') ?></td> <!-- pajak -->
-                <td class="right-align"><?= ($terima ? number_format($terima, 0, ",", ".") : '-') ?></td> <!-- tpp bersih -->
-                <td class="right-align"><?= ($pot_bpjs ? number_format($pot_bpjs, 0, ",", ".") : '-') ?></td> <!-- potongan bpjs -->
-                <td class="right-align"><?= ($terima_potbpjs ? number_format($terima_potbpjs, 0, ",", ".") : '-') ?></td> <!-- diterimakan dipotong bpjs -->
+                <td class="right-align"><?= ($pot > 0 ? number_format($pot, 0, ",", ".") : '0') ?></td> <!-- total potongan kehadiran -->
+                <td class="right-align"><?= ($tpp_kotor ? number_format($tpp_kotor, 0, ",", ".") : '0') ?></td> <!-- tpp kotor -->
+                <td class="right-align"><?= ($pot_pajak ? number_format($pot_pajak, 0, ",", ".") : '0') ?></td> <!-- pajak -->
+                <td class="right-align"><?= ($terima ? number_format($terima, 0, ",", ".") : '0') ?></td> <!-- tpp bersih -->
+                <td class="right-align"><?= ($pot_bpjs ? number_format($pot_bpjs, 0, ",", ".") : '0') ?></td> <!-- potongan bpjs -->
+                <td class="right-align"><?= ($terima_potbpjs ? number_format($terima_potbpjs, 0, ",", ".") : '0') ?></td> <!-- diterimakan dipotong bpjs -->
                 <td></td>
             </tr>
             <?php
@@ -209,7 +209,7 @@ if (count($rekap) == 0) {
             <th class="right-align"><?= number_format($tot_tpp36, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_tpp24, 0, ",", ".") ?></th>
             <th colspan="4"></th>
-            <th class="right-align"><?= ($tot_pot > 0 ? number_format($tot_pot, 0, ",", ".") : '-') ?></th>
+            <th class="right-align"><?= ($tot_pot > 0 ? number_format($tot_pot, 0, ",", ".") : '0') ?></th>
             <th class="right-align"><?= number_format($tot_tppkotor, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_pajak, 0, ",", ".") ?></th>
             <th class="right-align"><?= number_format($tot_terima, 0, ",", ".") ?></th>

@@ -758,9 +758,9 @@ class backup_service extends system\Model {
         $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
-        $checkBpjsGaji = round((($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
-                ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
-                $nominal_tpp * 0.01);
+        $checkBpjsGaji = (($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
+                round(($kenabpjs['value'] - $peg['totgaji']) * 0.01) :
+                round($nominal_tpp * 0.01);
         $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
         $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
         $presensi['pot_bpjskes'] = $pot_bpjs;
