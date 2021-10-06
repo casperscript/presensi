@@ -401,7 +401,6 @@ class backuplaporan extends system\Controller {
                 $input['tingkat'] = $i;
                 $rekap[$i] = $this->backup_service->getRekapAll_v2($input, $laporan, true);
             }
-//            comp\FUNC::showPre($rekap);exit;
             $tbpersonil = $this->backup_service->save_personil_v3($input, $tbinduk, $rekap, true);
 
             //simpan tpp

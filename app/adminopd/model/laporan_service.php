@@ -1017,12 +1017,12 @@ class laporan_service extends system\Model {
     public function getDataPersonilTpp_v2($data) {
         parent::setConnection('db_pegawai');
 
-        $idKey = array();
+        $idKey = [];
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
-            $bulan = ($data['bulan'] == 12) ? '"' . 1 . '"' : '"' . $data['bulan'] + 1 . '"';
+            $bulan = ($data['bulan'] == 12) ? 1 : $data['bulan'] + 1;
             $tahun = ($data['bulan'] == 12) ? $data['tahun'] + 1 : $data['tahun'];
-            $q_carigaji .= 'AND (MONTH(gaji.periode) = ? AND YEAR(gaji.periode) = ?) ';
+            $q_carigaji .= 'AND gaji.bulan = ? AND gaji.tahun = ? ';
             array_push($idKey, $bulan);
             array_push($idKey, $tahun);
         }
@@ -1048,13 +1048,13 @@ class laporan_service extends system\Model {
 		jabatan.`kode_kelas`            AS kode_kelas,
 		IF (pegawai.`kd_stspeg` = 29, kelas.`nominal` * 0.5, kelas.`nominal`) AS nominal_tp,
 		IF (pegawai.kelas_on_pegawai != "", pegawai.kelas_on_pegawai, kelas.`kelas`) AS kelas,
-		gaji.`total`                    AS totgaji,
+		gaji.`total`                    AS totgaji, 
 		pegawai.`kode_sert_guru`        AS kode_sert_guru
             FROM `texisting_kepegawaian` `pegawai` 
 		JOIN `texisting_personal` `personal` ON pegawai.`nipbaru` = personal.`nipbaru` 
 		LEFT JOIN `tref_jabatan_campur` `jabatan` ON jabatan.`kd_jabatan` = pegawai.`kd_jabatan` AND FIND_IN_SET(pegawai.`kode_sert_guru`, jabatan.`kode_sert_guru`)
 		LEFT JOIN `tref_tpp_kelas_jabatan` `kelas` ON jabatan.`kode_kelas` = kelas.`kode_kelas`
-		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . '
+		LEFT JOIN `data_gaji` `gaji` ON pegawai.`nipbaru` = gaji.`nipbaru` ' . $q_carigaji . ' 
             WHERE 1 ' . $q_cari . '
                 AND pegawai.`kd_stspeg` IN ("04", "29")
                 AND pegawai.`tunjangan_jabatan` = 0
@@ -1455,7 +1455,7 @@ class laporan_service extends system\Model {
         $all['allverified'] = $allverified;
         return $all;
     }
-    
+
     public function getRekapAll_v3($data, $laporan, $hitungpot = false, $custom = false) {
         $moderasi = $this->getArraymodAll($data, $laporan);
         $libur = $this->getLibur($data);
