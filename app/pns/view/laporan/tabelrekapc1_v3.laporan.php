@@ -136,6 +136,8 @@ $key = $data['personil'];
             $pot_kinerja = 100 - $kinerja[$pegawai['nipbaru']];
             $rupiah_pot_kinerja = round($tpp24 * $pot_kinerja / 100, 0);
         }
+        
+        echo $kinerja[$pegawai['nipbaru']] . 'xx';
         ?>
     </tbody>
     <tfoot>
@@ -153,7 +155,7 @@ $key = $data['personil'];
             <td class="center-align">
                 <b>
                     <?= !empty($pot_kinerja) ? $pot_kinerja . '%' : '' ?>
-                    <?= !empty($rupiah_pot_kinerja) ? ' (Rp ' . number_format($rupiah_pot_kinerja, 0, ",", ".") . ')' : 'NAN' ?>
+                    <?= isset($rupiah_pot_kinerja) ? ' (Rp ' . number_format($rupiah_pot_kinerja, 0, ",", ".") . ')' : 'NAN' ?>
                 </b>
             </td>
         </tr>
