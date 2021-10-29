@@ -172,8 +172,8 @@ class laporan extends system\Controller {
 
             $data['tpp_pegawai'] = $this->laporan_service->getTpp_v2($input + ['nipbaru' => $data['pegawai']['nipbaru']]);
             $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], true);
-            comp\FUNC::showPre($data['kinerja']);//exit;
-            comp\FUNC::showPre($data['pegawai']);//exit;
+//            comp\FUNC::showPre($data['kinerja']);//exit;
+//            comp\FUNC::showPre($data['pegawai']);//exit;
             $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
 
             $this->subView('tabelrekapc1_v3', $data);

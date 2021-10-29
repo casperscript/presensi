@@ -137,7 +137,6 @@ $key = $data['personil'];
             $rupiah_pot_kinerja = round($tpp24 * $pot_kinerja / 100, 0);
         }
         
-        echo $kinerja[$pegawai['nipbaru']] . 'xx';
         ?>
     </tbody>
     <tfoot>
