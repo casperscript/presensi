@@ -848,6 +848,7 @@ class laporan_service extends system\Model {
                         WHERE grup_pengguna_kd = 'KDGRUP04' AND nipbaru = '" . $i['nipbaru'] . "' 
                     ", []);
 
+                    $i['stempel'] = 'G09001.png';
                     $i['jabatan_pengguna'] = '';
                     if ($pengguna['count'] > 0)
                         $i['jabatan_pengguna'] = $pengguna['value'][0]['jabatan_pengguna'];
