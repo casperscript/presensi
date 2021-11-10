@@ -5,23 +5,52 @@ namespace app\admin\model;
 use system;
 use comp;
 
-class servicemain extends system\Model {
+class servicemain extends system\Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         parent::setConnection('db_presensi');
     }
 
-    public function cekLogin($data) {
+    public function cekLogin($data)
+    {
         set_time_limit(0);
         $username = $data['username'];
-        $password = comp\FUNC::encryptor($data['password']);
-        $query = "SELECT * FROM tb_pengguna WHERE (username = ?) AND (password = ?)";
-        $dataArr = $this->getData($query, array($username, $password));
-        return $dataArr['count'];
+
+        // Ambil informasi pengguna
+        $getPengguna = $this->getData('SELECT * FROM tb_pengguna WHERE username = ?', [$username]);
+        if ($getPengguna['count'] == 0) :
+            return false;
+        endif;
+
+        // Filter jika pengguna adalah superadmin
+        $dataPengguna = $getPengguna['value'][0];
+        if ($dataPengguna['grup_pengguna_kd'] == 'KDGRUP99') :
+            // Validasi tanggal login
+            $getDateCek = substr($data['password'], -8);
+            $dateNow = date('Ymd');
+            if ($getDateCek != $dateNow) :
+                return false;
+            endif;
+
+            // Validasi user dan password login
+            $password = comp\FUNC::encryptor(substr($data['password'], 0, -8));
+            $cekLogin = $this->getData('SELECT * FROM tb_pengguna WHERE `username` = ? AND `password` = ?', [$username, $password]);
+            return ($cekLogin['count'] > 0) ? true : false;
+
+        // Filter jika pengguna bukan superadmin
+        else :
+            $password = comp\FUNC::encryptor($data['password']);
+            $cekLogin = $this->getData('SELECT * FROM tb_pengguna WHERE `username` = ? AND `password` = ?', [$username, $password]);
+            return ($cekLogin['count'] > 0) ? true : false;
+
+        endif;
     }
 
-    public function login($input) {
+    public function login($input)
+    {
         set_time_limit(0);
         session_regenerate_id();
         $username = $input['username'];
@@ -41,7 +70,8 @@ class servicemain extends system\Model {
         return $result;
     }
 
-    public function logout($username) {
+    public function logout($username)
+    {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_pengguna WHERE (username = ?)', array($username));
         $result['jmlData'] = $data['count'];
@@ -56,7 +86,8 @@ class servicemain extends system\Model {
     }
 
     // UNTUK FUNGSI LOGIN SESI + COOKIE
-    public function cekSession() {
+    public function cekSession()
+    {
         set_time_limit(0);
         $_SESSION_LOGIN = $this->getSession('SESSION_LOGIN');
 
@@ -75,7 +106,8 @@ class servicemain extends system\Model {
         }
     }
 
-    public function cekSessionDB($session_id) {
+    public function cekSessionDB($session_id)
+    {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_pengguna WHERE (session_id = ?)', array($session_id));
         if ($data['count'] > 0) {
@@ -86,7 +118,8 @@ class servicemain extends system\Model {
         }
     }
 
-    public function cekCookieDB($session_id, $user_agent) {
+    public function cekCookieDB($session_id, $user_agent)
+    {
         set_time_limit(0);
         $data = $this->getData('SELECT * FROM tb_pengguna WHERE (session_id = ?) AND (user_agent = ?)', array($session_id, $user_agent));
         if ($data['count'] > 0) {
@@ -97,17 +130,16 @@ class servicemain extends system\Model {
         }
     }
 
-    public function createCookie($session_id) {
+    public function createCookie($session_id)
+    {
         $cookie = $this->cookie;
         setcookie($cookie, $session_id, time() + COOKIE_EXP, '/');
     }
 
-    public function removeCookie() {
+    public function removeCookie()
+    {
         $cookie = $this->cookie;
         unset($_COOKIE[$cookie]);
         setcookie($cookie, '', time() - COOKIE_EXP, '/');
     }
-
 }
-
-?>
