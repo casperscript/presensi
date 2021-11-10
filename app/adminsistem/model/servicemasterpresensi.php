@@ -504,26 +504,37 @@ class servicemasterpresensi extends system\Model {
     }
 
     public function getTabelMesin($data) {
-        set_time_limit(0);
-        $cari = '%' . $data['cari'] . '%';
-        $page = $data['page'];
-
-        $q_cari = !empty($cari) ? ' WHERE ((nama_mesin LIKE ?) || (ip_mesin LIKE ?) || (serial_mesin LIKE ?)) ' : '';
-        $query = 'SELECT * FROM tb_mesin' . $q_cari . '';
         $idKey = array();
-        array_push($idKey, $cari, $cari, $cari);
 
-        $batas = 10;
+        $q_cari = '';
+        if (!empty($data['cari'])) : // Pencarian
+            $q_cari .= 'AND (a.`nama_mesin` LIKE ? OR a.`ip_mesin` LIKE ? OR a.`serial_mesin` LIKE ?) ';
+            $cari = '%' . $data['cari'] . '%';
+            array_push($idKey, $cari, $cari, $cari);
+        endif;
+        
+        if(!empty($data['kelompok'])) : // Kelompok mesin
+            $q_cari .= 'AND (a.`id_kelompok_mesin` = ?) ';
+            array_push($idKey, $data['kelompok']);
+        endif;
+
+        if(!empty($data['status'])) : // Status mesin
+            $q_cari .= 'AND (a.`status` = ?) ';
+            array_push($idKey, $data['status']);
+        endif;
+
+        $page = isset($data['page']) ? $data['page'] : 1;
+        $batas = isset($data['limit']) ? $data['limit'] : 10;
         $posisi = ($page - 1) * $batas;
-        $jmlData = $this->getData($query, $idKey);
-        $dataArr = $this->getData($query . ' LIMIT ' . $posisi . ',' . $batas, $idKey);
+        $jmlData = $this->getData('SELECT COUNT(id_mesin) AS count FROM tb_mesin a WHERE 1 ' . $q_cari, $idKey);
+        $dataArr = $this->getData('SELECT a.*, b.`nama_kelompok` FROM tb_mesin a LEFT JOIN tb_kelompok_mesin b ON a.`id_kelompok_mesin` = b.`id_kelompok_mesin` WHERE 1 ' . $q_cari . ' LIMIT ' . $posisi . ',' . $batas, $idKey);
         $result['no'] = $posisi + 1;
         $result['page'] = $page;
         $result['batas'] = $batas;
-        $result['jmlData'] = $jmlData['count'];
+        $result['jmlData'] = ($jmlData['count'] > 0) ? $jmlData['value'][0]['count'] : 0;
         $result['dataTabel'] = $dataArr['value'];
         $result['query'] = $dataArr['query'];
-        $result['query'] = '';
+        // $result['query'] = '';
         return $result;
     }
 
@@ -830,5 +841,3 @@ class servicemasterpresensi extends system\Model {
     }
 
 }
-
-?>

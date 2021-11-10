@@ -1,7 +1,7 @@
 <body class="search-app quick-results-off loaded">
     <?php $this->getView('adminsistem', 'main', 'loading', ''); ?>
     <div class="mn-content fixed-sidebar">
-        <?php $this->getView('adminsistem', 'main', 'header', ''); ?>    
+        <?php $this->getView('adminsistem', 'main', 'header', ''); ?>
         <?php $this->getView('adminsistem', 'main', 'menu', ''); ?>
 
         <main class="mn-inner" style="background-color:#cfd8dc;">
@@ -25,32 +25,45 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col s12">
                     <div class="card stats-card">
-                        <div class="card-content">
-                            <div class="col s12">
-                                <form id="frmData" class="navbar-search expanded" onsubmit="return false" role="search" >
-                                    <div class="input-field col s7 custom-prefix">
+                        <div class="card-action" style="padding-bottom: none;">
+                            <form id="frmData" class="navbar-search expanded" onsubmit="return false" role="search">
+                                <div class="row" style="margin-bottom: 0;">
+                                    <div class="input-field col s3 custom-prefix">
                                         <i class="material-icons prefix">search</i>
                                         <input name="cari" id="cari" class="validate" type="text" placeholder="Pencarian Data">
                                     </div>
-                                    <div class="input-field col s2">
-                                        <button type="submit" class="waves-effect waves-light btn green">Cari</button>
+                                    <div class="input-field col s1">
+                                        <?= comp\MATERIALIZE::inputSelect('limit', $listShowData, 10, ' ') ?>
+                                        <label>Tampilkan</label>
                                     </div>
                                     <div class="input-field col s2">
+                                        <?= comp\MATERIALIZE::inputSelect('kelompok', $nama_kelompok, 0, '') ?>
+                                        <label>Kelompok</label>
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <?= comp\MATERIALIZE::inputSelect('status', $listStatus, 'enable', '') ?>
+                                        <label>Status</label>
+                                    </div>
+                                    <div class="input-field col s3">
+                                        <button type="submit" class="waves-effect waves-light btn green"><i class="material-icons">search</i></button>
                                         <a id="" class="waves-effect waves-light btn blue btnForm">Tambah</a>
                                     </div>
                                     <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
-                                </form>
-                            </div>
-                            <div class="col s12">
-                                <div id="data-tabel"></div>
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div id="sparkline-bar"></div>
+                </div>
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <div id="data-tabel"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -66,7 +79,7 @@
                 </div>
             </form>
         </div>
-        
+
         <div id="confirmModal" class="modal">
             <form id="frmHapus" class="form-horizontal" role="form" onsubmit="return false" autocomplete="off">
                 <div class="modal-content">
@@ -85,42 +98,43 @@
     </div>
     <!-- ./wrapper -->
 
+    <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
     <script>
-            (function ($) {
-                "use strict";
-                app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
+        (function($) {
+            "use strict";
+            app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
 
+            app.loadTabel();
+
+            $(document).on("change", "#limit, #kelompok, #status", function () {
                 app.loadTabel();
+            }) ;
 
-                $(document).on("submit", "#frmData", function () {
-                    $("#page").val(1);
-                    app.loadTabel();
-                });
+            $(document).on("submit", "#frmData", function() {
+                $("#page").val(1);
+                app.loadTabel();
+            });
 
-                $(document).on("click", ".btnForm", function () {
-                    app.showForm(this.id);
-                });
-                
-                $(document).on("submit", "#frmInput", function () {
-                    app.simpan(this);
-                });
-                
-                $(document).on("click", ".btnHapus", function () {
-                    $("#myConfirmModalLabel").html("Konfirmasi Hapus");
-                    $("#data-confirm").html("Apakah anda ingin menghapus data <span class='blue-text' for=''><b>"+$(this).attr("nama")+" ("+$(this).attr("ip")+")</b></span> ?");
-                    $("#id_confirm").val(this.id);
-                    $("#confirmModal").openModal();
-                });
-                
-                $(document).on("click", "#btnConfirmHapus", function () {
-                    app.hapus(this.id);
-                });
-                
-                $(document).on("click", ".paging", function () {
-                    app.tabelPagging($(this).attr("number-page"));
-                });
+            $(document).on("click", ".btnForm", function() {
+                app.showForm(this.id);
+            });
 
-            })(jQuery);
+            $(document).on("submit", "#frmInput", function() {
+                app.simpan(this);
+            });
+
+            $(document).on("click", ".btnHapus", function() {
+                var title = "Perhatian!!";
+                var msg = "Anda akan menghapus " + $(this).attr("nama");
+                app.hapus(this.id, title, msg);
+            });
+
+            $(document).on("click", ".paging", function() {
+                app.tabelPagging($(this).attr("number-page"));
+            });
+
+        })(jQuery);
     </script>
 </body>
