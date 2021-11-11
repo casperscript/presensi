@@ -129,6 +129,62 @@ class backuplaporan extends system\Controller {
     protected function tabelpresensi() {
         $input = $this->post(true);
         if ($input) {
+            $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
+            switch ($versi['data_1']) {
+                case 'v1':
+                    $this->tabelpresensi_v1($input, true);
+                    break;
+                case 'v2':
+                    $this->tabelpresensi_v2($input, true);
+                    break;
+            }
+        }
+    }
+
+    protected function tabelpresensi_v1() {
+        $input = $this->post(true);
+        if ($input) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getDataInduk($input);
+            if (!$data['induk']) {
+                $this->subView('notfound', $data);
+                exit;
+            }
+
+            $data['satker'] = $data['induk']['singkatan_lokasi'];
+            $data['pegawai'] = $this->backup_service->getDataPersonil($data);
+            $data['personil'] = '';
+            if ($data['pegawai']['count'] > 0) {
+                $personil = array_map(function ($i) {
+                    return $i['pin_absen'];
+                }, $data['pegawai']['value']);
+
+                $data['personil'] = implode(',', $personil);
+            }
+
+            if ($data['jenis'] == 1) :
+                $view = 'tabelmasuk';
+            elseif ($data['jenis'] == 2) :
+                $view = 'tabelapel';
+            elseif ($data['jenis'] == 3) :
+                $view = 'tabelpulang';
+            endif;
+
+            $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
+            $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+
+            $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
+
+            $this->subView($view, $data);
+        }
+    }
+
+    protected function tabelpresensi_v2() {
+        $input = $this->post(true);
+        if ($input) {
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
@@ -839,7 +895,7 @@ class backuplaporan extends system\Controller {
             foreach ($presensi['value'] as $updt) {
                 $update = $this->backup_service->update_bpjs($updt, $kenabpjs, $gaji);
                 if (!$update['error'])
-                    return json_encode($personil);
+                    return json_encode($update);
                 else {
                     $sukses++;
                     echo 'sukses ' . $bulan . '-' . $tahun . '-' . $updt['nipbaru'];

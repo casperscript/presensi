@@ -71,10 +71,15 @@ class backup_service extends system\Model {
             RIGHT(golruang, 1) AS golruang_2
         FROM tb_personil ' . $q_cari;
 
-        $query .= ' ORDER BY IF(urutan_sotk = "0" OR urutan_sotk = "" OR urutan_sotk IS NULL, 1, 0), IF(kd_jabatan = "" OR kd_jabatan = "-" OR kd_jabatan IS NULL, 1, 0), nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, nipbaru ASC';
+        $query .= ' ORDER BY IF(kd_jabatan = "" OR kd_jabatan = "-" OR kd_jabatan IS NULL, 1, 0), nominal_tp DESC, golruang_1 DESC, golruang_2 DESC, nipbaru ASC';
 
         $dataArr = $this->getData($query, $idKey);
         return $dataArr;
+    }
+
+    public function getDataPersonil_v2($data) {
+        $idKey = [];
+
     }
 
     public function getTabelPersonil($data) {
