@@ -76,7 +76,7 @@
                                         <button class="btn-floating btn waves-effect waves-light green btnTampil" title="Tampilkan" type="button">
                                             <i class="material-icons left">search</i>
                                         </button>
-                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="button" id="btnCetak">
+                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="button" id="btnCetak" disabled="">
                                             <i class="material-icons left">print</i>
                                         </button>
                                         <button class="btn-floating btn waves-effect waves-light red" title="Cetak Asli" type="button" id="btnCetakAsli">
@@ -120,10 +120,10 @@
                 app.loadTabel();
             });
 
-            $('#btnCetak').on('click', function() {
-                $('#asli').val('');
-                checkBendahara();
-            });
+            // $('#btnCetak').on('click', function() {
+            //     $('#asli').val('');
+            //     checkBendahara();
+            // });
 
             $('#btnCetakAsli').on('click', function() {
                 $('#asli').val(1);
