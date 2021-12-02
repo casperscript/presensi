@@ -133,7 +133,8 @@ class HusnanWModerasiModel extends system\Model {
             FROM tb_moderasi tmod INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis WHERE kdlokasi = ? AND flag_operator_opd IS NOT NULL ".$where;
             $params = [$input['kdlokasi']];
         } else {
-            $sql = "SELECT tmod.*, tjm.nama_jenis, tkp.ket_kode_presensi, tkp.pot_kode_presensi, tgrup.nama_grup_pengguna AS grup_pemohon FROM tb_moderasi tmod INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis INNER JOIN tb_grup_pengguna tgrup ON tmod.usergroup = tgrup.kd_grup_pengguna WHERE kdlokasi = ? AND tmod.id = ? AND flag_operator_opd IS NOT NULL ".$where;
+            $sql = "SELECT tmod.*, tjm.nama_jenis, tkp.ket_kode_presensi, tkp.pot_kode_presensi, tgrup.nama_grup_pengguna AS grup_pemohon 
+            FROM tb_moderasi tmod INNER JOIN tb_kode_presensi tkp ON tmod.kode_presensi = tkp.kode_presensi INNER JOIN tb_jenis_moderasi tjm ON tmod.kd_jenis = tjm.kd_jenis INNER JOIN tb_grup_pengguna tgrup ON tmod.usergroup = tgrup.kd_grup_pengguna WHERE kdlokasi = ? AND tmod.id = ? AND flag_operator_opd IS NOT NULL ".$where;
             $params = [$input['kdlokasi'], $mid];
         }
 
@@ -168,16 +169,20 @@ class HusnanWModerasiModel extends system\Model {
         if ($mid === null)
             $sql .= ' ORDER BY jml DESC, pin_absen, tanggal_awal';
 
-        $daftarModerasi = $this->getData($sql, $params)["value"];        
+        $daftarModerasi = $this->getData($sql, $params)["value"];
+        // $daftarModerasi = $this->getData($sql, $params);
+        // return $daftarModerasi;    
         $strPin = FUNC::husnanWStrImplode($daftarModerasi, "pin_absen");
 
         parent::setConnection('db_pegawai');        
-        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, ' ', namapeg, ' ', gelar_blkg) AS nama_lengkap, pin_absen, singkatan_lokasi FROM texisting_personal tperson INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru INNER JOIN tref_lokasi_kerja tlokasi ON tpeg.kdlokasi = tlokasi.kdlokasi WHERE pin_absen IN (".$strPin.") AND tpeg.kdlokasi = ?";
+        $sql = "SELECT tpeg.nipbaru, CONCAT(gelar_depan, ' ', namapeg, ' ', gelar_blkg) AS nama_lengkap, pin_absen, singkatan_lokasi FROM texisting_personal tperson INNER JOIN texisting_kepegawaian tpeg ON tperson.nipbaru = tpeg.nipbaru INNER JOIN tref_lokasi_kerja tlokasi ON tpeg.kdlokasi = tlokasi.kdlokasi WHERE pin_absen IN (".$strPin.") AND (tpeg.kdlokasi = ? OR tpeg.kdsublokasi = ?)";
 
         if (isset($input['cari']) && $input['cari'] != '') {
             $sql .= ' AND (tperson.nipbaru LIKE "%'.$input['cari'].'%" OR tperson.namapeg LIKE "%'.$input['cari'].'%")';
         }
-        $daftarPegawai = $this->getData($sql, [$input['kdlokasi']])["value"];
+        $daftarPegawai = $this->getData($sql, [$input['kdlokasi'], $input['kdlokasi']])["value"];
+        // $daftarPegawai = $this->getData($sql, [$input['kdlokasi'], $input['kdlokasi']]);
+        // return $daftarPegawai;
 
         $daftarModPegawai = [];
 
