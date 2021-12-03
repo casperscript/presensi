@@ -1427,4 +1427,20 @@ class laporan extends system\Controller {
         comp\FUNC::showPre($data);
     }
 
+    public function getJSON() {
+        header('Content-Type: application/json');
+        $input = $this->post(true);
+        switch ($input['mode']) {
+            case 'cekBackup':
+                $param = $input['params'];
+                $idKey['kdlokasi'] = $this->login['kdlokasi'];
+                $idKey['tahun'] = $param['tahun'];
+                $idKey['bulan'] = $param['bulan'];
+                $data = $this->backup_service->getDataInduk($idKey);
+                $response = ($data == false && $param['tingkat'] == 6) ? 
+                    ['msg' => 'Menunggu backup data..', 'value' => 0] : ['msg' => '', 'value' => 1];
+        }
+        echo json_encode($response);
+    }
+
 }

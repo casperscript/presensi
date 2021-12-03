@@ -16,6 +16,7 @@
             url_checkmod = url + "/checkmod";
             url_updatever = url + "/updateVerifikasi";
             url_updatebendahara = url + "/updateBendahara";
+            url_getJSON = url + "/getJSON";
         },
 
         tabelPagging: function (number) {
@@ -187,6 +188,25 @@
                 $('#format').val('TPP');
                 app.loadTabel();
             });   
+        },
+
+        cekBackup: function () {
+            var param = {};
+            param["bulan"] = $("#pilihbulan").val();
+            param["tahun"] = $("#tahun").val();
+            param["tingkat"] = $("#tingkat").val();
+            $.post(url_getJSON, {mode: "cekBackup", params: param, tahun: param["tahun"]}, function (data) {
+                
+                if (data.value == 0) {
+                    $("#btnCetak").hide();
+                    $("#btnMsg").html(data.msg);
+                    $("#btnMsg").show();
+                } else {
+                    $("#btnCetak").show();
+                    $("#btnMsg").hide();
+                }
+                console.log(data);
+            }, "json")
         }
     };
 <!--</script>-->

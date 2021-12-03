@@ -1,7 +1,7 @@
 <body class="search-app quick-results-off">
     <?php $this->getView('adminopd', 'main', 'loading', ''); ?>
     <div class="mn-content fixed-sidebar">
-        <?php $this->getView('adminopd', 'main', 'header', ''); ?>    
+        <?php $this->getView('adminopd', 'main', 'header', ''); ?>
         <?php $this->getView('adminopd', 'main', 'menu', ''); ?>
 
         <main class="mn-inner">
@@ -38,21 +38,22 @@
                                     </div>
                                     <div class="input-field col s2">
                                         <select name="bulan" id="pilihbulan">
-                                        <?php
+                                            <?php
                                             foreach (comp\FUNC::$namabulan as $key => $i) {
-                                                $selected = ''; $bulan = date('m');
+                                                $selected = '';
+                                                $bulan = date('m');
                                                 if ($bulan == 1)
                                                     $bulan = 13;
 
-                                                if ($key+2 == $bulan)
+                                                if ($key + 2 == $bulan)
                                                     $selected = 'selected';
-                                                echo '<option value="'.($key+1).'" '.$selected.'>'.$i.'</option>';   
+                                                echo '<option value="' . ($key + 1) . '" ' . $selected . '>' . $i . '</option>';
                                             }
-                                        ?>
+                                            ?>
                                         </select>
                                         <label>Pilih Bulan</label>
                                     </div>
-                                    <div class="input-field col s2">
+                                    <div class="input-field col s1">
                                         <?php
                                         $selected = (date('m') == 1) ? date('Y') - 1 : date('Y');
                                         echo comp\BOOTSTRAP::inputSelect('tahun', $listTahun, $selected, 'class="pilihtahun"');
@@ -72,16 +73,17 @@
                                             <label>Pilih Tingkat Laporan</label>
                                         </div>
                                     </div>
-                                    <div class="input-field col s2">
+                                    <div class="input-field col s3">
                                         <button class="btn-floating btn waves-effect waves-light green btnTampil" title="Tampilkan" type="button">
                                             <i class="material-icons left">search</i>
                                         </button>
-                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="button" id="btnCetak" disabled="">
+                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="button" id="btnCetak">
                                             <i class="material-icons left">print</i>
                                         </button>
                                         <button class="btn-floating btn waves-effect waves-light red" title="Cetak Asli" type="button" id="btnCetakAsli">
                                             <i class="material-icons left">print</i>
                                         </button>
+                                        <span id="btnMsg" class="chip red darken-4 white-text" style="display: none"></span>
                                     </div>
                                 </div>
                                 <select name="format" id="format" class="browser-default hide">
@@ -111,19 +113,23 @@
     <!-- ./wrapper -->
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
     <script>
-        (function ($) {
+        (function($) {
             "use strict";
             app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
+            // app.cekBackup('cekBackup', $("#frmData").serialize());
+            $(document).on("change", "#pilihbulan, #tahun, #tingkat", function() {
+                app.cekBackup();
+            });
 
-            $(".btnTampil").on("click", function () {
+            $(".btnTampil").on("click", function() {
                 $("#page").val(1);
                 app.loadTabel();
             });
 
-            // $('#btnCetak').on('click', function() {
-            //     $('#asli').val('');
-            //     checkBendahara();
-            // });
+            $('#btnCetak').on('click', function() {
+                $('#asli').val('');
+                checkBendahara();
+            });
 
             $('#btnCetakAsli').on('click', function() {
                 $('#asli').val(1);
@@ -139,14 +145,16 @@
                     alert('Mohon untuk memilih pegawai bendahara pengeluaran terlebih dahulu.');
                     app.loadTabel();
 
-                //cek verifikasi laporan
-                } /*else if (verified == 0) {
-                    alert('Penerimaan TPP tidak dapat dicetak sebelum laporan presensi diverifikasi oleh Kepala OPD.');
-                }*/ else
+                    //cek verifikasi laporan
+                }
+                /*else if (verified == 0) {
+                                   alert('Penerimaan TPP tidak dapat dicetak sebelum laporan presensi diverifikasi oleh Kepala OPD.');
+                               }*/
+                else
                     $('#frmData').submit();
             }
 
-            $("#data-tabel").on("click", ".paging", function () {
+            $("#data-tabel").on("click", ".paging", function() {
                 app.tabelPagging($(this).attr("number-page"));
             });
 
