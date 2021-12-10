@@ -1,8 +1,8 @@
 <body class="search-app quick-results-off">
-    <?php $this->getView('adminopd', 'main', 'loading', ''); ?>
+    <?php $this->getView('adminsistem', 'main', 'loading', ''); ?>
     <div class="mn-content fixed-sidebar">
-        <?php $this->getView('adminopd', 'main', 'header', ''); ?>    
-        <?php $this->getView('adminopd', 'main', 'menu', ''); ?>
+        <?php $this->getView('adminsistem', 'main', 'header', ''); ?>
+        <?php $this->getView('adminsistem', 'main', 'menu', ''); ?>
 
         <main class="mn-inner">
             <div class="search-header">
@@ -30,32 +30,48 @@
                     <!-- Tombol Navigasi Index -->
                     <div id="showIndex" class="card stats-card">
                         <div class="card-action" style="padding-bottom: 0px">
-                            <form id="frmData" class="navbar-search expanded" role="search" method="post" action="<?= $this->link('adminopd/tpp/cetaktpp') ?>">
+                            <form id="frmData" class="navbar-search expanded" role="search" method="post">
                                 <div class="row">
-                                    <div class="input-field col s7">
-                                        <?= comp\MATERIALIZE::inputText('satker', 'text', $satker, 'disabled style="color: rgba(0,0,0,.7)"'); ?>
-                                        <label>Satuan Kerja</label>
+                                    <div style="clear: both"></div>
+                                    <div class="input-field col s2">
+                                        <select name="bulan" id="pilihbulan">
+                                            <?php
+                                            $namabulan = [12 => 'Desember'];
+
+                                            foreach ($namabulan as $key => $i) {
+                                                echo '<option value="' . ($key) . '">' . $i . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <label>Pilih Bulan</label>
                                     </div>
                                     <div class="input-field col s2">
                                         <select name="tahun" id="pilihtahun">
-                                            <option value="<?= $tahun ?>"><?= $tahun ?></option>
+                                            <?php
+                                            for ($i = 2018; $i <= date('Y'); $i++) {
+                                                $selected = "";
+                                                $tahun = date('Y');
+                                                if (date('m') == 1) :
+                                                    $tahun--;
+                                                endif;
+
+                                                if ($i == $tahun) :
+                                                    $selected = "selected";
+                                                endif;
+
+                                                echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                                            }
+                                            ?>
                                         </select>
                                         <label>Pilih Tahun</label>
                                     </div>
-                                    <div class="input-field col s3">
-                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak TPP" type="button" id="btnCetak" style="display: none">
-                                            <i class="material-icons left">print</i>
+                                    <div class="input-field col s2">
+                                        <button class="btn-floating btn waves-effect waves-light green btnList" title="Tampilkan" type="button">
+                                            <i class="material-icons left">search</i>
                                         </button>
-                                        <span id="btnMsg" class="chip red darken-4 white-text" style="display: none">Cetak menunggu backup data..</span>
                                     </div>
                                 </div>
-                                <select name="format" id="format" class="browser-default hide">
-                                    <option value="TPP" selected>Laporan TPP</option>
-                                </select>
-                                <?= comp\MATERIALIZE::inputKey('download', 1); ?>
-                                <?= comp\MATERIALIZE::inputKey('bulan', 12); ?>
-                                <?= comp\MATERIALIZE::inputKey('kd_tpp', $kd_tpp); ?>
-                                <?= comp\MATERIALIZE::inputKey('bendahara', (is_array($bendahara) ? $bendahara['id_bendahara'] : '')); ?>
+                                <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
                             </form>
                         </div>
                         <div class="card-content" style="padding-top: 0px">
@@ -71,41 +87,32 @@
                 </div>
             </div>
         </main>
-        <?php $this->getView('adminopd', 'main', 'footer', ''); ?>
+        <?php $this->getView('adminsistem', 'main', 'footer', ''); ?>
     </div>
 
+    <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="assets/css/datatables.css" rel="stylesheet">
+    <style>
+        .sweet-alert {
+            width: 50%;
+            margin-left: 0;
+            left: 25%;
+        }
+    </style>
+
+    <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="assets/js/datatables.js"></script>
     <!-- ./wrapper -->
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
+
     <script>
-        (function ($) {
+        (function($) {
             "use strict";
             app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
 
-            $("#page").val(1);
-            app.loadTabel();
-            app.checkBc();
-
-            $('#btnCetak').on('click', function() {
-                checkBendahara();
-            });
-
-            function checkBendahara() {
-                var format = $('#format option:selected').val();
-                var bendahara = $('#bendahara').val();
-                var verified = $('#verified').val();
-                console.log('tes');
-
-                if (format == 'TPP' && !bendahara) {
-                    alert('Mohon untuk memilih pegawai bendahara pengeluaran terlebih dahulu.');
-                    app.loadTabel();
-
-                //cek verifikasi laporan
-                } else
-                    $('#frmData').submit();
-            }
-
-            $("#data-tabel").on("click", ".paging", function () {
-                app.tabelPagging($(this).attr("number-page"));
+            $(document).on("click", ".btnList", function() {
+                $("#page").val(1);
+                app.loadTabelListDes();
             });
         })(jQuery);
     </script>

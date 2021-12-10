@@ -86,6 +86,35 @@ class backuplaporan extends system\Controller {
         }
     }
 
+    protected function tabellistdes() {
+        $input = $this->post(true);
+        comp\FUNC::showPre($input);exit;
+        if ($input) {
+            foreach ($input as $key => $i) :
+                $data[$key] = $i;
+            endforeach;
+
+            $data['induk'] = $this->backup_service->getData('SELECT * FROM tb_induk 
+                WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"');
+
+            $check = $this->backup_service->getData('SELECT tb_induk.kdlokasi FROM tb_induk 
+                JOIN tb_personil ON tb_personil.induk_id = tb_induk.id
+                WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '" 
+                AND tb_personil.backup_presensi = 1
+                GROUP BY tb_induk.kdlokasi
+            ');
+
+            $data['sudah'] = [];
+            foreach ($check['value'] as $i) {
+                $data['sudah'][] = $i['kdlokasi'];
+            }
+
+            $data['belum'] = $this->backup_service->getBelumBackup($input, $data['induk']);
+            $data['lokasi'] = $this->laporan_service->getPilLokasi();
+            $this->subView('tabellist', $data);
+        }
+    }
+
     protected function tabelpresensiold() {
         $input = $this->post(true);
         if ($input) {
@@ -801,6 +830,14 @@ class backuplaporan extends system\Controller {
         }
     }
 
+    public function backupDes() {
+        $data['title'] = 'Backup Laporan Final';
+        $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
+                . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
+                . 'Backup Laporan Final</a>';
+        $this->showView('indexdes', $data, 'theme_admin');
+    }
+
     public function saveLogDes() {
         set_time_limit(0);
         if (!isset($_GET['p4'])) {
@@ -842,15 +879,16 @@ class backuplaporan extends system\Controller {
 
                 $data['personil'] = implode(',', $personil);
             }
+            comp\FUNC::showPre($data);
 
-            $result = $this->backup_service->dobackup_des($data, false);
-            if (!$result['error']) {
-                $error[] = $data['kdlokasi'];
-            }
+            // $result = $this->backup_service->dobackup_des($data, false);
+            // if (!$result['error']) {
+            //     $error[] = $data['kdlokasi'];
+            // }
         }
 
-        echo json_encode($error);
-        return $this->updatecpns($data['bulan'], $data['tahun']);
+        // echo json_encode($error);
+        // return $this->updatecpns($data['bulan'], $data['tahun']);
     }
 
     public function updateBpjs() {

@@ -1,5 +1,5 @@
 <?php header('application/javascript'); ?>
-<!--<script>-->
+<!-- <script> -->
     app = {
         init: function (url) {
             url_tabelpresensi = url + "/tabelpresensi";
@@ -10,6 +10,7 @@
             url_tabelrekap = url + "/tabelrekap";
             url_tabeltpp = url + "/tabeltpp";
             url_tabellist = url + "/tabellist";
+            url_tabellistdes = url + "/tabellistdes";
             url_backup = url + "/dobackup";
             url_hapus = url + "/hapus";
             url_backuppresensi = url + "/savePresensi";
@@ -38,6 +39,29 @@
                 $('.btnPresensi').on('click', function () {
                     app.backuppresensi($(this));
                 });
+
+                var ini = $('#listTable').DataTable();
+                var itu = $('#listTablenot').DataTable();
+
+                if (page !== undefined) {
+                    //$('#listTable_paginate').find('.paginate_button [data-dt-idx='+page+']').click();
+                    for (var i = 1; i < page; i++) {
+                        if (tipe === 'listTable') {
+                            ini.page('next').draw('page');
+                        } else if (tipe === 'listTablenot') {
+                            itu.page('next').draw('page');
+                        }
+                    }
+                }
+            });
+        },
+
+        loadTabelListDes: function () {
+            $("#data-tabel").html("");
+            $("#progress").removeAttr('style');
+            $.post(url_tabellistdes, $("#frmData").serialize(), function (data) {
+                $('#progress').attr('style', 'display: none');
+                $('#data-tabel').html(data);
 
                 var ini = $('#listTable').DataTable();
                 var itu = $('#listTablenot').DataTable();

@@ -1,7 +1,7 @@
 <body class="search-app quick-results-off">
     <?php $this->getView('adminopd', 'main', 'loading', ''); ?>
     <div class="mn-content fixed-sidebar">
-        <?php $this->getView('adminopd', 'main', 'header', ''); ?>    
+        <?php $this->getView('adminopd', 'main', 'header', ''); ?>
         <?php $this->getView('adminopd', 'main', 'menu', ''); ?>
 
         <main class="mn-inner">
@@ -63,25 +63,26 @@
                                                     if ($i == $tingkattpp)
                                                         $selected = ' selected';
 
-                                                    echo '<option value="'.$i.'" '.$selected.'>Tingkat '.$i.'</option>';
+                                                    echo '<option value="' . $i . '" ' . $selected . '>Tingkat ' . $i . '</option>';
                                                 }
                                                 ?>
                                             </select>
                                             <label>Pilih Tingkat Laporan</label>
                                         </div>
                                     </div-->
-                                    <div class="input-field col s2">
+                                    <div class="input-field col s3">
                                         <button class="btn-floating btn waves-effect waves-light green btnTampil" title="Tampilkan" type="button">
                                             <i class="material-icons left">search</i>
                                         </button>
-                                        <?php if($data['induk']) { ?>
-                                            <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="submit" id="btnCetak">
-                                                <i class="material-icons left">print</i>
-                                            </button>
-                                        <?php } ?>
+                                        <button class="btn-floating btn waves-effect waves-light indigo" title="Cetak" type="submit" id="btnCetak" style="display: none">
+                                            <i class="material-icons left">print</i>
+                                        </button>
+                                        <span id="btnMsg" class="chip red darken-4 white-text" style="display: none">Cetak menunggu backup data..</span>
                                     </div>
                                 </div>
                                 <?= comp\MATERIALIZE::inputKey('kd_tpp', $kd_tpp); ?>
+                                <?= comp\MATERIALIZE::inputKey('tahun', $tahun); ?>
+                                <?= comp\MATERIALIZE::inputKey('bulan', $bulan); ?>
                                 <?= comp\MATERIALIZE::inputKey('tpptingkat', $tingkattpp); ?>
                                 <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
                                 <?= comp\MATERIALIZE::inputKey('download', '1'); ?>
@@ -105,17 +106,29 @@
 
     <!-- ./wrapper -->
     <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <style>.sweet-alert{width: 50%; margin-left: 0; left: 25%;}</style>
+    <style>
+        .sweet-alert {
+            width: 50%;
+            margin-left: 0;
+            left: 25%;
+        }
+    </style>
     <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
     <script>
-        (function ($) {
+        (function($) {
             "use strict";
             app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
 
-            $(".btnTampil").on("click", function () {
+            app.checkBc();
+
+            $(".btnTampil").on("click", function() {
                 $("#page").val(1);
                 app.loadTabelpresensi();
+            }).click();
+
+            $(document).on("click", "#btnCetak", function() {
+                $("#frmData").submit();
             }).click();
 
         })(jQuery);

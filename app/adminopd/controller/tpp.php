@@ -118,6 +118,9 @@ class tpp extends system\Controller {
                     $data['view'] = 'tabeltpp2020';
 //                    comp\FUNC::showPre($data['koreksi']['196504091986032019']['data1']); exit;
                     break;
+                case '6':
+                    $data['view'] = 'tabeltpp2021';
+                    break;
                 default:
                     $data['view'] = 'tabeltpp';
             }
@@ -154,6 +157,18 @@ class tpp extends system\Controller {
     }
 
     private function showtpp($data) {
+        $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $data);
+            switch ($versi['data_1']) {
+                case 'v1':
+                    $this->showtpp_v1($data, true);
+                    break;
+                case 'v3':
+                    $this->showtpp_v3($data, true);
+                    break;
+            }
+    }
+
+    private function showtpp_v1($data) {
         $data['pegawai'] = $this->laporan_service->getDataPersonilTpp($data);
         $data['personil'] = '';
         if ($data['pegawai']['count'] > 0) {
@@ -171,6 +186,29 @@ class tpp extends system\Controller {
         $data['bendahara'] = $this->laporan_service->getBendahara($data['kdlokasi']);
         $data['kepala'] = $this->laporan_service->getKepala($data['kdlokasi']);
         
+        $this->subView($data['view'], $data);
+    }
+
+    private function showtpp_v3($data) {
+        $data['pegawai'] = $this->laporan_service->getDataPersonilTpp_v2($data);
+        $data['personil'] = '';
+        if ($data['pegawai']['count'] > 0) {
+            $personil = array_map(function ($i) {
+                return $i['pin_absen'];
+            }, $data['pegawai']['value']);
+
+            $data['personil'] = implode(',', $personil);
+        }
+
+        $data['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
+        $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+        $data['pajak'] = $this->laporan_service->getArraypajak();
+        $data['laporan'] = $this->laporan_service->getLaporan($data);
+        $data['rekap'] = $this->laporan_service->getRekapAll_v3($data, $data['laporan'], $data['potongan'], $data['custom']);
+        $data['bendahara'] = $this->laporan_service->getBendahara($data['kdlokasi']);
+        $data['kepala'] = $this->laporan_service->getKepala($data['kdlokasi']);
+        // comp\FUNC::showPre($data);exit;
+
         $this->subView($data['view'], $data);
     }
 
@@ -202,9 +240,7 @@ class tpp extends system\Controller {
     protected function presensi() {
         $kd_tpp = $_GET['p4']; //get data jenis tpp
 
-        $tpp = $this->laporan_service->getData("SELECT * FROM tb_tpp WHERE kd_tpp = ?
-            AND tampil = 1
-        ", [$kd_tpp]);
+        $tpp = $this->laporan_service->getData("SELECT * FROM tb_tpp WHERE kd_tpp = ? AND tampil = 1", [$kd_tpp]);
 
         if ($tpp['count'] == 0)
             $this->redirect('adminopd');
@@ -220,7 +256,7 @@ class tpp extends system\Controller {
         $data['tingkattpp'] = $data['tingkat'];
 
         //check backup date
-        $data['induk'] = $this->backup_service->getDataInduk($data);
+        // $data['induk'] = $this->backup_service->getDataInduk($data);
 //        comp\FUNC::showPre($data); exit;
         $this->showView('presensi', $data, 'theme_admin');
     }
@@ -231,9 +267,7 @@ class tpp extends system\Controller {
             foreach ($input as $key => $i)
                 $data[$key] = $i;
 
-            $tpp = $this->laporan_service->getData("SELECT * FROM tb_tpp WHERE kd_tpp = ?
-                AND tampil = 1
-            ", [$data['kd_tpp']]);
+            $tpp = $this->laporan_service->getData("SELECT * FROM tb_tpp WHERE kd_tpp = ? AND tampil = 1", [$data['kd_tpp']]);
 
             if ($tpp['count'] == 0)
                 $this->redirect('adminopd');
@@ -241,7 +275,7 @@ class tpp extends system\Controller {
             $data += $tpp['value'][0];
             $data += $this->getDesc($data);
             $data['kdlokasi'] = $this->login['kdlokasi'];
-            $data['satker'] = $this->satker;
+            $data['satker'] = $this->pegawai_service->getDataSatker($this->login['kdlokasi']);
             $data['format'] = 'B';
             $data['kepala'] = $this->laporan_service->getKepala($data['kdlokasi'], false);
             $data['adminopd'] = $this->laporan_service->getAdminopd($data['kdlokasi'], $this->login['nipbaru']);
@@ -252,6 +286,7 @@ class tpp extends system\Controller {
 
             $data['laporan'] = $this->laporan_service->getLaporan($data);
             $data['induk'] = $this->backup_service->getDataInduk($data);
+            // $data['induk'] = false;
 
             //admbil dari data backupan
             if ($data['induk'] && isset($data['laporan']['final']) && $data['laporan']['final'] != '') 
@@ -263,7 +298,6 @@ class tpp extends system\Controller {
     }
 
     protected function showpresensi($data) {
-//        comp\FUNC::showPre($data); exit;
         $data['pegawai'] = $this->laporan_service->getDataPersonilSatker($data);
         $data['personil'] = '';
         if ($data['pegawai']['count'] > 0) {
@@ -283,6 +317,7 @@ class tpp extends system\Controller {
 
         $data['rekap'] = $this->laporan_service->getRekapAll($data, $data['laporan'], $data['potongan'], $data['custom']);
         $data['kode'] = $this->laporan_service->getData("SELECT * FROM tb_kode_presensi ORDER BY kode_presensi ASC", [])['value'];
+        // comp\FUNC::showPre($data); exit;
         $this->subView($view, $data);
     }
 
@@ -335,5 +370,21 @@ class tpp extends system\Controller {
     public function script() {
         $data['title'] = '<!-- Script -->';
         $this->subView('script', $data);
+    }
+
+    public function getJSON() {
+        $input = $this->post(true);
+        if ($input) {
+            switch ($input['op']) {
+                case 'checkInduk':
+                    $input['kdlokasi'] = $this->login['kdlokasi'];
+                    $data = $this->backup_service->getDataInduk($input);
+                    $result = ($data) ? ['status' => true] : ['status' => false];
+                    break;
+                default:
+                    $result = array();
+            }
+            echo json_encode($result);
+        }
     }
 }

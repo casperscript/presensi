@@ -1,6 +1,6 @@
 <!-- added by husnanw -->
 <style>
-    ul#ulModerasi > li a:hover i {
+    ul#ulModerasi>li a:hover i {
         color: #f00 !important;
     }
 </style>
@@ -10,7 +10,7 @@
     <div class="side-nav-wrapper">
         <div class="sidebar-profile">
             <div class="sidebar-profile-image">
-                <img src="<?= (isset($selfId['foto'])) ? $this->simpeg_url . "/" . $selfId["foto"] : 'assets/images/profile-image.png' ?>" class="circle" alt="fotoku">
+                <img src="<?= (isset($selfId['foto'])) ? $this->simpeg_url . "/" . $selfId["foto"] : 'assets/images/profile-image.png' ?>" class="circle" alt="fotoku" style="width:100px; height:100px">
             </div>
             <div class="sidebar-profile-info">
                 <a class="pointer">
@@ -24,7 +24,8 @@
         <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
             <?php foreach ($menu as $header) : ?>
                 <?php if ($header['tipe'] == 'link') : ?>
-                    <li class="no-padding active <?php // ($header['active'] == 1) ? 'active' : ''  ?>">
+                    <li class="no-padding active <?php // ($header['active'] == 1) ? 'active' : ''  
+                                                    ?>">
                         <a class="collapsible-header waves-effect waves-grey" href="<?= $this->link($this->getProject() . $header['path']); ?>">
                             <i class="material-icons"><?= $header['icon'] ?></i><?= $header['nama'] ?>
                         </a>
@@ -82,8 +83,8 @@
 
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
-                    <i class="material-icons red-text">star</i>Moderasi<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
-                </a>                
+                    <i class="material-icons">star</i>Moderasi<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
+                </a>
                 <div class="collapsible-body">
                     <ul id="ulModerasi">
                         <li><a href="<?= $link_moderasi ?>"><i class="material-icons">star</i>Pengajuan Moderasi</a></li>
@@ -163,7 +164,7 @@
     </div>
 </aside>
 <script>
-//    $(document).ready(function () {
-//        $('.sidenav').sidenav();
-//    });
+    //    $(document).ready(function () {
+    //        $('.sidenav').sidenav();
+    //    });
 </script>

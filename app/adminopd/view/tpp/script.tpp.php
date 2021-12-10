@@ -1,10 +1,11 @@
 <?php header('application/javascript');?>
-<!--<script>-->
+<!-- <script> -->
     app = {
         init: function (url) {
             url_cetaktpp = url + "/cetaktpp";
             url_presensi = url + "/cetakpresensi";
             url_updatebendahara = url + "/updateBendahara";
+            url_getJSON = url + "/getJSON";
         },
 
         // Load Tabel
@@ -12,7 +13,9 @@
             $("#data-tabel").html("");
             $("#progress").removeAttr('style');
 
-            $.post(url_cetaktpp, {kd_tpp: $('#kd_tpp').val()}, function (data) {
+            //$.post(url_cetaktpp, {kd_tpp: $('#kd_tpp').val()}, function (data) {
+            $.post(url_cetaktpp, {kd_tpp: $('#kd_tpp').val(), tahun: $("#pilihtahun").val()}, function (data) {
+            //$.post(url_cetaktpp, $("#frmData").serialize(), function (data) {
                 $('#progress').attr('style', 'display: none');
                 $('#data-tabel').html(data);
 
@@ -31,6 +34,7 @@
             var form = {
                 kd_tpp: $('#kd_tpp').val(),
                 jenis: $('#jenis').val(),
+                tahun: $("#tahun").val(),
                 tpptingkat: $('#tpptingkat').val()
             };
             $.post(url_presensi, form, function (data) {
@@ -54,6 +58,19 @@
                     $('#frmData').submit();
                 });
             });            
+        },
+
+        checkBc: function () {
+            var data = $("#frmData").serialize() + "&op=checkInduk";
+            $.post(url_getJSON, data, function (response) {
+                if (response.status == false) {
+                    $("#btnCetak").hide();
+                    $("#btnMsg").show();
+                } else {
+                    $("#btnCetak").show();
+                    $("#btnMsg").hide();
+                }
+            }, "json");
         },
 
         checkMod: function (data) {

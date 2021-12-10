@@ -1183,7 +1183,7 @@ class laporan_service extends system\Model {
     public function getRekapAll($data, $laporan, $hitungpot = false, $custom = false) {
         $moderasi = $this->getArraymodAll($data, $laporan);
         $libur = $this->getLibur($data);
-//        return $libur;
+        // return $libur;
         $data_pot = $this->getArraypot();
         if (is_array($custom)) {
             $tglawal = $custom['awal'];
@@ -1460,7 +1460,7 @@ class laporan_service extends system\Model {
     public function getRekapAll_v3($data, $laporan, $hitungpot = false, $custom = false) {
         $moderasi = $this->getArraymodAll($data, $laporan);
         $libur = $this->getLibur($data);
-//        return $libur;
+        // return $libur;
         $data_pot = $this->getArraypot();
         if (is_array($custom)) {
             $tglawal = $custom['awal'];
@@ -1816,7 +1816,7 @@ class laporan_service extends system\Model {
     }
 
     public function getTppMenu() {
-        $dataArr = $this->getData('SELECT * FROM tb_tpp WHERE tampil = 1', array());
+        $dataArr = $this->getData('SELECT * FROM tb_tpp WHERE tampil = 2', array());
         $menu = [];
         foreach ($dataArr['value'] as $i) {
             $menu[$i['kd_tpp']] = [
