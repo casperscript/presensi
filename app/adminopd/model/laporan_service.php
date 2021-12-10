@@ -1816,7 +1816,7 @@ class laporan_service extends system\Model {
     }
 
     public function getTppMenu() {
-        $dataArr = $this->getData('SELECT * FROM tb_tpp WHERE tampil = 2', array());
+        $dataArr = $this->getData('SELECT * FROM tb_tpp WHERE tampil = 1', array());
         $menu = [];
         foreach ($dataArr['value'] as $i) {
             $menu[$i['kd_tpp']] = [
