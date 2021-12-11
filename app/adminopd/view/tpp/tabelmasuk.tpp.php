@@ -134,23 +134,25 @@ if (!isset($download)) {
                 <tr>
                     <td width="50%">
                         <?php
-                        if ($tingkat == 3)
+                        if ($tingkat == 3) {
                             if (isset($laporan['kepala_opd'])) {
                                 echo '<b>Mengesahkan ' . $laporan['kepala_opd']['jabatan_pengguna'] . ' Kepala OPD</b><br>' .
-                                    $laporan['kepala_opd']['nama_personil'] . '<br>
-                            NIP ' . $laporan['kepala_opd']['nipbaru'] . '<br>
-                            (' . comp\FUNC::tanggal($laporan['dt_sah_kepala_opd'], 'short_date') . ')';
-                            } else
+                                $laporan['kepala_opd']['nama_personil'] . '<br>
+                                NIP ' . $laporan['kepala_opd']['nipbaru'] . '<br>
+                                (' . comp\FUNC::tanggal($laporan['dt_sah_kepala_opd'], 'short_date') . ')';
+                            } else {
                                 echo '<b>[Belum disahkan Kepala OPD]';
-
-                        else if ($tingkat > 3)
+                            }
+                        } else if ($tingkat > 3) {
                             if (isset($laporan['admin_kota'])) {
                                 echo '<b>Telah diverifikasi ' . $laporan['admin_kota']['jabatan_pengguna'] . ' Admin Kota</b><br>' .
-                                    $laporan['admin_kota']['nama_personil'] . '<br>
-                            NIP ' . $laporan['admin_kota']['nipbaru'] . '<br>
-                            (' . comp\FUNC::tanggal($laporan['dt_ver_admin_kota'], 'short_date') . ')';
-                            } else
+                                $laporan['admin_kota']['nama_personil'] . '<br>
+                                NIP ' . $laporan['admin_kota']['nipbaru'] . '<br>
+                                (' . comp\FUNC::tanggal($laporan['dt_ver_admin_kota'], 'short_date') . ')';
+                            } else {
                                 echo '<b>[Belum diverifikasi Admin Kota]';
+                            }
+                        }
                         ?>
                     </td>
                     <td width="50%">
