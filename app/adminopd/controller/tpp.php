@@ -379,7 +379,7 @@ class tpp extends system\Controller {
                 case 'checkInduk':
                     $input['kdlokasi'] = $this->login['kdlokasi'];
                     $data = $this->backup_service->getDataInduk($input);
-                    $result = ($data) ? ['status' => true] : ['status' => false];
+                    $result = ($data) ? ['status' => true] : ['status' => true];
                     break;
                 default:
                     $result = array();
