@@ -90,6 +90,7 @@ $path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
         ?>
     </tbody>
 </table>
+
 <br>
 <?php
 if (!isset($download)) {
@@ -99,7 +100,7 @@ if (!isset($download)) {
                 <tr>
                     <td width="50%">
                         <?php
-                        if ($tingkat == 3)
+                        if ($tingkat >= 3)
                             echo '<b>Mengesahkan ' . $kepala['jabatan_pengguna'] . ' Kepala OPD</b><br>' .
                                 $kepala['nama_personil'] . '
                             <br><br><br><br>
@@ -134,7 +135,7 @@ if (!isset($download)) {
                 <tr>
                     <td width="50%">
                         <?php
-                        if ($tingkat == 3) {
+                        if ($tingkat >= 3) {
                             if (isset($laporan['kepala_opd'])) {
                                 echo '<b>Mengesahkan ' . $laporan['kepala_opd']['jabatan_pengguna'] . ' Kepala OPD</b><br>' .
                                 $laporan['kepala_opd']['nama_personil'] . '<br>
@@ -207,7 +208,7 @@ if (!isset($download)) {
 }
 
 if (count($laporan) == 0) {
-    if ($tingkat == 3) {
+    if ($tingkat >= 3) {
         $ket = 'Mengesahkan ' . $kepala['jabatan_pengguna'] . ' Kepala OPD';
         echo '<div class="kiri-atas"><div class="teks-atas"><b>' . $ket . '</b></div>
             <div class="ttd-area"><br><br><br><br><br><br><br><br><br></div>
