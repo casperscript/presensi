@@ -62,7 +62,7 @@ class laporan_service extends system\Model {
     
     public function getDataPersonilSatker_v2($data) {
         parent::setConnection('db_pegawai');
-        
+
         $idKey = [];
         $q_carigaji = '';
         if (!empty($data['bulan']) && !empty($data['tahun'])) {
@@ -273,6 +273,11 @@ class laporan_service extends system\Model {
         $field = $this->getTabel('tref_lokasi_kerja');
         $idKey = array();
         $q_cari = '';
+        if (isset($input['cari'])) {
+            $q_cari = 'AND (singkatan_lokasi LIKE ? OR nmlokasi LIKE ? OR kdlokasi LIKE ?) ';
+            $cari = '%' . $input['cari'] . '%';
+            array_push($idKey, $cari, $cari, $cari);
+        }
         foreach ($field as $key => $val) {
             if (isset($input[$key])) {
                 $q_cari .= 'AND (' . $key . ' = ?) ';

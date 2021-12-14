@@ -28,21 +28,22 @@
             <div class="row">
                 <div class="col s12">
                     <!-- Tombol Navigasi Index -->
-                    <div id="showIndex" class="card stats-card">
-                        <div class="card-action" style="padding-bottom: 0px">
+                    <div class="card stats-card">
+                        <div class="card-action" style="padding-bottom: none;">
                             <form id="frmData" class="navbar-search expanded" role="search" method="post">
-                                <div class="row">
-                                    <div style="clear: both"></div>
+                                <div class="row" style="margin-bottom: 0;">
+                                    <!-- <div style="clear: both"></div> -->
+                                    <div class="input-field col s3 custom-prefix">
+                                        <i class="material-icons prefix">search</i>
+                                        <?= comp\MATERIALIZE::inputText('cari', 'text', '', 'placeholder="Nama OPD"') ?>
+                                        <label>Pencarian</label>
+                                    </div>
                                     <div class="input-field col s2">
-                                        <select name="bulan" id="pilihbulan">
-                                            <?php
-                                            $namabulan = [12 => 'Desember'];
-
-                                            foreach ($namabulan as $key => $i) {
-                                                echo '<option value="' . ($key) . '">' . $i . '</option>';
-                                            }
-                                            ?>
-                                        </select>
+                                        <?= comp\MATERIALIZE::inputSelect('status', ['' => ':: Semua ::', 'belum' => 'Belum Backup', 'sudah' => 'Sudah Backup'], 'belum', '') ?>
+                                        <label>Status Backup</label>
+                                    </div>
+                                    <div class="input-field col s1">
+                                        <?= comp\MATERIALIZE::inputText('bulan', 'text', 'Desember', 'disabled="" style="color: rgba(0,0,0,.7)"') ?>
                                         <label>Pilih Bulan</label>
                                     </div>
                                     <div class="input-field col s2">
@@ -72,9 +73,14 @@
                                     </div>
                                 </div>
                                 <?= comp\MATERIALIZE::inputKey('page', '1'); ?>
+                                <?= comp\MATERIALIZE::inputKey('bulan', '12'); ?>
                             </form>
                         </div>
-                        <div class="card-content" style="padding-top: 0px">
+                    </div>
+                </div>
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
                             <div class="progress" id="progress" style="display: none">
                                 <div class="indeterminate"></div>
                             </div>
@@ -109,10 +115,14 @@
         (function($) {
             "use strict";
             app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
+            app.loadTabelListTPP();
 
             $(document).on("click", ".btnList", function() {
                 $("#page").val(1);
-                app.loadTabelListDes();
+                app.loadTabelListTPP();
+            });
+            $(document).on("click", ".btnBackup", function() {
+                app.saveLogTPP(this.id);
             });
         })(jQuery);
     </script>

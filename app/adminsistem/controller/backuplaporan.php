@@ -9,9 +9,11 @@ use app\adminsistem\model\backup_service;
 use system;
 use comp;
 
-class backuplaporan extends system\Controller {
+class backuplaporan extends system\Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->servicemain = new servicemain();
         $session = $this->servicemain->cekSession();
@@ -28,19 +30,21 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function index() {
+    protected function index()
+    {
         $data['title'] = 'Backup Laporan Final';
         $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Backup Laporan Final</a>';
+            . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
+            . 'Backup Laporan Final</a>';
         $this->showView('index', $data, 'theme_admin');
     }
 
-    protected function lihat() {
+    protected function lihat()
+    {
         $data['title'] = 'Backup Laporan Final';
         $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Backup Laporan Final</a>';
+            . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
+            . 'Backup Laporan Final</a>';
 
         $satker = $this->laporan_service->getPilLokasi();
         $params = explode('/', $_GET['p4']);
@@ -58,7 +62,8 @@ class backuplaporan extends system\Controller {
         $this->showView('lihat', $data, 'theme_admin');
     }
 
-    protected function tabellist() {
+    protected function tabellist()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -86,36 +91,38 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabellistdes() {
+    protected function tabellisttpp()
+    {
         $input = $this->post(true);
-        comp\FUNC::showPre($input);exit;
         if ($input) {
             foreach ($input as $key => $i) :
                 $data[$key] = $i;
             endforeach;
 
-            $data['induk'] = $this->backup_service->getData('SELECT * FROM tb_induk 
-                WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"');
+            // $data['induk'] = $this->backup_service->getData('SELECT * FROM tb_induk 
+            //      WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"');
 
-            $check = $this->backup_service->getData('SELECT tb_induk.kdlokasi FROM tb_induk 
-                JOIN tb_personil ON tb_personil.induk_id = tb_induk.id
-                WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '" 
-                AND tb_personil.backup_presensi = 1
-                GROUP BY tb_induk.kdlokasi
-            ');
+            // $check = $this->backup_service->getData('SELECT tb_induk.kdlokasi FROM tb_induk 
+            //     JOIN tb_personil ON tb_personil.induk_id = tb_induk.id
+            //     WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '" 
+            //     AND tb_personil.backup_presensi = 1
+            //     GROUP BY tb_induk.kdlokasi
+            // ');
 
-            $data['sudah'] = [];
-            foreach ($check['value'] as $i) {
-                $data['sudah'][] = $i['kdlokasi'];
-            }
+            // $data['sudah'] = [];
+            // foreach ($check['value'] as $i) {
+            //     $data['sudah'][] = $i['kdlokasi'];
+            // }
 
-            $data['belum'] = $this->backup_service->getBelumBackup($input, $data['induk']);
-            $data['lokasi'] = $this->laporan_service->getPilLokasi();
-            $this->subView('tabellist', $data);
+            $data['induk'] = $this->backup_service->getIndukDes($input);
+            $data['lokasi'] = $this->laporan_service->getPilLokasi($input);
+            // comp\FUNC::showPre($data);exit;
+            $this->subView('tabellisttpp', $data);
         }
     }
 
-    protected function tabelpresensiold() {
+    protected function tabelpresensiold()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -155,7 +162,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelpresensi() {
+    protected function tabelpresensi()
+    {
         $input = $this->post(true);
         if ($input) {
             $versi = $this->laporan_service->getDataVersi('history_of_report_rules', $input);
@@ -170,7 +178,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelpresensi_v1() {
+    protected function tabelpresensi_v1()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -211,7 +220,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelpresensi_v2() {
+    protected function tabelpresensi_v2()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -252,7 +262,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelpersonil() {
+    protected function tabelpersonil()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -272,7 +283,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelrekapc1() {
+    protected function tabelrekapc1()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -315,7 +327,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabelrekapc2() {
+    protected function tabelrekapc2()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i) :
@@ -347,7 +360,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function tabeltpp() {
+    protected function tabeltpp()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i)
@@ -385,7 +399,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function dobackup() {
+    protected function dobackup()
+    {
         set_time_limit(0);
         $input = $this->post(true);
         if ($input) {
@@ -408,7 +423,8 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    protected function dobackup_v1($input) {
+    protected function dobackup_v1($input)
+    {
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker($input);
         $input['personil'] = '';
         if ($input['pegawai']['count'] > 0) {
@@ -426,7 +442,8 @@ class backuplaporan extends system\Controller {
         return $error_msg;
     }
 
-    protected function dobackup_v2($input) {
+    protected function dobackup_v2($input)
+    {
         $input['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
         $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
@@ -464,7 +481,8 @@ class backuplaporan extends system\Controller {
         return $error_msg;
     }
 
-    protected function dobackup_v3($input) {
+    protected function dobackup_v3($input)
+    {
         $input['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
         $input['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
         $input['personil'] = implode(',', array_column($input['pegawai']['value'], 'pin_absen'));
@@ -502,7 +520,8 @@ class backuplaporan extends system\Controller {
         return $error_msg;
     }
 
-    protected function hapus() {
+    protected function hapus()
+    {
         $input = $this->post(true);
         if ($input) {
             $result = $this->backup_service->hapusBackup($input);
@@ -513,12 +532,14 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    public function script() {
+    public function script()
+    {
         $data['title'] = '<!-- Script -->';
         $this->subView('script', $data);
     }
 
-    public function savePresensi() {
+    public function savePresensi()
+    {
         $input = $this->post(true);
         if ($input) {
             foreach ($input as $key => $i)
@@ -573,8 +594,9 @@ class backuplaporan extends system\Controller {
         }
     }
 
-// --------------------------------------------------------------------------------//
-    public function checkbackup() {
+    // --------------------------------------------------------------------------------//
+    public function checkbackup()
+    {
         exit;
         set_time_limit(0);
         $data = [
@@ -625,7 +647,8 @@ class backuplaporan extends system\Controller {
     }
 
     //--------------------------//
-    public function getPot() {
+    public function getPot()
+    {
         exit;
         $idKey = [6, 2018];
         $query = 'SELECT * FROM tb_induk WHERE bulan = ? AND tahun = ?';
@@ -675,7 +698,8 @@ class backuplaporan extends system\Controller {
         var_dump($gagal);
     }
 
-    public function updateLog() {
+    public function updateLog()
+    {
         set_time_limit(0);
         if (!isset($_GET['p4'])) {
             echo 'missing parameter';
@@ -734,7 +758,8 @@ class backuplaporan extends system\Controller {
         exit;
     }
 
-    public function saveLog() {
+    public function saveLog()
+    {
         set_time_limit(0);
         if (!isset($_GET['p4'])) {
             echo 'missing parameter';
@@ -787,7 +812,8 @@ class backuplaporan extends system\Controller {
         return $this->updatecpns($data['bulan'], $data['tahun']);
     }
 
-    public function updatecpns($bulan, $tahun) {
+    public function updatecpns($bulan, $tahun)
+    {
         set_time_limit(0);
         $data = [
             'bulan' => $bulan,
@@ -830,34 +856,61 @@ class backuplaporan extends system\Controller {
         }
     }
 
-    public function backupDes() {
+    public function backupTPP()
+    {
         $data['title'] = 'Backup Laporan Final';
         $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
-                . 'Backup Laporan Final</a>';
-        $this->showView('indexdes', $data, 'theme_admin');
+            . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
+            . 'Backup Laporan Final</a>';
+        $this->showView('indextpp', $data, 'theme_admin');
     }
 
-    public function saveLogDes() {
+    public function saveLogTPP()
+    {
         set_time_limit(0);
-        if (!isset($_GET['p4'])) {
-            echo 'missing parameter';
+        $input = $this->post(true);
+        $parseId = explode('|', comp\FUNC::decryptor($input['id']));
+        if ($parseId) {
+            $data['tahun'] = $parseId[0];
+            $data['bulan'] = $parseId[1];
+            $data['kdlokasi'] = $parseId[2];
+
+            $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $data);
+            switch ($versi['data_1']) {
+                case 'v1':
+                    // $result = $this->dobackupdes_v1($input);
+                    $result = 'ok';
+                    break;
+                case 'v3':
+                    $result = $this->dobackupdes_v3($data);
+                    break;
+                default:
+                    $result = ['error' => 1, 'message' => 'Versi tidak ditemukan'];
+            }
+            // header('Content-Type: application/json');
+            // echo json_encode($result + ['page' => $input['page']]);
+            comp\FUNC::showPre($result);
             exit;
         }
 
-        $period = explode('-', $_GET['p4']);
-        if (count($period) < 2) {
-            echo 'wrong parameter';
-            exit;
-        }
+        // if (!isset($_GET['p4'])) {
+        //     echo 'missing parameter';
+        //     exit;
+        // }
 
-        $data['bulan'] = $period[0];
-        $data['tahun'] = $period[1];
+        // $period = explode('-', $_GET['p4']);
+        // if (count($period) < 2) {
+        //     echo 'wrong parameter';
+        //     exit;
+        // }
 
+
+    }
+
+    public function dobackupdes_v1()
+    {
         $idKey = [$data['bulan'] - 1, $data['tahun']];
-        $query = 'SELECT * FROM tb_laporan WHERE bulan = ? AND tahun = ?
-            AND sah_final != "" AND dt_sah_final != "0000-00-00 00:00:00"
-        ';
+        $query = 'SELECT * FROM tb_laporan WHERE bulan = ? AND tahun = ? AND sah_final != "" AND dt_sah_final != "0000-00-00 00:00:00"';
         $laporan = $this->laporan_service->getData($query, $idKey);
 
         $error = [];
@@ -891,7 +944,21 @@ class backuplaporan extends system\Controller {
         // return $this->updatecpns($data['bulan'], $data['tahun']);
     }
 
-    public function updateBpjs() {
+    public function dobackupdes_v3($input)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        $data['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
+        $data['personil'] = implode(',', array_column($data['pegawai']['value'], 'pin_absen'));
+        $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+
+        // $satker = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
+
+        return $data;
+    }
+
+    public function updateBpjs()
+    {
         set_time_limit(0);
         if (!isset($_GET['p4'])) {
             echo 'missing parameter';
@@ -943,5 +1010,4 @@ class backuplaporan extends system\Controller {
         echo '<br>Jumlah : ' . $sukses;
         exit;
     }
-
 }

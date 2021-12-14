@@ -10,10 +10,11 @@
             url_tabelrekap = url + "/tabelrekap";
             url_tabeltpp = url + "/tabeltpp";
             url_tabellist = url + "/tabellist";
-            url_tabellistdes = url + "/tabellistdes";
+            url_tabellisttpp = url + "/tabellisttpp";
             url_backup = url + "/dobackup";
             url_hapus = url + "/hapus";
             url_backuppresensi = url + "/savePresensi";
+            url_saveLogTPP = url + "/saveLogTPP";
         },
 
         tabelPagging: function (number) {
@@ -56,10 +57,10 @@
             });
         },
 
-        loadTabelListDes: function () {
+        loadTabelListTPP: function () {
             $("#data-tabel").html("");
             $("#progress").removeAttr('style');
-            $.post(url_tabellistdes, $("#frmData").serialize(), function (data) {
+            $.post(url_tabellisttpp, $("#frmData").serialize(), function (data) {
                 $('#progress').attr('style', 'display: none');
                 $('#data-tabel').html(data);
 
@@ -178,6 +179,22 @@
                     .error(function () {
                         swal("Error", "Permintaan gagal diproses", "error");
                     });
+        },
+
+        saveLogTPP: function (id) {
+            swal({
+                title: "Proses Backup",
+                text: "Sedang memproses... harap tunggu..",
+                showConfirmButton: true
+            });
+
+            $.post(url_saveLogTPP, {id: id})
+                .done(function (data) {
+                    console.log;
+                })
+                .error(function () {
+                    swal("Error", "Permintaan gagal diproses", "error");
+                });
         },
 
         hapus: function (obj) {
