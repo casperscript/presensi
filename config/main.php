@@ -24,8 +24,8 @@ return array(
         'web_header' => 'e-Presensi',
         'web_footer' => 'Copyright 2017',
         'dir_arsip' => UPLOAD . 'archive/',
-        'dir_ttd' => UPLOAD . 'ttd/',
-        'dir_stempel' => UPLOAD . 'stempel/',
+        'dir_ttd' => UPLOAD . 'ttd',
+        'dir_stempel' => UPLOAD . 'stempel',
         'dir_panduan' => UPLOAD . 'panduan',
         "husnanw_moderasi_upload_path" => UPLOAD . "moderasi/dokumen", // added by husnanw
         "simpeg_url" => "http://new-presensi.pekalongankota.go.id", // added by husnanw
