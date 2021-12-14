@@ -3,8 +3,8 @@ ob_start();
 
 $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
-$path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
-$path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
+$path_stempel = $this->link() . "upload/stempel/";
+$path_ttd = $this->link() . "upload/ttd/";
 ?>
 <br>
 <div class="row lap">

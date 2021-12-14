@@ -5,12 +5,8 @@ use comp\FUNC;
 
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 
-$path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
-$path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
-/*
-  $path_stempel = $this->link()."upload/stempel/";
-  $path_ttd = $this->link()."upload/ttd/";
- */
+$path_stempel = $this->link() . "upload/stempel/";
+$path_ttd = $this->link() . "upload/ttd/";
 $period = $bulan . $tahun;
 ?>
 <?php

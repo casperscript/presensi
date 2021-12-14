@@ -4,8 +4,8 @@ ob_start();
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 $hitungtgl = $tgl_akhir - $tgl_awal + 1;
 
-$path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
-$path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
+$path_stempel = $this->link() . "upload/stempel/";
+$path_ttd = $this->link() . "upload/ttd/";
 ?>
 <br>
 

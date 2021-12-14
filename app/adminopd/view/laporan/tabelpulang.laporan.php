@@ -6,12 +6,8 @@ use comp\FUNC;
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
-$path_stempel = $this->new_simpeg_url . "/simpeg/upload/stempel/";
-$path_ttd = $this->new_simpeg_url . "/simpeg/upload/ttd/";
-/*
-  $path_stempel = $this->link()."upload/stempel/";
-  $path_ttd = $this->link()."upload/ttd/";
- */
+$path_stempel = $this->link() . "upload/stempel/";
+$path_ttd = $this->link() . "upload/ttd/";
 
 if ($tingkat > 1 && !isset($laporan['admin_opd'])) {
     echo '<div class="alert-verifikasi">

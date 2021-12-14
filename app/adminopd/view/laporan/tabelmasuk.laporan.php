@@ -6,9 +6,6 @@ use comp\FUNC;
 $namabulan = array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
 $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
-// $path_stempel = $this->dir_stempel . "/upload/stempel/";
-// $path_ttd = $this->dir_ttd . "/upload/ttd/";
-
 $path_stempel = $this->link() . "upload/stempel/";
 $path_ttd = $this->link() . "upload/ttd/";
 
