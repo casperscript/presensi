@@ -172,7 +172,7 @@ class backup_service extends system\Model {
             $q_cari .= 'AND pin_absen IN (' . $data['pin_absen'] . ')';
         }
         $result = $this->getData('SELECT * FROM tb_personil '
-                . 'WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari
+                . 'WHERE induk_id = "' . $data['induk']['id'] . '" ' . $q_cari
                 . 'ORDER BY kelas DESC, nama_personil ASC');
         return $result;
     }

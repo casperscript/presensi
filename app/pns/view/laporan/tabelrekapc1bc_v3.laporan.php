@@ -1,6 +1,6 @@
 <?php
 ob_start();
-//comp\FUNC::showPre($rekapbc);exit;
+comp\FUNC::showPre($pegawai);exit;
 
 use comp\FUNC;
 ?>
