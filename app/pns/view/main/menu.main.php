@@ -1,8 +1,8 @@
 <!-- added by husnanw -->
 <style>
-ul#ulModerasi > li a:hover i {
-    color: #f00 !important;
-}
+    ul#ulModerasi>li a:hover i {
+        color: #f00 !important;
+    }
 </style>
 <!-- ### -->
 
@@ -10,9 +10,7 @@ ul#ulModerasi > li a:hover i {
     <div class="side-nav-wrapper">
         <div class="sidebar-profile">
             <div class="sidebar-profile-image">
-                <!-- modified by husnanw -->
-                <img src="<?= (isset($selfId['foto'])) ? $this->simpeg_url."/".$selfId["foto"] : 'assets/images/profile-image.png' ?>" class="circle" alt="fotoku">
-                <!-- ### -->
+                <img src="<?= (!empty($selfId['foto'])) ? $this->link() . $selfId["foto"] : $this->link() . 'template/theme_admin/assets/images/profile-image.png' ?>" class="circle" alt="Foto Pegawai">
             </div>
             <div class="sidebar-profile-info">
                 <a class="pointer">
@@ -26,29 +24,29 @@ ul#ulModerasi > li a:hover i {
         <ul class="sidebar-menu collapsible collapsible-accordion" data-collapsible="accordion">
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_beranda;?>">
+                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_beranda; ?>">
                     <i class="material-icons">desktop_windows</i>Beranda
                 </a>
             </li>
-            
+
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
                     <i class="material-icons">work</i>Presensi<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
                 </a>
                 <div class="collapsible-body">
                     <ul>
-                        <!--li><a href="<?= $link_apelpagi;?>">Apel Pagi</a></li-->
+                        <!--li><a href="<?= $link_apelpagi; ?>">Apel Pagi</a></li-->
                         <li><a href="<?= $link_datakehadiran ?>">Data Kehadiran</a></li>
                     </ul>
                 </div>
             </li>
-            
+
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey" href="<?= $link_moderasi ?>">
                     <i class="material-icons">email</i> Moderasi
                 </a>
             </li>
-            
+
             <!-- added by husnanw --
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
@@ -65,11 +63,11 @@ ul#ulModerasi > li a:hover i {
             <!-- ### -->
 
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_laporan;?>">
+                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_laporan; ?>">
                     <i class="material-icons">library_books</i>Laporan
                 </a>
             </li>
-            
+
             <!--li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
                     <i class="material-icons">library_books</i>Laporan<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
@@ -82,13 +80,13 @@ ul#ulModerasi > li a:hover i {
                     </ul>
                 </div>
             </li-->
-            
+
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_panduan;?>">
+                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_panduan; ?>">
                     <i class="material-icons">description</i>Panduan
                 </a>
             </li>
-            
+
             <li class="no-padding">
                 <a class="collapsible-header waves-effect waves-grey">
                     <i class="material-icons">settings</i>Pengaturan<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
@@ -99,16 +97,16 @@ ul#ulModerasi > li a:hover i {
                     </ul>
                 </div>
             </li>
-            
+
             <li class="no-padding">
-                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_logout;?>">
+                <a class="collapsible-header waves-effect waves-grey" href="<?= $link_logout; ?>">
                     <i class="material-icons">exit_to_app</i>Keluar
                 </a>
             </li>
-            
+
         </ul>
         <div class="footer">
-            © 2017 <br>Developed by 
+            © 2017 <br>Developed by
             <b><a href="https://kominfo.pekalongankota.go.id" target="_blank">Dinkominfo</a></b>
         </div>
     </div>

@@ -1,6 +1,6 @@
 <?php
 ob_start();
-// comp\FUNC::showPre($pegawai);exit;
+comp\FUNC::showPre($this->template);exit;
 
 use comp\FUNC;
 ?>
