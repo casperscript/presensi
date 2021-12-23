@@ -99,6 +99,8 @@ class backuplaporan extends system\Controller
                 $data[$key] = $i;
             endforeach;
 
+            // $tpp = $this->servicemain->getDataKrit('db_presensi', 'tb_tpp', ['kd_tpp' => $input['listTPP']]);
+
             // $data['induk'] = $this->backup_service->getData('SELECT * FROM tb_induk 
             //      WHERE bulan = "' . $input['bulan'] . '" AND tahun = "' . $input['tahun'] . '"');
 
@@ -862,6 +864,8 @@ class backuplaporan extends system\Controller
         $data['breadcrumb'] = '<a href="' . $this->link() . '" class="breadcrumb white-text" style="font-size: 13px;">'
             . 'Index</a><a class="breadcrumb white-text" style="font-size: 13px;">'
             . 'Backup Laporan Final</a>';
+        $data['listTPP'] = $this->servicemain->getArrDataKrit('db_presensi', 'tb_tpp', [], ['key' => 'kd_tpp', 'value' => 'label']);
+        // comp\FUNC::showPre($data);exit;
         $this->showView('indextpp', $data, 'theme_admin');
     }
 
@@ -871,9 +875,12 @@ class backuplaporan extends system\Controller
         $input = $this->post(true);
         $parseId = explode('|', comp\FUNC::decryptor($input['id']));
         if ($parseId) {
-            $data['tahun'] = $parseId[0];
-            $data['bulan'] = $parseId[1];
-            $data['kdlokasi'] = $parseId[2];
+            $tpp = $this->servicemain->getDataKrit('db_presensi', 'tb_tpp', ['kd_tpp' => $parseId[0]]);
+            $data['tpp'] = $tpp;
+            $data['tahun'] = $tpp['tahun'];
+            $data['bulan'] = $tpp['bulan'];
+            $data['kd_tpp'] = $parseId[0];
+            $data['kdlokasi'] = $parseId[1];
 
             $versi = $this->laporan_service->getDataVersi('history_of_report_tpp_rules', $data);
             switch ($versi['data_1']) {
@@ -907,7 +914,7 @@ class backuplaporan extends system\Controller
 
     }
 
-    public function dobackupdes_v1()
+    public function dobackupdes_v1($data = array())
     {
         $idKey = [$data['bulan'] - 1, $data['tahun']];
         $query = 'SELECT * FROM tb_laporan WHERE bulan = ? AND tahun = ? AND sah_final != "" AND dt_sah_final != "0000-00-00 00:00:00"';
@@ -948,13 +955,17 @@ class backuplaporan extends system\Controller
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
+        $data = $input;
+        $data['satker'] = $this->laporan_service->getDataSatker($input['kdlokasi']);
         $data['pegawai'] = $this->laporan_service->getDataPersonilSatker_v2($input);
         $data['personil'] = implode(',', array_column($data['pegawai']['value'], 'pin_absen'));
         $data['kenabpjs'] = $this->laporan_service->getDataSetting('maks_tpp_kena_bpjs');
+        $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
+        $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
 
-        // $satker = $this->servicemain->getDataKrit('db_pegawai', 'tref_lokasi_kerja', ['status_lokasi_kerja' => 1, 'kdlokasi' => $input['kdlokasi']]);
+        $result = $this->backup_service->dobackup_des_v3($data, false);
 
-        return $data;
+        return $result;
     }
 
     public function updateBpjs()

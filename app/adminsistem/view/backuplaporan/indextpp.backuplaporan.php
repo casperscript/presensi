@@ -30,7 +30,7 @@
                     <!-- Tombol Navigasi Index -->
                     <div class="card stats-card">
                         <div class="card-action" style="padding-bottom: none;">
-                            <form id="frmData" class="navbar-search expanded" role="search" method="post">
+                            <form id="frmData" class="navbar-search expanded" role="search" onsubmit="return false" autocomplete="off">
                                 <div class="row" style="margin-bottom: 0;">
                                     <!-- <div style="clear: both"></div> -->
                                     <div class="input-field col s3 custom-prefix">
@@ -42,29 +42,13 @@
                                         <?= comp\MATERIALIZE::inputSelect('status', ['' => ':: Semua ::', 'belum' => 'Belum Backup', 'sudah' => 'Sudah Backup'], 'belum', '') ?>
                                         <label>Status Backup</label>
                                     </div>
-                                    <div class="input-field col s1">
-                                        <?= comp\MATERIALIZE::inputText('bulan', 'text', 'Desember', 'disabled="" style="color: rgba(0,0,0,.7)"') ?>
-                                        <label>Pilih Bulan</label>
-                                    </div>
-                                    <div class="input-field col s2">
-                                        <select name="tahun" id="pilihtahun">
-                                            <?php
-                                            for ($i = 2018; $i <= date('Y'); $i++) {
-                                                $selected = "";
-                                                $tahun = date('Y');
-                                                if (date('m') == 1) :
-                                                    $tahun--;
-                                                endif;
-
-                                                if ($i == $tahun) :
-                                                    $selected = "selected";
-                                                endif;
-
-                                                echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
-                                            }
-                                            ?>
+                                    <div class="input-field col s3">
+                                        <select name="kd_tpp" id="kd_tpp">
+                                            <?php foreach ($listTPP as $valTPP) : ?>
+                                                <option value="<?= $valTPP['kd_tpp'] ?>" <?= (!empty($valTPP['tampil'])) ? 'selected' : '' ?>><?= $valTPP['label'] ?></option>
+                                            <?php endforeach; ?>
                                         </select>
-                                        <label>Pilih Tahun</label>
+                                        <label>Kategori Backup</label>
                                     </div>
                                     <div class="input-field col s2">
                                         <button class="btn-floating btn waves-effect waves-light green btnList" title="Tampilkan" type="button">
@@ -97,7 +81,6 @@
     </div>
 
     <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link href="assets/css/datatables.css" rel="stylesheet">
     <style>
         .sweet-alert {
             width: 50%;
@@ -107,16 +90,18 @@
     </style>
 
     <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
-    <script src="assets/js/datatables.js"></script>
     <!-- ./wrapper -->
     <script src="<?= $this->link($this->getProject() . $this->getController() . '/script.php'); ?>"></script>
 
     <script>
-        (function($) {
-            "use strict";
+        // (function($) {
+        //     "use strict";
             app.init("<?= $this->link($this->getProject() . $this->getController()); ?>");
             app.loadTabelListTPP();
 
+            $(document).on("change", "#frmData", function () {
+                app.loadTabelListTPP();
+            });
             $(document).on("click", ".btnList", function() {
                 $("#page").val(1);
                 app.loadTabelListTPP();
@@ -124,6 +109,9 @@
             $(document).on("click", ".btnBackup", function() {
                 app.saveLogTPP(this.id);
             });
-        })(jQuery);
+            $(document).on("click", ".btnHapusBackup", function () {
+                app.hapusLogTPP(this.id);
+            });
+        // })(jQuery);
     </script>
 </body>

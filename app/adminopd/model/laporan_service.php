@@ -1781,6 +1781,7 @@ class laporan_service extends system\Model {
             if ($peg['count'] > 0) {
                 $peg['value'][0]['id_bendahara'] = $id;
                 $respon = $peg['value'][0];
+                $respon['lokasi_induk'] = $get['value'][0]['lokasi_induk'];
             }
         }
 

@@ -1656,7 +1656,7 @@ class laporan_service extends system\Model {
                 if ($i['nipbaru'] != '' && $peg['count'] > 0) {
                     $jabatan = $i['jabatan_pengguna'] ? $i['jabatan_pengguna'] : '';
                     $respon = $peg['value'][0];
-                    $respon['namanya'] = $jabatan . ' ' . $namanya['value'][0]['kepalaskpd'];
+                    $respon['namanya'] = $jabatan . (empty($jabatan) ? '' : ' ') . $namanya['value'][0]['kepalaskpd'];
                     $respon['jabatan_pengguna'] = $jabatan;
                     break;
                 }

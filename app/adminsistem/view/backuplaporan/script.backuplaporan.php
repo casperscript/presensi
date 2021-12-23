@@ -64,9 +64,6 @@
                 $('#progress').attr('style', 'display: none');
                 $('#data-tabel').html(data);
 
-                var ini = $('#listTable').DataTable();
-                var itu = $('#listTablenot').DataTable();
-
                 if (page !== undefined) {
                     //$('#listTable_paginate').find('.paginate_button [data-dt-idx='+page+']').click();
                     for (var i = 1; i < page; i++) {
@@ -185,12 +182,13 @@
             swal({
                 title: "Proses Backup",
                 text: "Sedang memproses... harap tunggu..",
-                showConfirmButton: true
+                showConfirmButton: false
             });
 
             $.post(url_saveLogTPP, {id: id})
                 .done(function (data) {
-                    console.log;
+                    swal("Berhasil", "Data telah dibackup", "success");
+                    app.loadTabelListTPP();
                 })
                 .error(function () {
                     swal("Error", "Permintaan gagal diproses", "error");
@@ -235,6 +233,10 @@
                     });
                 }
             });
+        },
+
+        hapusLogTPP: function (id) {
+            alert(id);
         },
 
         backuppresensi: function (obj) {

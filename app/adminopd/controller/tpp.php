@@ -6,6 +6,7 @@ use app\adminopd\model\servicemain;
 use app\adminopd\model\laporan_service;
 use app\adminopd\model\pegawai_service;
 use app\adminopd\model\backup_service;
+use app\adminopd\model\backup_des_service;
 use system;
 use comp;
 
@@ -20,6 +21,7 @@ class tpp extends system\Controller {
             $this->laporan_service = new laporan_service();
             $this->pegawai_service = new pegawai_service();
             $this->backup_service = new backup_service();
+            $this->backup_des_service = new backup_des_service();
 
             $this->setSession('SESSION_LOGIN', $session['data']);
             $this->login = $this->getSession('SESSION_LOGIN');
@@ -97,15 +99,16 @@ class tpp extends system\Controller {
 
             $data['bendahara'] = $this->laporan_service->getBendahara($data['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($data['kdlokasi']);
+            // comp\FUNC::showPre($data['bendahara']);exit;
 
             //ambil tambahan data pilih bendahara
             //$data['pilbendahara'] = [];
-            $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $data['kdlokasi']])['value'];
-            $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "'.$data['kdlokasi'].'" LIMIT 1', []);
-            if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
-                $parent = $get['value'][0]['kdlokasi_parent'];
-                $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
-            }
+            $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $data['bendahara']['lokasi_induk']])['value'];
+            // $get = $this->pegawai_service->getData('SELECT kdlokasi_parent FROM tref_lokasi_kerja WHERE kdlokasi = "'.$data['kdlokasi'].'" LIMIT 1', []);
+            // if ($get['count'] == 1 && !empty($get['value'][0]['kdlokasi_parent']) && $get['value'][0]['kdlokasi_parent']) {
+            //     $parent = $get['value'][0]['kdlokasi_parent'];
+            //     $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $parent])['value'];
+            // }
 
             $data['custom'] = [
                 'awal' => $data['tgl_awal'], 
@@ -144,7 +147,7 @@ class tpp extends system\Controller {
                 }, $dataKecuali['value']);
             }
 
-            $data['induk'] = $this->backup_service->getDataInduk($data);
+            $data['induk'] = $this->backup_des_service->getDataInduk_V3($data);
             if ($data['induk']) {
                 $data['view'] .= 'bc';
                 $this->showtppbc($data);
@@ -220,7 +223,7 @@ class tpp extends system\Controller {
         }*/
 
         $data['satker'] = $data['induk']['singkatan_lokasi'];
-        $data['pegawai'] = $this->backup_service->getDataPersonilBatch($data, true);
+        $data['pegawai'] = $this->backup_des_service->getDataPersonilBatch_v2($data, true);
         $data['personil'] = '';
         if ($data['pegawai']['count'] > 0) {
             $personil = array_map(function ($i) {
@@ -230,9 +233,9 @@ class tpp extends system\Controller {
             $data['personil'] = implode(',', $personil);
         }
 
-        $data['tpp'] = $this->backup_service->getDataTpp($data['induk']['id']);
-        $data['laporan'] = $this->backup_service->getLaporan($data['induk']['id']);
-        $data['rekap'] = $this->backup_service->getRekapAllView($data['induk']['id']);
+        $data['tpp'] = $this->backup_des_service->getDataTpp($data['induk']['id']);
+        $data['laporan'] = $this->backup_des_service->getLaporan($data['induk']['id']);
+        $data['rekap'] = $this->backup_des_service->getRekapAllView($data['induk']['id']);
         
         $this->subView($data['view'], $data);
     }

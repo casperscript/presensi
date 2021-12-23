@@ -26,6 +26,18 @@ class backup_service extends system\Model {
         return false;
     }
 
+    public function getDataIndukDes_V3($data) {
+        parent::setConnection('db_backup_desember');
+        $idKey = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
+        $query = 'SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?';
+        $dataArr = $this->getData($query, $idKey);
+
+        if ($dataArr['count'] > 0)
+            return $dataArr['value'][0];
+
+        return false;
+    }
+
     public function getDataPersonil($data) {
         $idKey = array();
         $dataArr = array();

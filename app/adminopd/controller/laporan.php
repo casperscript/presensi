@@ -769,7 +769,6 @@ class laporan extends system\Controller {
             $accesskey = ['kinerja-key' => 'OFV6Y1NualM3dWZBRHZuaFhySDBVQWZYd29JNTZ0'];
             $request = array('pin' => $data['personil'], 'tahun' => $input['tahun'], 'bulan' => $input['bulan']);
             $kinerja = $this->webadapter->callAPI($url, $method, $accesskey, $request);
-//            comp\FUNC::showPre($kinerja);
             $poin = [];
             if ($kinerja['status'] == true) {
                 $arrNip = array_column($kinerja['data'], 'nip');
@@ -785,7 +784,13 @@ class laporan extends system\Controller {
             
             $data['bendahara'] = $this->laporan_service->getBendahara($input['kdlokasi']);
             $data['kepala'] = $this->laporan_service->getKepala($input['kdlokasi']);
-            $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+
+            // bendahara berdasarkan kdlokasi & kdlokasi_parent
+            // $data['pilbendahara'] = (isset($bendahara_parent)) ? array_merge($bendahara_satker, $bendahara_parent) : $bendahara_satker;
+            
+            // bendahara berdasarkan lokasi_induk tb_bendahara
+            $data['pilbendahara'] = $this->laporan_service->getDataPersonilSatker(['kdlokasi' => $data['bendahara']['lokasi_induk']])['value'];
+
             $this->subView('tabeltpp_v3', $data);
         }
     }

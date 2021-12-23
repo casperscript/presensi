@@ -8,23 +8,27 @@ use app\adminsistem\model\laporan_service;
 use app\adminsistem\model\pegawai_service;
 use app\adminsistem\model\webadapter;
 
-class backup_service extends system\Model {
+class backup_service extends system\Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         parent::setConnection('db_backup');
         $this->laporan_service = new laporan_service();
         $this->pegawai_service = new pegawai_service();
         $this->webadapter = new webadapter();
     }
-    
-    public function getData64() {
+
+    public function getData64()
+    {
         parent::setConnection('db_backup_64');
         $data = $this->getData('SELECT * FROM tb_presensi LIMIT 0, 10', []);
         return $data;
     }
-    
-    public function insertData62($data) {
+
+    public function insertData62($data)
+    {
         parent::setConnection('db_backup');
         $result = [];
         foreach ($data as $a) {
@@ -33,7 +37,8 @@ class backup_service extends system\Model {
         return $result;
     }
 
-    public function getDataInduk($data) {
+    public function getDataInduk($data)
+    {
         $idKey = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
         $query = 'SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?';
         $dataArr = $this->getData($query, $idKey);
@@ -45,7 +50,8 @@ class backup_service extends system\Model {
         return false;
     }
 
-    public function getDataPersonil($data) {
+    public function getDataPersonil($data)
+    {
         $idKey = array();
         $dataArr = array();
         $q_cari = 'WHERE 1 ';
@@ -77,12 +83,13 @@ class backup_service extends system\Model {
         return $dataArr;
     }
 
-    public function getDataPersonil_v2($data) {
+    public function getDataPersonil_v2($data)
+    {
         $idKey = [];
-
     }
 
-    public function getTabelPersonil($data) {
+    public function getTabelPersonil($data)
+    {
         $idKey = array();
         $page = (!empty($data['page'])) ? $data['page'] : 1;
         $batas = (!empty($data['batas'])) ? $data['batas'] : 10;
@@ -120,11 +127,12 @@ class backup_service extends system\Model {
         $result['jmlData'] = ($jmlData['count'] > 0) ? $jmlData['value'][0]['jumlah'] : 0;
         $result['dataTabel'] = $dataArr['value'];
         $result['query'] = $dataArr['query'];
-//        $result['query'] = '';
+        //        $result['query'] = '';
         return $result;
     }
 
-    public function getLaporan($induk_id) {
+    public function getLaporan($induk_id)
+    {
         $query = 'SELECT * FROM tb_laporan WHERE induk_id = "' . $induk_id . '"';
         $dataArr = $this->getData($query, []);
 
@@ -145,7 +153,8 @@ class backup_service extends system\Model {
         return false;
     }
 
-    public function getDataTpp($induk_id) {
+    public function getDataTpp($induk_id)
+    {
         $query = 'SELECT * FROM tb_tpp WHERE induk_id = "' . $induk_id . '" ';
         $dataArr = $this->getData($query, []);
 
@@ -155,7 +164,8 @@ class backup_service extends system\Model {
         return false;
     }
 
-    public function getDataPersonilBatch($data, $raw = false) {
+    public function getDataPersonilBatch($data, $raw = false)
+    {
         $qcari = '';
         if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
             $qcari = 'AND pin_absen IN (' . $data['pin_absen'] . ')';
@@ -191,19 +201,21 @@ class backup_service extends system\Model {
 
         return $dataArr;
     }
-    
-    public function getDataPersonilBatch_v2($data) {
+
+    public function getDataPersonilBatch_v2($data)
+    {
         $q_cari = '';
         if (isset($data['pin_absen']) && $data['pin_absen'] != '') {
             $q_cari .= 'AND pin_absen IN (' . $data['pin_absen'] . ')';
         }
         $result = $this->getData('SELECT * FROM tb_personil '
-                . 'WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari
-                . 'ORDER BY kelas DESC, nama_personil ASC');
+            . 'WHERE tampil_tpp = 1 AND induk_id = "' . $data['induk']['id'] . '" ' . $q_cari
+            . 'ORDER BY kelas DESC, nama_personil ASC');
         return $result;
     }
 
-    public function getBelumBackup($input, $induk) {
+    public function getBelumBackup($input, $induk)
+    {
         $idKey = [$input['bulan'], $input['tahun']];
         $sudah = [];
         foreach ($induk['value'] as $i) :
@@ -211,7 +223,7 @@ class backup_service extends system\Model {
         endforeach;
 
         $lap = $this->laporan_service->getData('SELECT * FROM tb_laporan '
-                . 'WHERE bulan = ? AND tahun = ? AND sah_final IS NOT NULL ', $idKey);
+            . 'WHERE bulan = ? AND tahun = ? AND sah_final IS NOT NULL ', $idKey);
 
         $belum = [];
         foreach ($lap['value'] as $j) {
@@ -223,14 +235,20 @@ class backup_service extends system\Model {
         return $belum;
     }
 
-    public function getIndukDes($input = array()) {
+    public function getIndukDes($input = array())
+    {
         parent::setConnection('db_backup_desember');
-        $idKey = [$input['bulan'], $input['tahun']];
-        $data = $this->getData('SELECT * FROM tb_induk WHERE bulan = ? AND tahun = ?', $idKey);
-        return $data;
+        $idKey = [$input['kd_tpp']];
+        $data = $this->getData('SELECT * FROM tb_induk WHERE 1 AND kd_tpp = ?', $idKey);
+        if ($data['count'] > 0) {
+            return $data['value'];
+        } else {
+            return [];
+        }
     }
 
-    public function dobackup($input, $w_presensi = true) {
+    public function dobackup($input, $w_presensi = true)
+    {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
@@ -273,7 +291,8 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    public function save_induk($input) {
+    public function save_induk($input)
+    {
         $induk = [
             'id' => '',
             'kdlokasi' => $input['kdlokasi'],
@@ -287,7 +306,25 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    public function save_laporan($input, $tbinduk) {
+    public function save_induk_des($input)
+    {
+        parent::setConnection('db_backup_desember');
+        $induk = [
+            'id' => '',
+            'kdlokasi' => $input['kdlokasi'],
+            'kd_tpp' => $input['kd_tpp'],
+            'nmlokasi' => $input['nmlokasi'],
+            'singkatan_lokasi' => $input['singkatan_lokasi'],
+            'bulan' => $input['bulan'],
+            'tahun' => $input['tahun'],
+            'dateAdd' => date('Y-m-d H:i:s')
+        ];
+        $tbinduk = $this->save('tb_induk', $induk);
+        return $tbinduk;
+    }
+
+    public function save_laporan($input, $tbinduk)
+    {
         parent::setConnection('db_presensi');
         $params = [$input['kdlokasi'], $input['bulan'], $input['tahun']];
         $sql = "SELECT * FROM tb_laporan WHERE kdlokasi = ? AND bulan = ? AND tahun = ? AND pin_absen IS NULL";
@@ -407,7 +444,8 @@ class backup_service extends system\Model {
         return $tblaporan;
     }
 
-    public function getDataPersonilTpp($data) {
+    public function getDataPersonilTpp($data)
+    {
         parent::setConnection('db_pegawai');
 
         $idKey = array();
@@ -447,11 +485,12 @@ class backup_service extends system\Model {
         return $dataArr;
     }
 
-    public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi) {
-//        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
+    public function save_personil_v2($input, $tbinduk, $rekap, $w_presensi)
+    {
+        //        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
         $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input, true);
         $pajak = $this->laporan_service->getArraypajak();
-//        comp\FUNC::showPre($input);exit;
+        //        comp\FUNC::showPre($input);exit;
 
         parent::setConnection('db_backup');
         foreach ($pegawai['value'] as $peg) {
@@ -475,7 +514,7 @@ class backup_service extends system\Model {
             $p['dateAdd'] = date('Y-m-d H:i:s');
 
             $tbpersonil = $this->save('tb_personil', $p);
-            
+
             #simpan presensi
             $input['kinerja'] = 0;
             if ($tbpersonil['error'] && $w_presensi) {
@@ -488,15 +527,16 @@ class backup_service extends system\Model {
         }
         return $tbpresensi;
     }
-    
-    public function save_personil_v3($input, $tbinduk, $rekap, $w_presensi) {
+
+    public function save_personil_v3($input, $tbinduk, $rekap, $w_presensi)
+    {
         $pegawai = $this->laporan_service->getDataPersonilTppToBackup_v3($input, true);
-//        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
+        //        $pegawai = $this->laporan_service->getDataPersonilSatker_v2($input);
         $pajak = $this->laporan_service->getArraypajak();
-        
+
         $arrPin = array_column($pegawai['value'], 'pin_absen');
         $impPin = implode(',', $arrPin);
-        
+
         ################## Begin Get API Kinerja ####################
         //ambil data kinerja
         $url = 'http://192.168.254.63/super/api/';
@@ -507,8 +547,8 @@ class backup_service extends system\Model {
         if (count($kinerja) == 0) {
             return 'tes';
         }
-//        comp\FUNC::showPre($pegawai);exit;
-        
+        //        comp\FUNC::showPre($pegawai);exit;
+
         $poin = [];
         if (!empty($kinerja)) {
             $arrNip = array_column($kinerja['data'], 'nip');
@@ -553,7 +593,8 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    private function save_personil($input, $tbinduk, $rekap, $w_presensi) {
+    private function save_personil($input, $tbinduk, $rekap, $w_presensi)
+    {
         $pegawai = $this->getDataPersonilTpp($input)['value'];
 
         parent::setConnection('db_backup');
@@ -596,7 +637,8 @@ class backup_service extends system\Model {
         return $tbpersonil;
     }
 
-    public function save_presensi($rekap, $peg, $personil_id, $kenabpjs = []) {
+    public function save_presensi($rekap, $peg, $personil_id, $kenabpjs = [])
+    {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -630,8 +672,8 @@ class backup_service extends system\Model {
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
         $checkBpjsGaji = round((($peg['nominal_tp'] + $peg['totgaji']) > $kenabpjs['value']) ?
-                ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
-                $peg['nominal_tp'] * 0.01);
+            ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
+            $peg['nominal_tp'] * 0.01);
         $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
         $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
         $presensi['pot_bpjskes'] = $pot_bpjs;
@@ -650,7 +692,8 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    public function save_presensi_v2($rekap, $peg, $personil_id, $kenabpjs = [], $input = []) {
+    public function save_presensi_v2($rekap, $peg, $personil_id, $kenabpjs = [], $input = [])
+    {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -699,8 +742,8 @@ class backup_service extends system\Model {
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
         $checkBpjsGaji = round((($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
-                ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
-                $nominal_tpp * 0.01);
+            ($kenabpjs['value'] - $peg['totgaji']) * 0.01 :
+            $nominal_tpp * 0.01);
         $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
         $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
         $presensi['pot_bpjskes'] = $pot_bpjs;
@@ -710,7 +753,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-//        comp\FUNC::showPre($presensi);//exit;
+        //        comp\FUNC::showPre($presensi);//exit;
 
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
@@ -720,8 +763,9 @@ class backup_service extends system\Model {
 
         return $tbpresensi;
     }
-    
-    public function save_presensi_v3($rekap, $peg, $personil_id, $kenabpjs = [], $input = []) {
+
+    public function save_presensi_v3($rekap, $peg, $personil_id, $kenabpjs = [], $input = [])
+    {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -771,8 +815,8 @@ class backup_service extends system\Model {
         $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
 
         $checkBpjsGaji = (($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
-                round(($kenabpjs['value'] - $peg['totgaji']) * 0.01) :
-                round($nominal_tpp * 0.01);
+            round(($kenabpjs['value'] - $peg['totgaji']) * 0.01) :
+            round($nominal_tpp * 0.01);
         $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
         $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
         $presensi['pot_bpjskes'] = $pot_bpjs;
@@ -782,7 +826,7 @@ class backup_service extends system\Model {
             $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
         }
         $presensi['dateAdd'] = date('Y-m-d H:i:s');
-        
+
         // jika TK lebih dari 10, tidak menerima TPP
         if ($get['sum_pot']['tk'] > 10) {
             $presensi['tpp_kotor'] = 0;
@@ -790,7 +834,7 @@ class backup_service extends system\Model {
             $presensi['pot_bpjskes'] = 0;
             $presensi['tpp_terima'] = 0;
         }
-        
+
 
         $tbpresensi = $this->save('tb_presensi', $presensi);
         if ($tbpresensi['error']) :
@@ -800,7 +844,8 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    public function save_tpp($input, $tbinduk) {
+    public function save_tpp($input, $tbinduk)
+    {
         $kepala = $this->laporan_service->getKepala($input['kdlokasi']);
         $bendahara = $this->laporan_service->getBendahara($input['kdlokasi']);
 
@@ -820,7 +865,8 @@ class backup_service extends system\Model {
         return $tbtpp;
     }
 
-    public function hapusBackup($data) {
+    public function hapusBackup($data)
+    {
         $params = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
         $induk = $this->getData('SELECT * FROM tb_induk WHERE kdlokasi = ? AND bulan = ? AND tahun = ?', $params);
 
@@ -835,7 +881,8 @@ class backup_service extends system\Model {
         return true;
     }
 
-    public function getRekapAllView($induk_id, $pin_absen = '') {
+    public function getRekapAllView($induk_id, $pin_absen = '')
+    {
         $cond = "";
         if ($pin_absen != '')
             $cond = " AND tb_personil.pin_absen IN (" . $pin_absen . ")";
@@ -877,7 +924,8 @@ class backup_service extends system\Model {
     /*     * *********************************************************************** */
     /*     * *********************************************************************** */
 
-    public function checkMasuk($data, $jadwal = []) {
+    public function checkMasuk($data, $jadwal = [])
+    {
         $check = [];
         foreach ($data as $i) {
             $pin = $i['pin_absen'];
@@ -909,7 +957,7 @@ class backup_service extends system\Model {
 
             $kode = '';
             $waktu = substr($i['jam_log_presensi'], 0, 5);
-            if ($libur) {//libur tapi finger
+            if ($libur) { //libur tapi finger
                 //$waktu = ($format == 'A' ? 'M1' : substr($i['jam_log_presensi'], 0, 5));
                 $kode = 'M1';
             } elseif ($finger < $awal || $finger > $akhir) {
@@ -966,7 +1014,8 @@ class backup_service extends system\Model {
         return $check;
     }
 
-    public function checkPulang($data, $jadwal = []) {
+    public function checkPulang($data, $jadwal = [])
+    {
         $check = [];
         $bln = null;
         $thn = null;
@@ -1025,7 +1074,7 @@ class backup_service extends system\Model {
 
             $kode = '';
             $waktu = substr($i['jam_log_presensi'], 0, 5);
-            if ($libur) {//libur tapi finger
+            if ($libur) { //libur tapi finger
                 //$pulang = ($format == 'A' ? 'P1' : substr($i['jam_log_presensi'], 0, 5));
                 $kode = 'P1';
             } elseif ($finger < $awal || $finger > $akhir) { //jk finger tidak sesuai ketentuan
@@ -1082,7 +1131,8 @@ class backup_service extends system\Model {
         return $check;
     }
 
-    public function getLogPersonil($data) {
+    public function getLogPersonil($data)
+    {
         parent::setConnection('db_presensi');
 
         $params = [$data['bulan'], $data['tahun']];
@@ -1108,7 +1158,8 @@ class backup_service extends system\Model {
         return $check;
     }
 
-    public function getBatalApel($data) {
+    public function getBatalApel($data)
+    {
         parent::setConnection('db_presensi');
         $get = $this->getData("SELECT * FROM tb_batal_apel WHERE MONTH(tanggal_apel) = ? AND YEAR(tanggal_apel) = ? AND status_batal = 1", [$data['bulan'], $data['tahun']]);
 
@@ -1121,7 +1172,8 @@ class backup_service extends system\Model {
         return $rekap;
     }
 
-    public function getMasukkerja($data) {
+    public function getMasukkerja($data)
+    {
         parent::setConnection('db_presensi');
         //$params = [$data['kdlokasi'], $data['bulan'], $data['tahun']];
         /* $get = $this->getData("SELECT * FROM view_jadwal WHERE kdlokasi = ? 
@@ -1147,7 +1199,8 @@ class backup_service extends system\Model {
         return $masuk;
     }
 
-    public function getArrayJam($id = null) {
+    public function getArrayJam($id = null)
+    {
         parent::setConnection('db_presensi');
 
         $q_cari = '';
@@ -1168,7 +1221,8 @@ class backup_service extends system\Model {
         return $jamapel;
     }
 
-    public function compare($tanggal, $finger, $jamapel, $jammasuk = '') {
+    public function compare($tanggal, $finger, $jamapel, $jammasuk = '')
+    {
         parent::setConnection('db_presensi');
 
         if (!isset($jamapel[$tanggal])) {
@@ -1199,7 +1253,8 @@ class backup_service extends system\Model {
             return 0;
     }
 
-    public function getRecordApel($data) {
+    public function getRecordApel($data)
+    {
         parent::setConnection('db_presensi');
         $idKey = array($data['bulan'], $data['tahun']);
         $batal = $this->getBatalApel($data);
@@ -1207,8 +1262,8 @@ class backup_service extends system\Model {
           . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in ('.$data['personil'].') '
           . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC'; */
         $query = 'SELECT * FROM tb_log_presensi '
-                . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in (' . $data['personil'] . ') AND status_log_presensi = 2 '
-                . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC';
+            . 'WHERE (MONTH(tanggal_log_presensi) = ?) AND (YEAR(tanggal_log_presensi) = ?) AND pin_absen in (' . $data['personil'] . ') AND status_log_presensi = 2 '
+            . 'ORDER BY tanggal_log_presensi DESC, jam_log_presensi DESC';
         $dataArr = $this->getData($query, $idKey);
 
         $result = [];
@@ -1299,8 +1354,9 @@ class backup_service extends system\Model {
         return $result;
     }
 
-    public function getRekapAll($data, $laporan, $hitungpot = false) {
-//        comp\FUNC::showPre($data);exit;
+    public function getRekapAll($data, $laporan, $hitungpot = false)
+    {
+        //        comp\FUNC::showPre($data);exit;
         $moderasi = $this->laporan_service->getArraymodAll($data, $laporan);
         $libur = $this->laporan_service->getLibur($data);
         $data_pot = $this->laporan_service->getArraypot();
@@ -1579,8 +1635,9 @@ class backup_service extends system\Model {
         $all['allverified'] = $allverified;
         return $all;
     }
-    
-    public function getRekapAll_v2($data, $laporan, $hitungpot = false) {
+
+    public function getRekapAll_v2($data, $laporan, $hitungpot = false)
+    {
         $moderasi = $this->laporan_service->getArraymodAll($data, $laporan);
         $libur = $this->laporan_service->getLibur($data);
         $data_pot = $this->laporan_service->getArraypot();
@@ -1606,7 +1663,7 @@ class backup_service extends system\Model {
             for ($i = 1; $i <= $hitungtgl; $i++) {
 
                 $tgl = $data['tahun'] . '-' . $data['bulan'] . '-' . $i;
-//                $hari = date("l", strtotime($tgl));
+                //                $hari = date("l", strtotime($tgl));
 
                 $kd_masuk = '';
                 $kd_apel = '';
@@ -1722,7 +1779,6 @@ class backup_service extends system\Model {
                         if ($jnsmod == 'JNSMOD04' || ($kd_apel == $kd_masuk && $kd_pulang == $kd_masuk)) :
                             $gabung = true;
                         endif;
-                        
                     }
                 }
 
@@ -1862,8 +1918,9 @@ class backup_service extends system\Model {
         return $all;
     }
 
-//-----------------------------------------------------------------------//
-    public function save_cpns($induk_id, $data, $rekap) {
+    //-----------------------------------------------------------------------//
+    public function save_cpns($induk_id, $data, $rekap)
+    {
         parent::setConnection('db_backup');
 
         $count = 0;
@@ -1915,7 +1972,8 @@ class backup_service extends system\Model {
         return $obj;
     }
 
-    public function update_presensi($rekap, $personil) {
+    public function update_presensi($rekap, $personil)
+    {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -1954,7 +2012,8 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    public function updatetampil($induk_id, $personil) {
+    public function updatetampil($induk_id, $personil)
+    {
         if (is_null($this->db)) {
             parent::setConnection('db_backup');
             $this->openConnection();
@@ -1973,11 +2032,14 @@ class backup_service extends system\Model {
 
     /*     * **********************************TPP DES************************************************* */
 
-    public function getRekapAllCustom($data, $laporan, $hitungpot = false, $custom = false) {
+    public function getRekapAllCustom($data, $laporan, $hitungpot = false, $custom = false)
+    {
         $moderasi = $this->laporan_service->getArraymodAll($data, $laporan);
         $libur = $this->laporan_service->getLibur($data);
         $data_pot = $this->laporan_service->getArraypot();
-        //$hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
+        $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
+        $hitungmod = $moderasi['hitung'];
+
         if (is_array($custom)) {
             $tglawal = $custom['awal'];
             $hitungtgl = $custom['akhir'];
@@ -1985,8 +2047,6 @@ class backup_service extends system\Model {
             $tglawal = 1;
             $hitungtgl = cal_days_in_month(CAL_GREGORIAN, $data['bulan'], $data['tahun']);
         }
-
-        $hitungmod = $moderasi['hitung'];
 
         $data['pin_absen'] = $data['personil'];
         $log = $this->getLogPersonil($data);
@@ -2010,7 +2070,7 @@ class backup_service extends system\Model {
                     $hitungpot = false;
 
                 $tgl = $data['tahun'] . '-' . $data['bulan'] . '-' . $i;
-                $hari = date("l", strtotime($tgl));
+                // $hari = date("l", strtotime($tgl));
 
                 $kd_masuk = '';
                 $kd_apel = '';
@@ -2214,21 +2274,26 @@ class backup_service extends system\Model {
                     'all' => ($subtot > 0 ? $subtot : '')
                 ];
 
-                if ($hitungpot)
+                if ($hitungpot) :
                     $sum_mk += $pot_masuk;
+                endif;
                 $sum_ap += $pot_apel;
                 $sum_pk += $pot_pulang;
 
-                if ($kd_masuk == 'TK')
+                if ($kd_masuk == 'TK') :
                     $jumlah_tk++;
+                endif;
 
-                if ($jumlah_tk >= 7)
+                if ($jumlah_tk >= 10) :
                     $pot_penuh[] = 'TK';
+                endif;
             }
 
             $all[$key]['pot_penuh'] = array_unique($pot_penuh);
 
-            if (count($pot_penuh) == 0) {
+            if ($jumlah_tk > 10) {
+                $tot = 'TK > 10 kali';
+            } elseif (count($pot_penuh) == 0) {
                 $tot = ($sum_mk + $sum_ap + $sum_pk);
             } else {
                 $implode = implode(",", $all[$key]['pot_penuh']);
@@ -2237,7 +2302,7 @@ class backup_service extends system\Model {
 
             $all[$key]['sum_pot'] = [
                 'mk' => $sum_mk, 'ap' => $sum_ap, 'pk' => $sum_pk,
-                'all' => $tot
+                'all' => $tot, 'tk' => $jumlah_tk
             ];
         }
 
@@ -2245,7 +2310,8 @@ class backup_service extends system\Model {
         return $all;
     }
 
-    public function dobackup_des($input, $w_presensi = true) {
+    public function dobackup_des($input, $w_presensi = true)
+    {
         //$input['satker'] = $this->laporan_service->getPilLokasi()[$input['kdlokasi']];
         $lokasi = $this->pegawai_service->getData('SELECT * FROM tref_lokasi_kerja WHERE status_lokasi_kerja = 1 AND kdlokasi = "' . $input['kdlokasi'] . '"');
         if ($lokasi['count'] > 0) {
@@ -2282,7 +2348,97 @@ class backup_service extends system\Model {
         return $tbinduk;
     }
 
-    private function save_personil_des($input, $tbinduk, $rekap, $w_presensi) {
+    public function dobackup_des_v3($input)
+    {
+        $custom = ['awal' => $input['tpp']['tgl_awal'], 'akhir' => $input['tpp']['tgl_akhir']];
+        $rekap = [];
+        $laporan = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $input['tingkat'] = $i;
+            $rekap[$i] = $this->getRekapAllCustom($input, $laporan, true, $custom);
+        }
+
+        // simpan induk
+        $input['nmlokasi'] = $input['satker']['nmlokasi'];
+        $input['singkatan_lokasi'] = $input['satker']['singkatan_lokasi'];
+        $tbinduk = $this->save_induk_des($input);
+
+        if ($tbinduk['error']) {
+            // simpan personil
+            $tbpersonil = $this->save_personil_des_v3($input, $tbinduk, $rekap, true);
+
+            // simpan laporan
+            $tblaporan = $this->save_laporan_des_v3($input, $tbinduk);
+
+            // simpan tpp
+            $tbtpp = $this->save_tpp_des_v3($input, $tbinduk);
+
+            if (!$tbpersonil['error'] || !$tblaporan['error'] || !$tbtpp['error']) {
+                parent::setConnection('db_backup_desember');
+                $this->delete('tb_induk', ['id' => $tbinduk['inserted_id']]);
+                return ['error' => false];
+            }
+        }
+
+        return ['error' => true];
+    }
+
+    private function save_laporan_des_v3($input, $tbinduk)
+    {
+        // return $tbinduk;
+        parent::setConnection('db_backup_desember');
+        $field = $this->getTabel('tb_laporan');
+        $field['induk_id'] = $tbinduk['inserted_id'];
+
+        parent::setConnection('db_presensi');
+        $kdlokasi = $input['satker']['kdlokasi'];
+        $idKey = [$kdlokasi];
+        $getPengguna = $this->getData('SELECT * FROM tb_pengguna WHERE 1 AND kdlokasi = ? AND grup_pengguna_kd IN ("KDGRUP01", "KDGRUP02") AND status_login != "offline"', $idKey);
+
+        parent::setConnection('db_pegawai');
+        foreach ($getPengguna['value'] as $val) {
+            $nipKey = [$val['nipbaru']];
+            $getPeg = $this->getData("SELECT CONCAT(gelar_depan, IF(gelar_depan = '', '', ' '), namapeg, IF(gelar_blkg = '', '', ', '), gelar_blkg) AS nama_personil FROM texisting_personal WHERE 1 AND nipbaru = ?", $nipKey)['value'];
+
+            switch ($val['grup_pengguna_kd']) {
+                case 'KDGRUP01':
+                    $field['nip_admin_opd'] = $val['nipbaru'];
+                    $field['nama_admin_opd'] = isset($getPeg[0]['nama_personil']) ? $getPeg[0]['nama_personil'] : '';
+                    $field['jabatan_admin_opd'] = $val['jabatan_pengguna'];
+                    $field['dt_admin_opd'] = date('Y-m-d H:i:s');
+                    break;
+                case 'KDGRUP02':
+                    $field['nip_kepala_opd'] = $val['nipbaru'];
+                    $field['nama_kepala_opd'] = isset($getPeg[0]['nama_personil']) ? $getPeg[0]['nama_personil'] : '';
+                    $field['jabatan_kepala_opd'] = $val['jabatan_pengguna'];
+                    $field['dt_kepala_opd'] = date('Y-m-d H:i:s');
+                    break;
+            }
+        }
+
+        parent::setConnection('db_backup_desember');
+        $tblaporan = $this->save('tb_laporan', $field);
+        return $tblaporan;
+    }
+
+    private function save_tpp_des_v3($input, $tbinduk)
+    {
+        parent::setConnection('db_backup_desember');
+        $field_tpp = $this->getTabel('tb_tpp');
+        $field_tpp['induk_id'] = $tbinduk['inserted_id'];
+        $field_tpp['jabatan_kepala'] = $input['kepala']['namanya'];
+        $field_tpp['nip_kepala'] = $input['kepala']['nipbaru'];
+        $field_tpp['nama_kepala'] = $input['kepala']['nama_personil'];
+        $field_tpp['nip_bendahara'] = $input['bendahara']['nipbaru'];
+        $field_tpp['nama_bendahara'] = $input['bendahara']['nama_personil'];
+        $field_tpp['dateAdd'] = date('Y-m-d H:i:s');
+
+        $tbtpp = $this->save('tb_tpp', $field_tpp);
+        return $tbtpp;
+    }
+
+    private function save_personil_des($input, $tbinduk, $rekap, $w_presensi)
+    {
         $pegawai = $this->getDataPersonilTpp($input)['value'];
 
         parent::setConnection('db_backup');
@@ -2317,7 +2473,46 @@ class backup_service extends system\Model {
         return $tbpersonil;
     }
 
-    public function save_presensi_des($rekap, $peg, $personil_id) {
+    private function save_personil_des_v3($input, $tbinduk, $rekap, $w_presensi)
+    {
+        $pegawai = $this->laporan_service->getDataPersonilTpp_v2($input)['value'];
+        $pajak = $this->laporan_service->getArraypajak();
+
+        parent::setConnection('db_backup_desember');
+        foreach ($pegawai as $peg) {
+            $p = $this->getTabel('tb_personil');
+            $field = array_keys($p);
+
+            foreach ($field as $i) {
+                if ($i != 'id' && isset($peg[$i]))
+                    $p[$i] = $peg[$i];
+            }
+
+            //remove whitespace-- ambil % pajak
+            $clean = str_replace(" ", "", $peg['golruang']);
+            $gol = explode("/", $clean)[0];
+            $p['pajak_tpp'] = isset($pajak[$gol]) ? $pajak[$gol] : 0;
+            $p['induk_id'] = $tbinduk['inserted_id'];
+            $p['tampil_tpp'] = 1;
+            $p['dateAdd'] = date('Y-m-d H:i:s');
+
+            $tbpersonil = $this->save('tb_personil', $p);
+
+            //simpan presensi
+            if ($tbpersonil['error'] && $w_presensi) {
+                $peg['pajak_tpp'] = $p['pajak_tpp'];
+                $tbpresensi = $this->save_presensi_des_v3($rekap, $peg, $tbpersonil['inserted_id'], $input['kenabpjs'], $input);
+                if (!$tbpresensi['error']) {
+                    return $tbpresensi;
+                }
+            }
+        }
+
+        return $tbpersonil;
+    }
+
+    public function save_presensi_des($rekap, $peg, $personil_id)
+    {
         parent::setConnection('db_backup');
         $saveto = [];
         $pot_penuh = [];
@@ -2359,7 +2554,77 @@ class backup_service extends system\Model {
         return $tbpresensi;
     }
 
-    public function update_bpjs($presensi, $kenabpjs, $gaji) {
+    public function save_presensi_des_v3($rekap, $peg, $personil_id, $kenabpjs = [], $input = [])
+    {
+        parent::setConnection('db_backup_desember');
+        $saveto = [];
+        $pot_penuh = [];
+        $sum_pot = [];
+        $pin_absen = $peg['pin_absen'];
+
+        for ($i = 1; $i <= 3; $i++) {
+            $get = $rekap[$i][$pin_absen];
+            $pot_penuh[$i] = $get['pot_penuh'];
+            $sum_pot[$i] = $get['sum_pot'];
+            foreach ($get as $tgl => $isi) {
+                $saveto[$tgl][$i] = $isi;
+            }
+        }
+
+        $nominal_tpp = isset($peg['nominal_tp']) ? $peg['nominal_tp'] : 0;
+        $final = ($sum_pot[3]['all'] > 100 ? 100 : $sum_pot[3]['all']);
+
+        $presensi = [
+            'id' => '',
+            'personil_id' => $personil_id,
+            'pot_penuh' => json_encode($pot_penuh),
+            'sum_pot' => json_encode($sum_pot),
+            'pot_final' => $final,
+            'poin_kinerja' => 100,
+            'tpp_kotor' => $nominal_tpp
+        ];
+
+        $nominal_tp36 = round($nominal_tpp * 36 / 100);
+        $nominal_tp24 = round($nominal_tpp * 24 / 100);
+
+        $pot_tp36 = round((is_numeric($final) ? $final : 100) / 100 * $nominal_tp36, 0);
+        $pot_tp24 = round((100 - $presensi['poin_kinerja']) / 100 * $nominal_tp24, 0);
+
+        $tpp_kotor = $nominal_tpp - ($pot_tp36 + $pot_tp24);
+        $pot_pajak = round($peg['pajak_tpp'] * $tpp_kotor);
+        $presensi['tpp_bersih'] = $tpp_kotor - $pot_pajak;
+
+        $checkBpjsGaji = (($nominal_tpp + $peg['totgaji']) > $kenabpjs['value']) ?
+            round(($kenabpjs['value'] - $peg['totgaji']) * 0.01) :
+            round($nominal_tpp * 0.01);
+        $pot_bpjs = ($presensi['tpp_bersih'] > $checkBpjsGaji) ? $checkBpjsGaji : $presensi['tpp_bersih'];
+        $terima_potbpjs = $presensi['tpp_bersih'] - $pot_bpjs;
+        $presensi['pot_bpjskes'] = $pot_bpjs;
+        $presensi['tpp_terima'] = $terima_potbpjs;
+
+        for ($i = 1; $i <= 31; $i++) {
+            $presensi['t' . $i] = (isset($saveto[$i]) ? json_encode($saveto[$i]) : "{}");
+        }
+        $presensi['dateAdd'] = date('Y-m-d H:i:s');
+
+        // jika TK lebih dari 10, tidak menerima TPP
+        if ($get['sum_pot']['tk'] > 10) {
+            $presensi['tpp_kotor'] = 0;
+            $presensi['tpp_bersih'] = 0;
+            $presensi['pot_bpjskes'] = 0;
+            $presensi['tpp_terima'] = 0;
+        }
+
+        $tbpresensi = $this->save('tb_presensi', $presensi);
+        if ($tbpresensi['error']) {
+            $this->update('tb_personil', ['backup_presensi' => 1], ['id' => $personil_id]);
+        }
+
+        return $tbpresensi;
+    }
+
+    public function update_bpjs($presensi, $kenabpjs, $gaji)
+    {
         parent::setConnection('db_backup');
         $totgaji = $gaji[$presensi['nipbaru']];
         $bersih = $presensi['tpp_bersih'];
@@ -2376,5 +2641,4 @@ class backup_service extends system\Model {
 
         return $tbpresensi;
     }
-
 }

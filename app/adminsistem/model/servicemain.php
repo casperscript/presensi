@@ -156,6 +156,31 @@ class servicemain extends system\Model {
         }
     }
 
+    public function getArrDataKrit($con, $tabel, $kriteria, $unset = array(), $cols = array()) {
+        parent::setConnection($con);
+        $q_cari = '';
+        $idKey = array();
+        foreach ($unset as $key => $val) {
+            unset($kriteria[$val]);
+        }
+
+        $field = $this->getTabel($tabel);
+        foreach ($field as $key => $val) {
+            if (isset($kriteria[$key])) {
+                $q_cari .= 'AND (' . $key . ' = ?) ';
+                array_push($idKey, $kriteria[$key]);
+            }
+        }
+        $col = count($cols) > 0 ? join(',', $cols) : '*';
+
+        $data = $this->getData('SELECT ' . $col . ' FROM ' . $tabel . ' WHERE 1 ' . $q_cari, $idKey);
+        if ($data['count'] > 0) {
+            return $data['value'];
+        } else {
+            return [];
+        }
+    }
+
     public function getTabelKrit($con, $tabel, $kriteria, $sort = '') {
         parent::setConnection($con);
         $q_cari = '';
