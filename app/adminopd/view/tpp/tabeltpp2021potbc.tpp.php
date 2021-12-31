@@ -233,7 +233,7 @@ if ($bendahara != '') {
 
                 </td>
                 <td width="50%" style="padding-left: 48mm">
-                    Pekalongan, <?= FUNC::tanggal(date("Y-m-d"), 'long_date') ?>
+                    Pekalongan, <?= comp\FUNC::tanggal(date("Y-m-d"), 'long_date') ?>
                 </td>
             </tr>
             <tr>
