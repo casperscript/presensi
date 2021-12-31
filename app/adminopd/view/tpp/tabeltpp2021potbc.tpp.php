@@ -216,9 +216,9 @@ if (!isset($download)) {
     </tbody>
 </table>
 <br /><br /><br />
-<div style="color: #ddd;">source: db_backup_desember-tabeltpp2021potbc</div>
 <?php
 if (!isset($download)) {
+    echo '<div style="color: #ddd;">source: db_backup_desember-tabeltpp2021potbc</div>';
     exit;
 }
 
