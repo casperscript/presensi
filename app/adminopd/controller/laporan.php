@@ -1441,6 +1441,12 @@ class laporan extends system\Controller {
                 $idKey['kdlokasi'] = $this->login['kdlokasi'];
                 $idKey['tahun'] = $param['tahun'];
                 $idKey['bulan'] = $param['bulan'];
+                // cetak laporan TPP di tutup sementara untuk desember 2021
+                if ($param['tahun'] == 2021 && $param['bulan'] == 12) {
+                    $response = ['msg' => 'Pencetakan dibatasi..', 'value' => 0];
+                    echo json_encode($response);
+                    exit;
+                }
                 $data = $this->backup_service->getDataInduk($idKey);
                 $response = ($data == false && $param['tingkat'] == 6) ? 
                     ['msg' => 'Menunggu backup data..', 'value' => 0] : ['msg' => '', 'value' => 1];
