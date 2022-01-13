@@ -42,11 +42,26 @@ class laporan_service extends system\Model {
     
     public function getDataVersi($id, $param) {
         parent::setConnection('db_presensi');
+        $periode = $param['tahun'] . '-' . $param['bulan'] . '-1';
+        $data = $this->getData('SELECT * FROM tb_variabel_versi '
+                . 'WHERE 1 '
+                . ' AND kode_variabel = ? '
+                . ' AND ? BETWEEN tgl_mulai AND tgl_akhir', [$id, $periode]);
+        if ($data['count'] > 0) {
+            return $data['value'][0];
+        } else {
+            return $this->getTabel('tb_variabel_versi');
+        }
+    }
+
+    public function getDataVersix($id, $param) {
+        parent::setConnection('db_presensi');
         $data = $this->getData('SELECT * FROM tb_variabel_versi '
                 . 'WHERE 1 '
                 . ' AND kode_variabel = ? '
                 . ' AND ? BETWEEN YEAR(tgl_mulai) AND YEAR(tgl_akhir) '
                 . ' AND ? BETWEEN MONTH(tgl_mulai) AND MONTH(tgl_akhir)', [$id, $param['tahun'], $param['bulan']]);
+                return $data;
         if ($data['count'] > 0) {
             return $data['value'][0];
         } else {
