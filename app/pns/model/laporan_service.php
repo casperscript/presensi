@@ -589,7 +589,6 @@ class laporan_service extends system\Model {
     }
     
     public function getArraymod($input, $laporan = []) {
-        comp\FUNC::showPre($input);
         $data = $this->getModerasi($input, $laporan);
 
         $dataArr = [];
