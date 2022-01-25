@@ -93,7 +93,7 @@ class presensi_service extends system\Model {
                 $result[$kol[$opsi['key']]] = $kol[$opsi['value']];
             }
         } else {
-            $result = array('' => '');
+            $result = [];
         }
         return $result;
     }

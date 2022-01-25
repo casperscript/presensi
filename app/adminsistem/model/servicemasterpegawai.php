@@ -55,11 +55,17 @@ class servicemasterpegawai extends system\Model {
 //        return array('Hari Kerja' => 'Hari Kerja', 'Bulan Kerja' => 'Bulan Kerja');
 //    }
 
-    public function getTabelPilihanLokasiKerja() {
+    public function getTabelPilihanLokasiKerja($param = []) {
         set_time_limit(0);
         $data = array();
-        $dataArr = $this->getData('SELECT * FROM tref_lokasi_kerja WHERE (status_lokasi_kerja = "1")
-            ORDER BY singkatan_lokasi ASC', array());
+        $idKey = [];
+        $q_cari = 'WHERE 1 ';
+        if (isset($param['status_lokasi_kerja']) && $param['status_lokasi_kerja'] == 'all') {
+            $q_cari .= '';
+        } else {
+            $q_cari .= 'AND status_lokasi_kerja = 1';
+        }
+        $dataArr = $this->getData('SELECT * FROM tref_lokasi_kerja ' . $q_cari . ' ORDER BY singkatan_lokasi ASC', $idKey);
         foreach ($dataArr['value'] as $kol) {
             $data[$kol['kdlokasi']] = $kol['singkatan_lokasi'];
         }

@@ -37,7 +37,8 @@ class mastershift extends system\Controller {
         $input = $this->post(true);
         if ($input) {
             $dataTabel = $this->servicemasterpresensi->getTabelShift($input);
-            $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja();
+            $param['status_lokasi_kerja'] = 'all';
+            $data['nama_lokasi'] = $this->servicemasterpegawai->getTabelPilihanLokasiKerja($param);
             $data['title'] = 'Total Data : ' . $dataTabel['jmlData'] . ' Data';
             $data = array_merge($data, $dataTabel);
             $this->subView('tabel', $data);
